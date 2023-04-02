@@ -24,3 +24,14 @@ In order to start working on the project follow these steps:
 - Then write `git commit -m "<ISSUE_NUMBER> LAB-<X>: <Business logic done it commit>"` *(you should change any `<...>` accordingly to your issue)*
 - Then write `git push` and a prompt for a **pull request** should appear. If it doesn't, just go to the [repository site](https://git.pg.edu.pl/p1304534/single_sign_on) and crate it manually through gitlab UI.
 
+### FAQ
+
+Q: I created a pull request that:
+- have not passed CI/CD
+- have bugs in business logic
+- still need changes *(on old commit)*
+
+A: For purposes when the business logic is not changed but fixed:
+- `git commit --amend --no-edit` if the previous commit message is correct.
+- `git commit --amend -m "new message"` to overwrite previous commit message.
+Then you should `git push --force`. The flag is required as you are trying to *change history*.
