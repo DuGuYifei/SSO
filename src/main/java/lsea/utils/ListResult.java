@@ -12,13 +12,15 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class ListResult<E> {
-    @Nullable
-    public int count;
+public class ListResult {
 
     @Nullable
-    public List<E> data;
+    private int count;
 
     @Nullable
-    public Map<String, Object> meta;
+    private List<Object> data;
+
+    @Nullable
+    private Map<String, Object> meta;
+
 }
