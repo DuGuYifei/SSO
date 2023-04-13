@@ -5,8 +5,13 @@ stages:
     - test
     - package
     - deploy
+cache:
+    paths:
+        - .m2/repository
+    key: "$CI_COMMIT_REF_SLUG"
 
 variables:
+    MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
     MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
 
 validate-project:
