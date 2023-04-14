@@ -1,4 +1,4 @@
-package lsea.config;
+package lsea.laboratory.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +32,7 @@ public class SwaggerConfig {
                 .groupName("sso")
                 .enable(flag)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("lsea.controllers"))
+                .apis(RequestHandlerSelectors.basePackage("lsea.laboratory.controllers"))
                 .paths(PathSelectors.any())
                 .build();
     }

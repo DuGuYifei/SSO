@@ -1,4 +1,4 @@
-package lsea.controller;
+package lsea.laboratory.controllers;
 
 import lsea.LaboratoryApplication;
 import org.junit.Test;

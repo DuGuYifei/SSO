@@ -1,4 +1,4 @@
-package lsea.controllers;
+package lsea.laboratory.controllers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
