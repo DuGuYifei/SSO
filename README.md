@@ -35,3 +35,16 @@ A: For purposes when the business logic is not changed but fixed:
 - `git commit --amend --no-edit` if the previous commit message is correct.
 - `git commit --amend -m "new message"` to overwrite previous commit message.
 Then you should `git push --force`. The flag is required as you are trying to *change history*.
+
+Q: I have conflicts in my pull request, what do I do?
+
+A: Don't panic! Follow those steps :) :
+- Go on your machine to the **destination** branch *(probably always `master`)* using `git checkout <branch_name>`
+- Get all updates using `git pull`
+- Go to the branch with conflicts using `git checkout <conflicting_branch_name>`
+- Type `git rebase -i master`. *(It might open some messages, quit on them, we don't want to change commits messages)*
+- `*` Resolve conflicts that both your changes and the incoming commit's changes are both present
+- When there will be no conflicts left *(in VS Code they are indicated by red exclamation marks)* you should add changed files with command: `git add <path_to_file_or_directory>` 
+- Then type `git rebase --continue`. If there are no conflicts left *(message in the console should indicate that)* you can proceed further. If there are next commits incoming, go to the step marked with `*`.
+- You are practically done! Now `git push --force` will push the resolved changes onto your branch
+
