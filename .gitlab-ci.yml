@@ -52,3 +52,9 @@ deploy-to-production:
         - 'true'
     only:
         - master
+
+test_javadoc:
+    stage: test
+    script:
+        - mvn javadoc:javadoc
+        - test -d target/site/apidocs/
