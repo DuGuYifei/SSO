@@ -26,12 +26,12 @@ validate-project:
 run-unit-tests:
     stage: test
     script:
-        - 'mvn $MAVEN_CLI_OPTS -Dmaven.main.skip=true -Dtest=!lsea/laboratory/controllers/* test -DfailIfNoTests=false'
+        - 'mvn $MAVEN_CLI_OPTS -Dmaven.main.skip=true -Dtest=!lsea/controllers/* test -DfailIfNoTests=false'
 
 run-api-tests:
     stage: test
     script:
-        - 'mvn $MAVEN_CLI_OPTS -Dmaven.main.skip=true -Dtest=lsea/laboratory/controllers/* test'
+        - 'mvn $MAVEN_CLI_OPTS -Dmaven.main.skip=true -Dtest=lsea/controllers/* test'
 
 build-dist:
     stage: package
