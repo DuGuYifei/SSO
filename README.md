@@ -24,6 +24,21 @@ In order to start working on the project follow these steps:
 - Then write `git commit -m "<ISSUE_NUMBER> LAB-<X>: <Business logic done it commit>"` *(you should change any `<...>` accordingly to your issue)*
 - Then write `git push` and a prompt for a **pull request** should appear. If it doesn't, just go to the [repository site](https://git.pg.edu.pl/p1304534/single_sign_on) and crate it manually through gitlab UI.
 
+### Javadoc Documentation
+
+- Ensure that you have added comments to your code using Javadoc syntax. Javadoc comments start with /** and end with */. For example:
+```
+/**
+ * This is a Javadoc comment.
+ */
+public class MyClass {
+    // Code goes here...
+}
+```
+- The asterisk (*) before the comment in a Javadoc comment block is optional and can be omitted. However, it is a common convention to include it to indicate that the comment is a Javadoc comment block. Including the asterisk can also improve the readability and visual structure of the comment block by aligning the content of the block.
+- Run the `mvn javadoc:javadoc` command to generate the Javadoc HTML files.
+- The Javadoc documentation for this project can be found in the `target/site/apidocs/` directory. To access it, open the `index.html` file in your web browser.
+
 ### FAQ
 
 Q: I created a pull request that:
