@@ -21,7 +21,6 @@ public class ListResult {
     /**
      * The number of items in the list.
      */
-    @Nullable
     private int count;
 
     /**
