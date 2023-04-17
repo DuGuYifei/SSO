@@ -15,6 +15,7 @@ public class LaboratoryApplication {
 	 * @param args command line arguments
 	 */
 	public static void main(String[] args) {
+		System.setProperty("spring.profiles.active", "dev");
 		SpringApplication.run(LaboratoryApplication.class, args);
 	}
 
