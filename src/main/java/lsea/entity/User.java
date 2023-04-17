@@ -1,11 +1,9 @@
 package lsea.entity;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import io.jsonwebtoken.Claims;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import lsea.dto.CreateUserDto;
 import lsea.errors.GenericConflictError;
 import lsea.errors.GenericForbiddenError;
@@ -15,11 +13,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Optional;
 import java.util.UUID;
 
 /* @Requirement-2.1 */
@@ -37,7 +32,7 @@ import java.util.UUID;
 @EqualsAndHashCode
 @Entity
 @Table(name = "users")
-public class User implements Serializable {
+public class User extends PermissionedEntity implements Serializable {
 
     /**
      * Unique identifier for the user.
@@ -51,21 +46,21 @@ public class User implements Serializable {
      * The username of the user.
      */
     @SerializedName("username")
-    @Column(name = "username", unique = true)
+    @Column(name = "username", unique = true, nullable = false)
     private String username;
 
     /**
      * The encrypted password of the user.
      */
     @ToString.Exclude
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
 
     /**
      * The date the user was created.
      */
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     @SerializedName("created_at")
     private Date createdAt;
 
@@ -81,7 +76,7 @@ public class User implements Serializable {
      * The email address of the user.
      */
     @SerializedName("email")
-    @Column(name = "email", unique = true)
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
     /**
@@ -100,8 +95,8 @@ public class User implements Serializable {
     /**
      * The global permission level of the user.
      */
-    @Column(name = "global_permission")
-    private GlobalPermissions globalPermission = GlobalPermissions.USER;
+    @Column(name = "global_permission", nullable = false)
+    private int globalPermission = GlobalPermissions.USER;
 
     /**
      * Creates a new User instance based on the provided CreateUserDto.
