@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 
-
+/**
+ * This controller is responsible for handling requests related to the application's index.
+ */
 @Api(tags = "index")
 @RestController
 public class IndexController {

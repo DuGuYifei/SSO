@@ -17,14 +17,26 @@ import springfox.documentation.spring.web.json.Json;
 import javax.annotation.Resource;
 
 
+/**
+ * This is a JUnit test class for the IndexController class.
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {LaboratoryApplication.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 public class IndexControllerTest {
 
+    /**
+     * This is the MockMvc object that is used to send requests to the endpoints.
+     */
     @Resource
     private MockMvc mockMvc;
 
+    /**
+     * This test method sends a GET request to the "/" endpoint and checks if the response is as expected.
+     * It uses the Json class to create the expected response.
+     *
+     * @throws Exception if the test fails
+     */
     @Test
     @DisplayName("Test of IndexController")
     public void sanityCheck() throws Exception {
