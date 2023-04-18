@@ -7,7 +7,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-/* @Requirement-2.1 */
 /**
  * A data transfer object for updating a user.
  */
@@ -21,7 +20,8 @@ public class UpdateUserDto {
 
     /**
      * The username of the user, provided by the user.
-     * Must be between 3 and 26 characters long and can only contain letters, underscores and hyphens.
+     * Must be between 3 and 26 characters long and can only contain letters,
+     * underscores and hyphens.
      */
     @NotBlank
     @Size(min = 3, max = 26)

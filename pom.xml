@@ -94,7 +94,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>lsea.ProductionApplication</mainClass>
+							<mainClass>lsea.LaboratoryAppplication</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
@@ -119,6 +119,22 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>Production</id>
+			<properties>
+				<spring.boot.mainclass>lsea.ProductionApplication</spring.boot.mainclass>
+			</properties>
+		</profile>
+		<profile>
+			<id>Development</id>
+			<properties>
+				<spring.boot.mainclass>lsea.LaboratoryAppplication</spring.boot.mainclass>
+			</properties>
+		</profile>
+	</profiles>
+
 	<repositories>
 		<repository>
 			<id>spring-milestones</id>

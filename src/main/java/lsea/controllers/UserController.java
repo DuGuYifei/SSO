@@ -20,7 +20,8 @@ public class UserController {
     /**
      * The ping method is used to test if the server is alive.
      *
-     * @return ResponseEntity object containing "Pong from user controller!" message.
+     * @return ResponseEntity object containing "Pong from user controller!"
+     *         message.
      */
     @GetMapping("/ping")
     public ResponseEntity<String> ping() {

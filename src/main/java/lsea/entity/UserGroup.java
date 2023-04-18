@@ -12,10 +12,11 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
-
+/* Requirement 2.1 */
 /**
  * Represents a user group entity in the system.
- * Extends PermissionedEntity to allow for checking of global access permissions.
+ * Extends PermissionedEntity to allow for checking of global access
+ * permissions.
  */
 @Getter
 @Setter
@@ -23,7 +24,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString
-@EqualsAndHashCode
 @Entity
 @Table(name = "usergroups")
 public class UserGroup extends PermissionedEntity implements Serializable {
@@ -54,7 +54,7 @@ public class UserGroup extends PermissionedEntity implements Serializable {
      * The global access permission level for the user group.
      */
     @Column(name = "global_permission", nullable = false)
-    private int globalPermission = GlobalPermissions.USER;
+    private int globalPermission;
 
     /**
      * The timestamp of when the user group was created.
@@ -74,11 +74,15 @@ public class UserGroup extends PermissionedEntity implements Serializable {
 
     /**
      * Creates a new user group entity from a CreateUserGroupDto and a User creator.
-     * Only users with the MODERATOR global access permission level or higher are allowed to create user groups.
-     * @param dto the CreateUserGroupDto object containing the data for the new user group
+     * Only users with the MODERATOR global access permission level or higher are
+     * allowed to create user groups.
+     * 
+     * @param dto     the CreateUserGroupDto object containing the data for the new
+     *                user group
      * @param creator the User object of the creator of the new user group
      * @return the new UserGroup object
-     * @throws GenericForbiddenError if the creator does not have sufficient global access permissions to create a user group
+     * @throws GenericForbiddenError if the creator does not have sufficient global
+     *                               access permissions to create a user group
      */
     public static UserGroup create(CreateUserGroupDto dto, User creator) throws GenericForbiddenError {
         if (!creator.hasGlobalAccess(GlobalPermissions.MODERATOR)) {
@@ -95,6 +99,7 @@ public class UserGroup extends PermissionedEntity implements Serializable {
 
     /**
      * Converts the UserGroup object to a JSON string.
+     * 
      * @return the JSON string representation of the UserGroup object
      */
     public String toJson() {

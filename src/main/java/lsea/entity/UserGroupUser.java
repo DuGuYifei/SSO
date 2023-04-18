@@ -10,7 +10,6 @@ import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;
 
-
 /**
  * Entity class representing the relationship between a user and a user group.
  */
@@ -65,16 +64,23 @@ public class UserGroupUser {
     /**
      * Creates a new UserGroupUser instance based on the given DTO.
      *
-     * @param dto the DTO containing the information to use for the new instance
+     * @param dto       the DTO containing the information to use for the new
+     *                  instance
+     * @param adderUser the user adding the new user to the group
      * @return the new UserGroupUser instance
+     * @throws GenericForbiddenError if the user adding the new user to the group
+     *                               and doesn't have permissions to do so
      */
-    public static UserGroupUser create(AddUserToUserGroupDto dto, UserGroupUser adderUser) throws GenericForbiddenError {
+    public static UserGroupUser create(AddUserToUserGroupDto dto, UserGroupUser adderUser)
+            throws GenericForbiddenError {
         if (adderUser.groupPermission.equals(GroupPermissions.SPECTATOR)) {
-            throw new GenericForbiddenError("The user adding the new user to the group must have a permission level greater than SPECTATOR.");
+            throw new GenericForbiddenError(
+                    "The user adding the new user to the group must have a permission level greater than SPECTATOR.");
         }
 
         if (adderUser.groupPermission.ordinal() <= dto.getRole()) {
-            throw new GenericForbiddenError("The user adding the new user to the group must have a permission level greater or equal than the new user.");
+            throw new GenericForbiddenError(
+                    "The user adding the new user to the group must have a permission level greater or equal than the new user.");
         }
 
         return UserGroupUser.builder()

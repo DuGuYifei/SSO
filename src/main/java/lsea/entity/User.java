@@ -17,9 +17,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
-/* @Requirement-2.1 */
-/* @Requirement-2.4 */
-/* @Requirement-2.6 */
+/* Requirement 2.1 */
+/* Requirement 2.4 */
 /**
  * Represents a user in the system.
  */
@@ -29,11 +28,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString
-@EqualsAndHashCode
 @Entity
 @Table(name = "users")
 public class User extends PermissionedEntity implements Serializable {
-
+    /* Requirement 2.6 */
     /**
      * Unique identifier for the user.
      */
@@ -96,10 +94,12 @@ public class User extends PermissionedEntity implements Serializable {
      * The global permission level of the user.
      */
     @Column(name = "global_permission", nullable = false)
-    private int globalPermission = GlobalPermissions.USER;
+    private int globalPermission;
 
+    /* Requirement 2.6 */
     /**
      * Creates a new User instance based on the provided CreateUserDto.
+     * 
      * @param dto the CreateUserDto containing the user data
      * @return a new User instance with the provided data
      */
@@ -147,7 +147,6 @@ public class User extends PermissionedEntity implements Serializable {
                 .compact();
     }
 
-
     /**
      * Converts a User object to a JSON string using the Gson library.
      *
@@ -157,7 +156,6 @@ public class User extends PermissionedEntity implements Serializable {
         Gson gson = new Gson();
         return gson.toJson(this);
     }
-
 
     /**
      * Verifies a JWT token and returns the user ID encoded in the token.

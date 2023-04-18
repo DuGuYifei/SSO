@@ -1,4 +1,4 @@
 /**
- * Package contains Data Transfer Objects 
+ * Package contains Data Transfer Objects
  */
 package lsea.dto;

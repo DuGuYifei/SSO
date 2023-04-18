@@ -3,6 +3,7 @@ package lsea;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/* Requirement 2.5 */
 /**
  * Application main class.
  */

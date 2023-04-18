@@ -7,7 +7,8 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 /**
- * Data Transfer Object (DTO) representing the information needed to create a new user group in the SSO system.
+ * Data Transfer Object (DTO) representing the information needed to create a
+ * new user group in the SSO system.
  */
 @Data
 @Getter

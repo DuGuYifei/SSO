@@ -1,7 +1,8 @@
 package lsea.errors;
 
 /**
- * An error class representing a validation error, which occurs when a request fails a validation check.
+ * An error class representing a validation error, which occurs when a request
+ * fails a validation check.
  */
 public class ValidationError extends HttpBaseError {
 

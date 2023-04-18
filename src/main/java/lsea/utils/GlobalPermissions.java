@@ -2,7 +2,8 @@ package lsea.utils;
 
 /**
  * The possible global permissions that a user can have.
- * These permissions can be used to restrict access to certain parts of the application.
+ * These permissions can be used to restrict access to certain parts of the
+ * application.
  */
 public class GlobalPermissions {
 

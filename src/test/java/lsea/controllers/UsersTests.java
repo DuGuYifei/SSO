@@ -13,13 +13,15 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/* Requirement 2.1 */
 /**
  * This class contains integration tests for the User Controller.
- * It uses TestRestTemplate to send HTTP requests to the test server and verifies the response.
+ * It uses TestRestTemplate to send HTTP requests to the test server and
+ * verifies the response.
  */
 @Api(value = "User Integration Tests")
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {LaboratoryApplication.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = { LaboratoryApplication.class }, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UsersTests {
 
     /**
@@ -78,11 +80,13 @@ public class UsersTests {
                 "http://localhost:" + port + "/api/v1/users", request, String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-        assertThat(response.getBody()).isEqualTo("A validation error occured: email must match \"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$\"");
+        assertThat(response.getBody()).isEqualTo(
+                "A validation error occured: email must match \"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$\"");
     }
 
     /**
-     * Following test verifies whether the user creation endpoint rejects registering already existing users.
+     * Following test verifies whether the user creation endpoint rejects
+     * registering already existing users.
      */
     @Test
     public void testAlreadyExistingUser() {

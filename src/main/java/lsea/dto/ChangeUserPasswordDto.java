@@ -5,7 +5,6 @@ import lombok.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-/* @Requirement-2.1 */
 /**
  * A data transfer object for updating a user's password.
  */

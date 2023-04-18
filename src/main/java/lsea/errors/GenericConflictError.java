@@ -1,12 +1,15 @@
 package lsea.errors;
 
+/* Requirement 2.2 */
 /**
- * This class represents a generic conflict error, which occurs when a resource request conflicts with another resource.
+ * This class represents a generic conflict error, which occurs when a resource
+ * request conflicts with another resource.
  * It extends the HttpBaseError class.
  */
- public class GenericConflictError extends HttpBaseError {
+public class GenericConflictError extends HttpBaseError {
 
     /* Requirement 2.7 */
+    /* Requirement 2.9 */
     /**
      * Constructs a new GenericConflictError object with the specified message.
      *
@@ -17,6 +20,7 @@ package lsea.errors;
     }
 
     /* Requirement 2.7 */
+    /* Requirement 2.9 */
     /**
      * Constructs a new GenericConflictError object with the specified exception.
      *

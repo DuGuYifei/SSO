@@ -6,9 +6,9 @@ import org.springframework.lang.Nullable;
 import java.util.List;
 import java.util.Map;
 
-/* @Requirement-2.1 */
 /**
- * Represents a result containing a list of data, along with metadata and a count of the number of items in the list.
+ * Represents a result containing a list of data, along with metadata and a
+ * count of the number of items in the list.
  */
 @Builder
 @Setter
