@@ -18,7 +18,7 @@ variables:
 validate-project:
     stage: validate
     script:
-        - 'mvn $MAVEN_CLI_OPTS compile'
+        - "mvn $MAVEN_CLI_OPTS compile"
     artifacts:
         paths:
             - target
@@ -27,35 +27,36 @@ validate-project:
 run-unit-tests:
     stage: test
     script:
-        - 'mvn $MAVEN_CLI_OPTS -Dmaven.main.skip=true -Dtest=!lsea/controllers/* test -DfailIfNoTests=false'
+        - "mvn $MAVEN_CLI_OPTS -Dmaven.main.skip=true -Dtest=!lsea/controllers/* test -DfailIfNoTests=false"
 
 run-api-tests:
     stage: test
     script:
-        - 'mvn $MAVEN_CLI_OPTS -Dmaven.main.skip=true -Dtest=lsea/controllers/* test'
-
-build-dist:
-    stage: package
-    script:
-        - 'mvn $MAVEN_CLI_OPTS -Dmaven.main.skip=true -Dmaven.test.skip=true package'
-    artifacts:
-        paths:
-            - target/*.jar
-
-deploy-to-server:
-    stage: deploy
-    script:
-        - 'true'
-
-deploy-to-production:
-    stage: deploy
-    script:
-        - 'true'
-    only:
-        - master
+        - "mvn $MAVEN_CLI_OPTS -Dmaven.main.skip=true -Dtest=lsea/controllers/* test"
 
 test_javadoc:
     stage: test
     script:
         - mvn javadoc:javadoc
         - test -d target/site/apidocs/
+
+build-dist:
+    stage: package
+    script:
+        - "mvn $MAVEN_CLI_OPTS -Dmaven.main.skip=true -Dmaven.test.skip=true package"
+    artifacts:
+        paths:
+            - target/*.jar
+            - target/site/apidocs/*
+
+deploy-to-server:
+    stage: deploy
+    script:
+        - "true"
+
+deploy-to-production:
+    stage: deploy
+    script:
+        - "true"
+    only:
+        - master
