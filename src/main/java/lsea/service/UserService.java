@@ -1,8 +1,10 @@
 package lsea.service;
 
+import lsea.dto.AuthorizeUserDto;
 import lsea.dto.CreateUserDto;
 import lsea.entity.User;
 import lsea.errors.GenericConflictError;
+import lsea.errors.GenericForbiddenError;
 import lsea.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,6 +57,22 @@ public class UserService extends BaseService {
         }
         final User user = User.create(dto);
         userRepository.save(user);
+    }
+
+    /**
+     * Logs in a user and returns a JWT token.
+     * 
+     * @param dto the user credentials
+     * @return a JWT token
+     * @throws Exception if the user credentials are invalid
+     */
+    public String authorize(AuthorizeUserDto dto) throws Exception {
+        Optional<User> user = userRepository.findByEmail(dto.getEmail());
+        if (!user.isPresent()) {
+            throw new GenericForbiddenError("Invalid e-mail or password");
+        }
+        user.get().verifyPassword(dto.getPassword());
+        return user.get().getJwtToken();
     }
 
     /**

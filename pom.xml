@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>lsea</groupId>
-	<artifactId>laboratory</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>laboratory</name>
-	<description>single sign-on</description>
+	<artifactId>SSO</artifactId>
+	<version>4.0.0</version>
+	<name>SSO</name>
+	<description>Single Sign On application backend</description>
 	<properties>
 		<java.version>8</java.version>
 	</properties>

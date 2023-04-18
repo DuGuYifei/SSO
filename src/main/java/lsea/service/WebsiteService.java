@@ -2,10 +2,11 @@ package lsea.service;
 
 import lsea.entity.Website;
 import lsea.repository.WebsiteRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-
 
 /**
  * Service layer for all business actions regarding Website entity.
@@ -23,17 +24,17 @@ public class WebsiteService {
      *
      * @param websiteRepository the website repository
      */
+    @Autowired
     public WebsiteService(WebsiteRepository websiteRepository) {
         this.websiteRepository = websiteRepository;
     }
 
-
     /**
      * Find by user id and website displayName.
      *
-     * @param id the id of the user
+     * @param id          the id of the user
      * @param displayName the displayName of the website
-     * @return Optional<Website>
+     * @return the list of Websites by user id and website displayName
      */
     /* @Requirement-3.4 */
     public List<Website> findAllByUserIdAndWebsiteDisplayName(UUID id, String displayName) {
@@ -46,15 +47,21 @@ public class WebsiteService {
 
     /**
      * find by id.
+     * 
      * @param id the id of the website
-     * @return the Optional<Website>
+     * @return the Optional instance of Website
      */
     public Optional<Website> findById(UUID id) {
         return websiteRepository.findById(id);
     }
 
     /**
-     * Find all by createdById and redirectUrl in priority queue. If user has multi account in one website, he can choose one by one as most recently used.
+     * Find all by createdById and redirectUrl in priority queue. If user has multi
+     * account in one website, he can choose one by one as most recently used.
+     * 
+     * @param userId the user id
+     * @param url    the redirect url
+     * @return the priority queue
      */
     /* Requirement-3.4 */
     public PriorityQueue<Website> findAllByCreatedByIdAndRedirectUrl(UUID userId, String url) {
@@ -64,7 +71,6 @@ public class WebsiteService {
         websites.sort(Comparator.comparing(Website::getUpdatedAt).thenComparing(Website::getCreatedAt));
 
         return new PriorityQueue<>(websites);
-
     }
 
     /**
@@ -85,7 +91,8 @@ public class WebsiteService {
     }
 
     /**
-     * Find all in set ordered by comparable of Website (comparable doesn't include id).
+     * Find all in set ordered by comparable of Website (comparable doesn't include
+     * id).
      *
      * @return the set
      */

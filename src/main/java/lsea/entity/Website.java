@@ -25,7 +25,7 @@ import java.util.UUID;
 @EqualsAndHashCode
 @Entity
 @Table(name = "websites")
-public class Website implements Serializable, Comparable<Website>, Cloneable{
+public class Website implements Serializable, Comparable<Website>, Cloneable {
 
     /**
      * Unique id (primary key).
@@ -136,6 +136,9 @@ public class Website implements Serializable, Comparable<Website>, Cloneable{
         return this.privateKey.compareTo(o.getPrivateKey());
     }
 
+    /**
+     * Override clone method for Website class.
+     */
     @Override
     public Object clone() {
         Website clonedWebsite = null;
@@ -145,7 +148,8 @@ public class Website implements Serializable, Comparable<Website>, Cloneable{
             e.printStackTrace();
         }
         clonedWebsite.setId(new UUID(this.getId().getMostSignificantBits(), this.getId().getLeastSignificantBits()));
-        clonedWebsite.setCreatedById(new UUID(this.getCreatedById().getMostSignificantBits(), this.getCreatedById().getLeastSignificantBits()));
+        clonedWebsite.setCreatedById(new UUID(this.getCreatedById().getMostSignificantBits(),
+                this.getCreatedById().getLeastSignificantBits()));
         clonedWebsite.setCreatedAt(new Date(this.getCreatedAt().getTime()));
         clonedWebsite.setUpdatedAt(new Date(this.getUpdatedAt().getTime()));
         clonedWebsite.setDisplayName(new String(this.getDisplayName()));
