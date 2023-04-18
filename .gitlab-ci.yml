@@ -8,7 +8,7 @@ stages:
 cache:
     paths:
         - .m2/repository
-    key: "$CI_COMMIT_REF_SLUG"
+    key: "VERY_COOL_KEY"
 
 variables:
     MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
@@ -34,7 +34,7 @@ run-api-tests:
     script:
         - "mvn $MAVEN_CLI_OPTS -Dmaven.main.skip=true -Dtest=lsea/controllers/* test"
 
-test_javadoc:
+test-javadoc:
     stage: test
     script:
         - mvn javadoc:javadoc
@@ -44,10 +44,11 @@ build-dist:
     stage: package
     script:
         - "mvn $MAVEN_CLI_OPTS -Dmaven.main.skip=true -Dmaven.test.skip=true package"
+        - "mvn javadoc:javadoc"
     artifacts:
         paths:
             - target/*.jar
-            - target/site/apidocs/*
+            - target/site/
 
 deploy-to-server:
     stage: deploy
