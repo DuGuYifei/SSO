@@ -1,6 +1,7 @@
 package lsea.controllers;
 
 import io.swagger.annotations.Api;
+import lsea.LaboratoryApplication;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @Api(value = "User Integration Tests")
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = {LaboratoryApplication.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UsersTests {
 
     /**
