@@ -8,6 +8,8 @@ import lsea.dto.CreateUserDto;
 import lsea.errors.GenericConflictError;
 import lsea.errors.GenericForbiddenError;
 import lsea.utils.GlobalPermissions;
+import lsea.utils.RandomBase64Generator;
+
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -31,6 +33,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "users")
 public class User extends PermissionedEntity implements Serializable {
+    static private String temporarySecret = RandomBase64Generator.generateLong();
     /* Requirement 2.6 */
     /**
      * Unique identifier for the user.
@@ -131,6 +134,18 @@ public class User extends PermissionedEntity implements Serializable {
     }
 
     /**
+     * Verifies the password of the user.
+     * 
+     * @param password the password to verify
+     * @throws GenericForbiddenError if the password is incorrect
+     */
+    public void verifyPassword(String password) throws GenericForbiddenError {
+        if (!BCrypt.checkpw(password, this.getPassword())) {
+            throw new GenericForbiddenError("Invalid e-mail or password");
+        }
+    }
+
+    /**
      * Generates a JWT token for the user.
      *
      * @return The JWT token
@@ -138,6 +153,9 @@ public class User extends PermissionedEntity implements Serializable {
     public String getJwtToken() {
         Date now = new Date();
         String secret = System.getenv("JWT_SECRET");
+        if (secret == null) {
+            secret = temporarySecret;
+        }
         return Jwts.builder()
                 .setId(UUID.randomUUID().toString())
                 .setSubject(id.toString())

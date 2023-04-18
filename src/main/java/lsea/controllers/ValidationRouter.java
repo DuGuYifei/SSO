@@ -24,7 +24,7 @@ public abstract class ValidationRouter {
     /**
      * Validates the given DTO.
      *
-     * @param <T> the type of the DTO to validate
+     * @param <T>    the type of the DTO to validate
      * @param object the object to validate
      * @throws ValidationError if the object fails validation
      */

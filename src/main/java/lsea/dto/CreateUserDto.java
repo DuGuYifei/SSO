@@ -2,9 +2,7 @@ package lsea.dto;
 
 import lombok.*;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 /**
  * Data transfer object for creating a new user.
@@ -39,6 +37,6 @@ public class CreateUserDto {
      * The email address of the user, provided by the user.
      */
     @NotBlank
-    @Pattern(regexp = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$")
+    @Pattern(regexp = "^[a-z0-9_.+-]+@[a-z0-9-]+\\.[a-z0-9-.]+$")
     private String email;
 }
