@@ -14,7 +14,7 @@ import java.util.*;
  * Service layer for all business actions regarding User entity.
  */
 @Service
-public class UserService {
+public class UserService extends BaseService {
 
     /**
      * Repository for user management.
@@ -22,7 +22,9 @@ public class UserService {
     private UserRepository userRepository;
 
     /**
-     * Constructs a new instance of UserService class with UserRepositoryInterface dependency injection.
+     * Constructs a new instance of UserService class with UserRepositoryInterface
+     * dependency injection.
+     * 
      * @param userRepository an instance of UserRepositoryInterface
      */
     @Autowired
@@ -30,10 +32,20 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    /* Requirement 2.8 */
+    /**
+     * Default constructor.
+     */
+    public UserService() {
+        System.out.println("Initializing user service...");
+    }
+
     /**
      * Saves a new User to the UserRepository.
+     * 
      * @param dto a new User instance
-     * @throws Exception if a user with the same email address already exists in the UserRepository
+     * @throws Exception if a user with the same email address already exists in the
+     *                   UserRepository
      */
     @Transactional
     public void createOne(CreateUserDto dto) throws Exception {
@@ -47,8 +59,10 @@ public class UserService {
 
     /**
      * Retrieves a User instance by id.
+     * 
      * @param id the id of the User instance to be retrieved
-     * @return an Optional containing the User instance if it exists, otherwise returns an empty Optional
+     * @return an Optional containing the User instance if it exists, otherwise
+     *         returns an empty Optional
      */
     public Optional<User> findById(UUID id) {
         return userRepository.findById(id.toString());

@@ -6,7 +6,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-/* @Requirement-2.1 */
 /**
  * Data transfer object for creating a new user.
  */
@@ -20,7 +19,8 @@ public class CreateUserDto {
 
     /**
      * The username of the user, provided by the user.
-     * Must be between 3 and 26 characters long and can only contain letters, underscores and hyphens.
+     * Must be between 3 and 26 characters long and can only contain letters,
+     * underscores and hyphens.
      */
     @NotBlank
     @Size(min = 3, max = 26)

@@ -21,6 +21,7 @@ public class SwaggerConfig {
 
     /**
      * Create a Docket bean
+     * 
      * @param environment The environment of the application
      * @return A Docket bean
      */
@@ -41,6 +42,7 @@ public class SwaggerConfig {
 
     /**
      * Create a ApiInfo bean
+     * 
      * @return A ApiInfo bean
      */
     private ApiInfo apiInfo() {

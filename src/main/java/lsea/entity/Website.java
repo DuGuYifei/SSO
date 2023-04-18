@@ -1,6 +1,5 @@
 package lsea.entity;
 
-
 import com.google.gson.annotations.SerializedName;
 import lombok.*;
 import lsea.dto.CreateWebsiteDto;
@@ -11,6 +10,10 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
+/* Requirement 2.1 */
+/**
+ * Represents a website in the system.
+ */
 @Getter
 @Setter
 @Builder
@@ -19,7 +22,7 @@ import java.util.UUID;
 @EqualsAndHashCode
 @Entity
 @Table(name = "websites")
-public class Website implements Serializable, Comparable<Website>{
+public class Website implements Serializable, Comparable<Website> {
 
     /**
      * Unique id (primary key).
@@ -55,7 +58,8 @@ public class Website implements Serializable, Comparable<Website>{
     private String redirectUrl;
 
     /**
-     * private key of the application that requests the single sign on on their websites
+     * private key of the application that requests the single sign on on their
+     * websites
      */
     @SerializedName("private_key")
     private String privateKey;
@@ -75,7 +79,9 @@ public class Website implements Serializable, Comparable<Website>{
 
     /**
      * Creates a new website based on the provided CreateWebsiteDto.
-     * @param dto The dto containing the information to create the website.
+     * 
+     * @param dto     The dto containing the information to create the website.
+     * @param creator The user creating the website.
      * @return The newly created website row.
      */
     public static Website create(CreateWebsiteDto dto, User creator) {
@@ -85,45 +91,45 @@ public class Website implements Serializable, Comparable<Website>{
                 .createdById(creator.getId())
                 .createdAt(new Date())
                 .redirectUrl(dto.getRedirectUrl())
-                .privateKey(RandomBase64Generator.generate())
+                .privateKey(RandomBase64Generator.generateLong())
                 .isActive(false)
                 .build();
         website.setUpdatedAt(website.getCreatedAt());
         return website;
     }
 
-    /* @Requirement-2.8 */
     /**
-     * CompareTo method for Website class. It is compare without id, because in case there is two same website row.
+     * CompareTo method for Website class. It is compare without id, because in case
+     * there is two same website row.
      */
     @Override
     public int compareTo(Website o) {
         int result = this.isActive.compareTo(o.getIsActive());
-        if(result != 0){
+        /* Requirement 2.3 */
+        if (result != 0) {
             return result;
         }
         result = this.createdById.compareTo(o.getCreatedById());
-        if(result != 0){
+        if (result != 0) {
             return result;
         }
         result = this.updatedAt.compareTo(o.getUpdatedAt());
-        if(result != 0){
+        if (result != 0) {
             return result;
         }
         result = this.createdAt.compareTo(o.getCreatedAt());
-        if(result != 0){
+        if (result != 0) {
             return result;
         }
         result = this.displayName.compareTo(o.getDisplayName());
-        if(result != 0){
+        if (result != 0) {
             return result;
         }
         result = this.redirectUrl.compareTo(o.getRedirectUrl());
-        if(result != 0){
+        if (result != 0) {
             return result;
         }
         return this.privateKey.compareTo(o.getPrivateKey());
     }
 
 }
-
