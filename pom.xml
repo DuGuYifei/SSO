@@ -94,7 +94,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>lsea.LaboratoryAppplication</mainClass>
+							<mainClass>lsea.ProductionApplication</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

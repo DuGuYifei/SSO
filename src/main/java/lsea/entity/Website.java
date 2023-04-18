@@ -6,6 +6,9 @@ import lsea.dto.CreateWebsiteDto;
 import lsea.utils.RandomBase64Generator;
 
 import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
@@ -22,7 +25,7 @@ import java.util.UUID;
 @EqualsAndHashCode
 @Entity
 @Table(name = "websites")
-public class Website implements Serializable, Comparable<Website> {
+public class Website implements Serializable, Comparable<Website>, Cloneable{
 
     /**
      * Unique id (primary key).
@@ -75,6 +78,7 @@ public class Website implements Serializable, Comparable<Website> {
      */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = true)
+    @SerializedName("updated_at")
     private Date updatedAt;
 
     /**
@@ -130,6 +134,25 @@ public class Website implements Serializable, Comparable<Website> {
             return result;
         }
         return this.privateKey.compareTo(o.getPrivateKey());
+    }
+
+    @Override
+    public Object clone() {
+        Website clonedWebsite = null;
+        try {
+            clonedWebsite = (Website) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        clonedWebsite.setId(new UUID(this.getId().getMostSignificantBits(), this.getId().getLeastSignificantBits()));
+        clonedWebsite.setCreatedById(new UUID(this.getCreatedById().getMostSignificantBits(), this.getCreatedById().getLeastSignificantBits()));
+        clonedWebsite.setCreatedAt(new Date(this.getCreatedAt().getTime()));
+        clonedWebsite.setUpdatedAt(new Date(this.getUpdatedAt().getTime()));
+        clonedWebsite.setDisplayName(new String(this.getDisplayName()));
+        clonedWebsite.setRedirectUrl(new String(this.getRedirectUrl()));
+        clonedWebsite.setPrivateKey(new String(this.getPrivateKey()));
+        clonedWebsite.setIsActive(new Boolean(this.getIsActive()));
+        return clonedWebsite;
     }
 
 }

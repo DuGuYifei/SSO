@@ -43,8 +43,8 @@ public class User extends PermissionedEntity implements Serializable {
     /**
      * The username of the user.
      */
-    @SerializedName("username")
     @Column(name = "username", unique = true, nullable = false)
+    @SerializedName("username")
     private String username;
 
     /**
@@ -59,22 +59,22 @@ public class User extends PermissionedEntity implements Serializable {
      */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false)
-    @SerializedName("created_at")
+    @SerializedName("createdAt")
     private Date createdAt;
 
     /**
      * The date the user was last updated.
      */
     @Temporal(TemporalType.TIMESTAMP)
-    @SerializedName("updated_at")
     @Column(name = "updated_at")
+    @SerializedName("updatedAt")
     private Date updatedAt;
 
     /**
      * The email address of the user.
      */
-    @SerializedName("email")
     @Column(name = "email", unique = true, nullable = false)
+    @SerializedName("email")
     private String email;
 
     /**
