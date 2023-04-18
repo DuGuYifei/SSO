@@ -130,7 +130,7 @@
 		<profile>
 			<id>Development</id>
 			<properties>
-				<spring.boot.mainclass>lsea.LaboratoryAppplication</spring.boot.mainclass>
+				<spring.boot.mainclass>lsea.LaboratoryApplication</spring.boot.mainclass>
 			</properties>
 		</profile>
 	</profiles>
