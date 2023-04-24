@@ -83,7 +83,7 @@ public class UserService extends BaseService {
      *         returns an empty Optional
      */
     public Optional<User> findById(UUID id) {
-        return userRepository.findById(id.toString());
+        return userRepository.findById(id);
     }
 
 }

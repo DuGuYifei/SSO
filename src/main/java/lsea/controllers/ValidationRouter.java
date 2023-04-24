@@ -1,7 +1,10 @@
 package lsea.controllers;
 
+import lsea.errors.GenericForbiddenError;
 import lsea.errors.ValidationError;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,5 +41,26 @@ public abstract class ValidationRouter {
             String joined = String.join(", ", errors);
             throw new ValidationError(joined);
         }
+    }
+
+    static protected String getTokenFromRequest(HttpServletRequest request) throws ValidationError, GenericForbiddenError {
+        Cookie[] cookies = request.getCookies();
+
+        if(cookies == null){
+            throw new GenericForbiddenError("No cookies found");
+        }
+
+        String token = null;
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("token")) {
+                token = cookie.getValue();
+            }
+        }
+
+        if(token == null){
+            throw new ValidationError("No token found in cookies");
+        }
+
+        return token;
     }
 }

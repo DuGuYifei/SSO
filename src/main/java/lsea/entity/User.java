@@ -182,8 +182,11 @@ public class User extends PermissionedEntity implements Serializable {
      * @return The user ID encoded in the token
      * @throws GenericForbiddenError if the token is invalid
      */
-    public UUID verifyToken(String token) throws GenericForbiddenError {
+    public static UUID verifyToken(String token) throws GenericForbiddenError {
         String secret = System.getenv("JWT_SECRET");
+        if (secret == null) {
+            secret = temporarySecret;
+        }
         try {
             Claims claims = Jwts.parser()
                     .setSigningKey(secret)
