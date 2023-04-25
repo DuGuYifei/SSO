@@ -38,39 +38,39 @@ public class Website implements Serializable, Comparable<Website>, Cloneable {
     /**
      * The name of website. e.g.:Google, Facebook.
      */
-    @SerializedName("display_name")
+    @SerializedName("displayName")
     private String displayName;
 
     /**
      * uuid reference to users table
      */
-    @SerializedName("created_by_id")
+    @SerializedName("createdById")
     private UUID createdById;
 
     /**
      * defaults to time.now
      */
     @Temporal(TemporalType.TIMESTAMP)
-    @SerializedName("created_at")
+    @SerializedName("createAt")
     private Date createdAt;
 
     /**
      * url to redirect from our single sign on application
      */
-    @SerializedName("redirect_url")
+    @SerializedName("redirectUrl")
     private String redirectUrl;
 
     /**
      * private key of the application that requests the single sign on on their
      * websites
      */
-    @SerializedName("private_key")
+    @SerializedName("privateKey")
     private String privateKey;
 
     /**
      * default to false
      */
-    @SerializedName("is_active")
+    @SerializedName("isActive")
     private Boolean isActive;
 
     /**
@@ -78,7 +78,7 @@ public class Website implements Serializable, Comparable<Website>, Cloneable {
      */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = true)
-    @SerializedName("updated_at")
+    @SerializedName("updateAt")
     private Date updatedAt;
 
     /**
