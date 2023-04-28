@@ -23,6 +23,6 @@ public abstract class PermissionedEntity {
    *         false otherwise
    */
   public boolean hasGlobalAccess(int permission) {
-    return this.permission <= permission;
+    return this.permission >= permission;
   }
 }
