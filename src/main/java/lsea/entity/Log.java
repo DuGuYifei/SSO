@@ -67,6 +67,7 @@ public class Log {
      * The current state of the user.
      * Extracted from jwt token - user.toJson().
      */
+    @Lob // Large object
     @SerializedName("userCurrentState")
     private String userCurrentState;
 
