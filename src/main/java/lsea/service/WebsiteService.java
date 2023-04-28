@@ -1,11 +1,18 @@
 package lsea.service;
 
+import lsea.dto.CreateWebsiteDto;
+import lsea.entity.User;
 import lsea.entity.Website;
+import lsea.errors.GenericForbiddenError;
+import lsea.errors.GenericNotFoundError;
+import lsea.repository.UserRepository;
 import lsea.repository.WebsiteRepository;
 
+import lsea.utils.GlobalPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.*;
 
 /**
@@ -20,13 +27,43 @@ public class WebsiteService {
     private final WebsiteRepository websiteRepository;
 
     /**
+     * The user repository.
+     */
+    private final UserRepository userRepository;
+
+    /**
      * Instantiates a new Website service.
      *
      * @param websiteRepository the website repository
      */
     @Autowired
-    public WebsiteService(WebsiteRepository websiteRepository) {
+    public WebsiteService(WebsiteRepository websiteRepository,
+                          UserRepository userRepository) {
         this.websiteRepository = websiteRepository;
+        this.userRepository = userRepository;
+    }
+
+    /**
+     * Create one.
+     *
+     * @param dto   the dto
+     * @param token the token
+     * @throws GenericNotFoundError   the generic not found error
+     * @throws GenericForbiddenError  the generic forbidden error
+     */
+    @Transactional
+    public void createOne(CreateWebsiteDto dto, String token) throws GenericNotFoundError, GenericForbiddenError {
+        UUID userId = User.verifyToken(token);
+        Optional<User> user = userRepository.findById(userId);
+
+        if (!user.isPresent()) {
+            throw new GenericNotFoundError("User not found");
+        } else if (user.get().hasGlobalAccess(GlobalPermissions.MODERATOR)) {
+            throw new GenericForbiddenError("User has no permission to create a website");
+        }
+
+        final Website website = Website.create(dto, user.get());
+        websiteRepository.save(website);
     }
 
     /**
