@@ -95,6 +95,7 @@ public class ManagementControllerTest {
         cookie = result.getResponse().getCookie("token");
 
         MockHttpServletRequestBuilder requestBuilder =MockMvcRequestBuilders.get("/api/v1/management/analysis")
+                .param("numThreads", "5")
                 .cookie(cookie)
                 .contentType("application/json;charset=UTF-8");
 

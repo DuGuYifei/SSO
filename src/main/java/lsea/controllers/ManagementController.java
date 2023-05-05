@@ -27,7 +27,6 @@ import java.util.Map;
 @Api("management")
 @RestController
 @RequestMapping("/api/v1/management")
-/* Requirement 4_5 */
 public class ManagementController {
 
     /**
@@ -53,8 +52,9 @@ public class ManagementController {
      * @throws InterruptedException if the thread is interrupted
      * @throws GenericNotFoundError if the user is not found
      */
+    /* Requirement 4.1 */
     @GetMapping("/analysis")
-    public ListResult analysis(@RequestBody int numThreads, HttpServletRequest request) throws ValidationError, GenericForbiddenError, InterruptedException, GenericNotFoundError {
+    public ListResult analysis(@RequestParam int numThreads, HttpServletRequest request) throws ValidationError, GenericForbiddenError, InterruptedException, GenericNotFoundError {
         String token = ValidationRouter.getTokenFromRequest(request);
 
         return managementService.longestFiveLogs(token, numThreads);
@@ -67,12 +67,12 @@ public class ManagementController {
      * @return ResponseEntity containing the report
      * @throws GenericForbiddenError if the user does not have the permission
      * @throws ValidationError if the dto is not valid
-     * @throws IOException if the file is not found
      * @throws InterruptedException if the thread is interrupted
      * @throws GenericNotFoundError if the user is not found
      */
+    /* Requirement 4.4 */
     @PostMapping(value = "/report", produces = "application/vnd.ms-excel")
-    public ResponseEntity<byte[]> generateReport(@RequestBody GenerateReportDto dto, HttpServletRequest request) throws GenericForbiddenError, ValidationError, IOException, InterruptedException, GenericNotFoundError {
+    public ResponseEntity<byte[]> generateReport(@RequestBody GenerateReportDto dto, HttpServletRequest request) throws GenericForbiddenError, ValidationError, InterruptedException, GenericNotFoundError {
         ValidationRouter.validate(dto);
         String token = ValidationRouter.getTokenFromRequest(request);
         Map<Integer, String> result = new HashMap<>();

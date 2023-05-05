@@ -1,7 +1,5 @@
 package lsea.service;
 
-import io.swagger.models.auth.In;
-import lsea.controllers.ValidationRouter;
 import lsea.dto.GenerateReportDto;
 import lsea.entity.Log;
 import lsea.entity.User;
@@ -15,19 +13,14 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xddf.usermodel.chart.*;
 import org.apache.poi.xssf.usermodel.*;
-import org.hibernate.boot.Metadata;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import java.io.*;
 import java.util.*;
 
 /**
  * Service layer for all business actions regarding management
  * which includes statistics and analysis.
  */
-/* Requirement 4_5 */
 @Service
 public class ManagementService {
 
@@ -60,6 +53,8 @@ public class ManagementService {
      * @throws InterruptedException if the thread is interrupted
      * @throws GenericNotFoundError if the user is not found
      */
+    /* Requirement 4.1 */
+    /* Requirement 4.2 */
     public ListResult longestFiveLogs(String token, int numThreads) throws InterruptedException, GenericNotFoundError, GenericForbiddenError {
         UUID userId = User.verifyToken(token);
 
@@ -133,6 +128,7 @@ public class ManagementService {
      * @param response PriorityQueue<Log>
      * @param resultNum int
      */
+    /* Requirement 4.1 */
     private void subLongestFiveLogs(List<Log> logs, PriorityQueue<Log> response, int resultNum) {
         if (logs.size() == 0) {
             return;
@@ -165,6 +161,7 @@ public class ManagementService {
      * @return Workbook object
      * @throws InterruptedException if the thread is interrupted
      */
+    /* Requirement 4.4 */
     public Workbook generateReport(GenerateReportDto dto, Map<Integer, String> result) throws InterruptedException {
         int numThreads = dto.getNumThreads();
         XSSFWorkbook workbook = new XSSFWorkbook();

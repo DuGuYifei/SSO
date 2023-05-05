@@ -44,7 +44,7 @@ public class LogController {
      * @param request HttpServletRequest containing the token cookie
      * @return ResponseEntity object containing { status: 200, success: true }
      * @throws GenericForbiddenError if the cookie is not found or token is not valid
-     * @throws ValidationError if the request body is invalid
+     * @throws ValidationError if the request body is invalid or the cookie not contains the token
      */
     @PostMapping
     public ResponseEntity<SuccessResult> createOne(@RequestBody CreateLogDto dto, HttpServletRequest request) throws GenericForbiddenError, ValidationError {
@@ -58,4 +58,25 @@ public class LogController {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * Create N test logs into the logs table
+     * @param N number of logs to create
+     * @param request HttpServletRequest containing the token cookie
+     * @return ResponseEntity object containing { status: 200, success: true }
+     * @throws GenericForbiddenError if the cookie is not found or token is not valid
+     * @throws ValidationError the cookie not contains the token
+     */
+    /* Requirement 4.3 */
+    @PostMapping("/generate-test-data")
+    public ResponseEntity<SuccessResult> createOne(@RequestBody int N, HttpServletRequest request) throws GenericForbiddenError, ValidationError {
+        String token = ValidationRouter.getTokenFromRequest(request);
+
+        for(int i = 0; i < N; i++){
+            CreateLogDto dto = CreateLogDto.builder().data("test" + i).logType(0).build();
+            logService.createOne(dto, token);
+        }
+
+        SuccessResult result = SuccessResult.builder().status(200).build();
+        return ResponseEntity.ok(result);
+    }
 }
