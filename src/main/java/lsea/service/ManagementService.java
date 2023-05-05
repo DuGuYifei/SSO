@@ -1,5 +1,8 @@
 package lsea.service;
 
+import io.swagger.models.auth.In;
+import lsea.controllers.ValidationRouter;
+import lsea.dto.GenerateReportDto;
 import lsea.entity.Log;
 import lsea.entity.User;
 import lsea.errors.GenericForbiddenError;
@@ -8,8 +11,16 @@ import lsea.repository.LogRepository;
 import lsea.repository.UserRepository;
 import lsea.utils.GlobalPermissions;
 import lsea.utils.ListResult;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xddf.usermodel.chart.*;
+import org.apache.poi.xssf.usermodel.*;
+import org.hibernate.boot.Metadata;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -41,12 +52,15 @@ public class ManagementService {
     }
 
     /**
-     * This method is used to get the longest five logs.
-     * @return ListResult object
+     * The analysis method is used to get the five longest logs.
+     * @param numThreads int
+     * @param token String
+     * @return ListResult object containing the five longest logs
+     * @throws GenericForbiddenError if the user does not have the permission
      * @throws InterruptedException if the thread is interrupted
+     * @throws GenericNotFoundError if the user is not found
      */
-    public ListResult longestFiveLogs(String token) throws InterruptedException, GenericNotFoundError, GenericForbiddenError {
-
+    public ListResult longestFiveLogs(String token, int numThreads) throws InterruptedException, GenericNotFoundError, GenericForbiddenError {
         UUID userId = User.verifyToken(token);
 
         Optional<User> user = userRepository.findById(userId);
@@ -77,7 +91,6 @@ public class ManagementService {
 
         response.setCount(resultNum);
         List<List<Log>> subLogs = new ArrayList<>();
-        int numThreads = 2;
         for (int i = 0; i < numThreads; i++) {
             subLogs.add(new ArrayList<>());
         }
@@ -114,6 +127,12 @@ public class ManagementService {
         return response;
     }
 
+    /**
+     * The subLongestFiveLogs method is used to get the five longest logs.
+     * @param logs List<Log>
+     * @param response PriorityQueue<Log>
+     * @param resultNum int
+     */
     private void subLongestFiveLogs(List<Log> logs, PriorityQueue<Log> response, int resultNum) {
         if (logs.size() == 0) {
             return;
@@ -139,4 +158,62 @@ public class ManagementService {
         }
     }
 
+    /**
+     * The generateReport method is used to generate a report.
+     * @param dto GenerateReportDto
+     * @param result Map<Integer, String>
+     * @return Workbook object
+     * @throws InterruptedException if the thread is interrupted
+     */
+    public Workbook generateReport(GenerateReportDto dto, Map<Integer, String> result) throws InterruptedException {
+        int numThreads = dto.getNumThreads();
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet spreadsheet = workbook.createSheet(" Analysis ");
+
+        Row row = spreadsheet.createRow((short) 0);
+        Cell cell = row.createCell((short) 0);
+        cell.setCellValue("Threads number");
+        cell = row.createCell((short) 1);
+        cell.setCellValue("Time(ms)");
+
+        for (int i = 1; i <= numThreads; i++) {
+            row = spreadsheet.createRow((short) i);
+            cell = row.createCell((short) 0);
+            cell.setCellValue(i);
+            cell = row.createCell((short) 1);
+            cell.setCellValue(Integer.parseInt(result.get(i)));
+        }
+
+        XSSFDrawing drawing = spreadsheet.createDrawingPatriarch();
+        XSSFClientAnchor anchor = drawing.createAnchor(0, 0, 0, 0, 4, 0, 18, 25);
+
+        XSSFChart chart = drawing.createChart(anchor);
+        chart.setTitleText("Analysis of threads number performance");
+        chart.setTitleOverlay(false);
+
+        XDDFChartLegend legend = chart.getOrAddLegend();
+        legend.setPosition(LegendPosition.TOP_RIGHT);
+
+        XDDFCategoryAxis bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
+        bottomAxis.setTitle("Threads number");
+        XDDFValueAxis leftAxis = chart.createValueAxis(AxisPosition.LEFT);
+        leftAxis.setTitle("Duration time(ms)");
+
+        XDDFDataSource<String> threads = XDDFDataSourcesFactory.fromStringCellRange(spreadsheet,
+                new CellRangeAddress(1, numThreads, 0, 0));
+
+        XDDFNumericalDataSource<Double> time = XDDFDataSourcesFactory.fromNumericCellRange(spreadsheet,
+                new CellRangeAddress(1, numThreads, 1, 1));
+
+        XDDFLineChartData data = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, leftAxis);
+
+        XDDFLineChartData.Series series1 = (XDDFLineChartData.Series) data.addSeries(threads, time);
+        series1.setTitle("Duration", null);
+        series1.setSmooth(false);
+        series1.setMarkerStyle(MarkerStyle.STAR);
+
+        chart.plot(data);
+
+        return workbook;
+    }
 }

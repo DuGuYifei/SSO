@@ -2,17 +2,22 @@ package lsea.controllers;
 
 
 import io.swagger.annotations.Api;
+import lsea.dto.GenerateReportDto;
 import lsea.errors.GenericForbiddenError;
 import lsea.errors.GenericNotFoundError;
 import lsea.errors.ValidationError;
 import lsea.service.ManagementService;
 import lsea.utils.ListResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -39,15 +44,58 @@ public class ManagementController {
     }
 
     /**
-     * The analysis method is used to get the longest five logs.
+     * The analysis method is used to get the five longest logs.
+     * @param numThreads int
      * @param request HttpServletRequest containing the token cookie
-     * @return ListResult object containing the longest five logs
+     * @return ListResult object containing the five longest logs
+     * @throws ValidationError if the dto is not valid
+     * @throws GenericForbiddenError if the user does not have the permission
      * @throws InterruptedException if the thread is interrupted
+     * @throws GenericNotFoundError if the user is not found
      */
     @GetMapping("/analysis")
-    public ListResult analysis(HttpServletRequest request) throws ValidationError, GenericForbiddenError, InterruptedException, GenericNotFoundError {
+    public ListResult analysis(@RequestBody int numThreads, HttpServletRequest request) throws ValidationError, GenericForbiddenError, InterruptedException, GenericNotFoundError {
         String token = ValidationRouter.getTokenFromRequest(request);
 
-        return managementService.longestFiveLogs(token);
+        return managementService.longestFiveLogs(token, numThreads);
+    }
+
+    /**
+     * The generateReport method is used to generate a report.
+     * @param dto GenerateReportDto
+     * @param request HttpServletRequest containing the token cookie
+     * @return ResponseEntity containing the report
+     * @throws GenericForbiddenError if the user does not have the permission
+     * @throws ValidationError if the dto is not valid
+     * @throws IOException if the file is not found
+     * @throws InterruptedException if the thread is interrupted
+     * @throws GenericNotFoundError if the user is not found
+     */
+    @PostMapping(value = "/report", produces = "application/vnd.ms-excel")
+    public ResponseEntity<byte[]> generateReport(@RequestBody GenerateReportDto dto, HttpServletRequest request) throws GenericForbiddenError, ValidationError, IOException, InterruptedException, GenericNotFoundError {
+        ValidationRouter.validate(dto);
+        String token = ValidationRouter.getTokenFromRequest(request);
+        Map<Integer, String> result = new HashMap<>();
+        for (int numThreads = 1; numThreads <= dto.getNumThreads(); numThreads++) {
+            ListResult listResult = managementService.longestFiveLogs(token, numThreads);
+            String duration = listResult.getMeta().get("duration").toString();
+            result.put(numThreads, duration);
+        }
+
+        Workbook workbook = managementService.generateReport(dto, result);
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try {
+            workbook.write(bos);
+            workbook.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("application/vnd.ms-excel"));
+        headers.setContentDispositionFormData("attachment", "report.xlsx");
+        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+        ResponseEntity<byte[]> response = new ResponseEntity<>(bos.toByteArray(), headers, HttpStatus.OK);
+        return response;
     }
 }
