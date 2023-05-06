@@ -1,6 +1,5 @@
 package lsea.repository;
 
-
 import lsea.entity.Website;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -10,7 +9,8 @@ import java.util.UUID;
 /* Requirement-2.2 */
 
 /**
- * The interface Website repository provides methods for interacting with website data in the system.
+ * The interface Website repository provides methods for interacting with
+ * website data in the system.
  */
 public interface WebsiteRepository extends JpaRepository<Website, UUID> {
 
@@ -30,7 +30,6 @@ public interface WebsiteRepository extends JpaRepository<Website, UUID> {
      * @return the list of websites
      */
     List<Website> findAllByCreatedByIdAndDisplayName(UUID userId, String displayName);
-
 
     /**
      * Find all by created by id and website redirect url.

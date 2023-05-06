@@ -73,7 +73,8 @@ public class Log {
 
     /**
      * Creates a new log entry.
-     * @param dto - The data transfer object for creating a new log entry.
+     * 
+     * @param dto  - The data transfer object for creating a new log entry.
      * @param user - The user who created the log entry.
      * @return - The new log entry.
      * @throws GenericForbiddenError - If the user is not found by the jwt.

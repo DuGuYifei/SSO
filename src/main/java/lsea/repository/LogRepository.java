@@ -7,7 +7,8 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 /**
- * The log interface provides methods for interacting with log data in the system.
+ * The log interface provides methods for interacting with log data in the
+ * system.
  */
 @Repository
 public interface LogRepository extends JpaRepository<Log, UUID> {

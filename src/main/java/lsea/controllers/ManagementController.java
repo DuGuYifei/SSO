@@ -1,6 +1,5 @@
 package lsea.controllers;
 
-
 import io.swagger.annotations.Api;
 import lsea.dto.GenerateReportDto;
 import lsea.errors.GenericForbiddenError;
@@ -19,7 +18,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
  * This controller is responsible for handling requests related to the
  * statistics and analysis.
@@ -36,6 +34,7 @@ public class ManagementController {
 
     /**
      * The constructor of the ManagementController class.
+     * 
      * @param managementService ManagementService
      */
     public ManagementController(ManagementService managementService) {
@@ -44,17 +43,19 @@ public class ManagementController {
 
     /**
      * The analysis method is used to get the five longest logs.
+     * 
      * @param numThreads int
-     * @param request HttpServletRequest containing the token cookie
+     * @param request    HttpServletRequest containing the token cookie
      * @return ListResult object containing the five longest logs
-     * @throws ValidationError if the dto is not valid
+     * @throws ValidationError       if the dto is not valid
      * @throws GenericForbiddenError if the user does not have the permission
-     * @throws InterruptedException if the thread is interrupted
-     * @throws GenericNotFoundError if the user is not found
+     * @throws InterruptedException  if the thread is interrupted
+     * @throws GenericNotFoundError  if the user is not found
      */
     /* Requirement 4.1 */
     @GetMapping("/analysis")
-    public ListResult analysis(@RequestParam int numThreads, HttpServletRequest request) throws ValidationError, GenericForbiddenError, InterruptedException, GenericNotFoundError {
+    public ListResult analysis(@RequestParam int numThreads, HttpServletRequest request)
+            throws ValidationError, GenericForbiddenError, InterruptedException, GenericNotFoundError {
         String token = ValidationRouter.getTokenFromRequest(request);
 
         return managementService.longestFiveLogs(token, numThreads);
@@ -62,17 +63,19 @@ public class ManagementController {
 
     /**
      * The generateReport method is used to generate a report.
-     * @param dto GenerateReportDto
+     * 
+     * @param dto     GenerateReportDto
      * @param request HttpServletRequest containing the token cookie
      * @return ResponseEntity containing the report
      * @throws GenericForbiddenError if the user does not have the permission
-     * @throws ValidationError if the dto is not valid
-     * @throws InterruptedException if the thread is interrupted
-     * @throws GenericNotFoundError if the user is not found
+     * @throws ValidationError       if the dto is not valid
+     * @throws InterruptedException  if the thread is interrupted
+     * @throws GenericNotFoundError  if the user is not found
      */
     /* Requirement 4.4 */
     @PostMapping(value = "/report", produces = "application/vnd.ms-excel")
-    public ResponseEntity<byte[]> generateReport(@RequestBody GenerateReportDto dto, HttpServletRequest request) throws GenericForbiddenError, ValidationError, InterruptedException, GenericNotFoundError {
+    public ResponseEntity<byte[]> generateReport(@RequestBody GenerateReportDto dto, HttpServletRequest request)
+            throws GenericForbiddenError, ValidationError, InterruptedException, GenericNotFoundError {
         ValidationRouter.validate(dto);
         String token = ValidationRouter.getTokenFromRequest(request);
         Map<Integer, String> result = new HashMap<>();

@@ -36,7 +36,8 @@ public class ManagementService {
 
     /**
      * The constructor of the ManagementService class.
-     * @param logRepository LogRepository
+     * 
+     * @param logRepository  LogRepository
      * @param userRepository UserRepository
      */
     public ManagementService(LogRepository logRepository, UserRepository userRepository) {
@@ -46,16 +47,18 @@ public class ManagementService {
 
     /**
      * The analysis method is used to get the five longest logs.
+     * 
      * @param numThreads int
-     * @param token String
+     * @param token      String
      * @return ListResult object containing the five longest logs
      * @throws GenericForbiddenError if the user does not have the permission
-     * @throws InterruptedException if the thread is interrupted
-     * @throws GenericNotFoundError if the user is not found
+     * @throws InterruptedException  if the thread is interrupted
+     * @throws GenericNotFoundError  if the user is not found
      */
     /* Requirement 4.1 */
     /* Requirement 4.2 */
-    public ListResult longestFiveLogs(String token, int numThreads) throws InterruptedException, GenericNotFoundError, GenericForbiddenError {
+    public ListResult longestFiveLogs(String token, int numThreads)
+            throws InterruptedException, GenericNotFoundError, GenericForbiddenError {
         UUID userId = User.verifyToken(token);
 
         Optional<User> user = userRepository.findById(userId);
@@ -64,7 +67,7 @@ public class ManagementService {
             throw new GenericNotFoundError("User not found");
         }
 
-        if(user.get().getGlobalPermission() <= GlobalPermissions.MODERATOR){
+        if (user.get().getGlobalPermission() <= GlobalPermissions.MODERATOR) {
             throw new GenericForbiddenError("Permission denied");
         }
 
@@ -73,14 +76,16 @@ public class ManagementService {
         List<Log> logs = logRepository.findAll();
 
         ListResult response = new ListResult();
-        if(logs.size() <= 5){
+        if (logs.size() <= 5) {
             response.setCount(logs.size());
             response.setData(Arrays.asList(logs.toArray()));
-            response.setMeta(new HashMap<String, Object>(){{
-                put("startTime", System.currentTimeMillis());
-                put("duration", 0);
-                put("endTime", System.currentTimeMillis());
-            }});
+            response.setMeta(new HashMap<String, Object>() {
+                {
+                    put("startTime", System.currentTimeMillis());
+                    put("duration", 0);
+                    put("endTime", System.currentTimeMillis());
+                }
+            });
             return response;
         }
 
@@ -90,11 +95,12 @@ public class ManagementService {
             subLogs.add(new ArrayList<>());
         }
         int n = logs.size();
-        for(int i = 0; i < n; i++){
+        for (int i = 0; i < n; i++) {
             subLogs.get(i % numThreads).add(logs.get(i));
         }
         List<Thread> threads = new ArrayList<>();
-        PriorityQueue<Log> pqLogs = new PriorityQueue<>(resultNum + 1, (a, b) -> a.getData().length() - b.getData().length());
+        PriorityQueue<Log> pqLogs = new PriorityQueue<>(resultNum + 1,
+                (a, b) -> a.getData().length() - b.getData().length());
         long start = System.currentTimeMillis();
         for (int i = 0; i < numThreads; i++) {
             int finalI = i;
@@ -106,15 +112,18 @@ public class ManagementService {
             thread.join();
         }
         long end = System.currentTimeMillis();
-        long duration = end-start;
-        response.setMeta(new HashMap<String, Object>(){{
-            put("startTime", start);
-            put("duration", duration);
-            put("endTime", end);
-        }});
+        long duration = end - start;
+        response.setMeta(new HashMap<String, Object>() {
+            {
+                put("startTime", start);
+                put("duration", duration);
+                put("endTime", end);
+            }
+        });
         List<Log> result = new ArrayList<>();
         // this loop is to add the element from the priority queue to the result list
-        // if use pqLogs.toArray(), the order of the elements in the array is not guaranteed
+        // if use pqLogs.toArray(), the order of the elements in the array is not
+        // guaranteed
         while (!pqLogs.isEmpty()) {
             result.add(pqLogs.poll());
         }
@@ -124,8 +133,9 @@ public class ManagementService {
 
     /**
      * The subLongestFiveLogs method is used to get the five longest logs.
-     * @param logs List<Log>
-     * @param response PriorityQueue<Log>
+     * 
+     * @param logs      List<Log>
+     * @param response  PriorityQueue<Log>
      * @param resultNum int
      */
     /* Requirement 4.1 */
@@ -144,10 +154,10 @@ public class ManagementService {
                 }
             }
         }
-        synchronized (response){
+        synchronized (response) {
             while (!pq.isEmpty()) {
                 response.add(pq.poll());
-                if(response.size() > resultNum){
+                if (response.size() > resultNum) {
                     response.poll();
                 }
             }
@@ -156,7 +166,8 @@ public class ManagementService {
 
     /**
      * The generateReport method is used to generate a report.
-     * @param dto GenerateReportDto
+     * 
+     * @param dto    GenerateReportDto
      * @param result Map<Integer, String>
      * @return Workbook object
      * @throws InterruptedException if the thread is interrupted
