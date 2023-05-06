@@ -28,13 +28,15 @@ public class WebsiteController {
 
     /**
      * The createOne method is used to create a new website.
-     * @param dto CreateWebsiteDto
+     * 
+     * @param dto     CreateWebsiteDto
      * @param request HttpServletRequest containing the token cookie
      * @return ResponseEntity object containing { status: 200, success: true }
      * @throws Exception if the cookie is not found or token is not valid
      */
     @PostMapping
-    public ResponseEntity<SuccessResult> createOne(@RequestBody CreateWebsiteDto dto, HttpServletRequest request) throws Exception {
+    public ResponseEntity<SuccessResult> createOne(@RequestBody CreateWebsiteDto dto, HttpServletRequest request)
+            throws Exception {
         ValidationRouter.validate(dto);
         String token = ValidationRouter.getTokenFromRequest(request);
         websiteService.createOne(dto, token);

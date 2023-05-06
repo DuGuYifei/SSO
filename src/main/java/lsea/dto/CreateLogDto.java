@@ -1,8 +1,6 @@
 package lsea.dto;
 
-
 import lombok.*;
-import lsea.utils.LogType;
 
 import javax.validation.constraints.*;
 

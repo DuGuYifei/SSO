@@ -11,12 +11,11 @@ import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.UUID;
 
-
 /**
  * This is a JUnit test class for the Website class.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {LaboratoryApplication.class})
+@SpringBootTest(classes = { LaboratoryApplication.class })
 public class WebsiteTest {
 
     /**

@@ -1,6 +1,5 @@
 package lsea.controllers;
 
-
 import lsea.LaboratoryApplication;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -26,56 +25,56 @@ import javax.servlet.http.Cookie;
 @AutoConfigureMockMvc
 public class LogControllerTests {
 
-    /**
-     * This is the MockMvc object that is used to send requests to the endpoints.
-     */
-    @Resource
-    private MockMvc mockMvc;
+        /**
+         * This is the MockMvc object that is used to send requests to the endpoints.
+         */
+        @Resource
+        private MockMvc mockMvc;
 
-    /**
-     * This test method sends a Post request to the "/api/v1/logs"
-     */
-    @Test
-    @DisplayName("Test of LogController")
-    public void createOne() throws Exception {
+        /**
+         * This test method sends a Post request to the "/api/v1/logs"
+         */
+        @Test
+        @DisplayName("Test of LogController")
+        public void createOne() throws Exception {
 
-        String userRequest = "{\n" +
-                "    \"username\": \"test\",\n" +
-                "    \"password\": \"12345678\",\n" +
-                "    \"email\": \"123@11.com\"\n" +
-                "}";
+                String userRequest = "{\n" +
+                                "    \"username\": \"test\",\n" +
+                                "    \"password\": \"12345678\",\n" +
+                                "    \"email\": \"123@11.com\"\n" +
+                                "}";
 
-        String userAuthRequest = "{\n" +
-                "    \"password\": \"12345678\",\n" +
-                "    \"email\": \"123@11.com\"\n" +
-                "}";
+                String userAuthRequest = "{\n" +
+                                "    \"password\": \"12345678\",\n" +
+                                "    \"email\": \"123@11.com\"\n" +
+                                "}";
 
-        String logRequest = "{\n" +
-                "    \"data\": \"test data\",\n" +
-                "    \"logType\": 0\n" +
-                "}";
+                String logRequest = "{\n" +
+                                "    \"data\": \"test data\",\n" +
+                                "    \"logType\": 0\n" +
+                                "}";
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users")
-                .contentType("application/json;charset=UTF-8")
-                .content(userRequest))
-                .andReturn();
+                mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users")
+                                .contentType("application/json;charset=UTF-8")
+                                .content(userRequest))
+                                .andReturn();
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users/authorize")
-                .contentType("application/json;charset=UTF-8")
-                .content(userAuthRequest))
-                .andReturn();
+                MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users/authorize")
+                                .contentType("application/json;charset=UTF-8")
+                                .content(userAuthRequest))
+                                .andReturn();
 
-        Cookie cookie = result.getResponse().getCookie("token");
+                Cookie cookie = result.getResponse().getCookie("token");
 
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/v1/logs")
-                .cookie(cookie)
-                .contentType("application/json;charset=UTF-8")
-                .content(logRequest);
+                MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/v1/logs")
+                                .cookie(cookie)
+                                .contentType("application/json;charset=UTF-8")
+                                .content(logRequest);
 
-        mockMvc.perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andDo(MockMvcResultHandlers.print())
-                .andReturn();
-    }
+                mockMvc.perform(requestBuilder)
+                                .andExpect(MockMvcResultMatchers.status().isOk())
+                                .andDo(MockMvcResultHandlers.print())
+                                .andReturn();
+        }
 
 }

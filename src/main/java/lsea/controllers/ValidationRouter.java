@@ -43,10 +43,11 @@ public abstract class ValidationRouter {
         }
     }
 
-    static protected String getTokenFromRequest(HttpServletRequest request) throws ValidationError, GenericForbiddenError {
+    static protected String getTokenFromRequest(HttpServletRequest request)
+            throws ValidationError, GenericForbiddenError {
         Cookie[] cookies = request.getCookies();
 
-        if(cookies == null){
+        if (cookies == null) {
             throw new GenericForbiddenError("No cookies found");
         }
 
@@ -57,7 +58,7 @@ public abstract class ValidationRouter {
             }
         }
 
-        if(token == null){
+        if (token == null) {
             throw new ValidationError("No token found in cookies");
         }
 

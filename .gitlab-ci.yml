@@ -29,21 +29,21 @@ run-unit-tests:
     script:
         - "mvn $MAVEN_CLI_OPTS -Dmaven.main.skip=true -Dtest=!lsea/controllers/* test -DfailIfNoTests=false"
     needs:
-      - validate-project
+        - validate-project
 
 run-api-tests:
     stage: test
     script:
         - "mvn $MAVEN_CLI_OPTS -Dmaven.main.skip=true -Dtest=lsea/controllers/* test"
     needs:
-      - validate-project
+        - validate-project
 
 test-javadoc:
     stage: test
     script:
         - mvn javadoc:javadoc
         - test -d target/site/apidocs/
-    needs:    
+    needs:
         - validate-project
 
 build-dist:
@@ -64,7 +64,7 @@ deploy-to-server:
     script:
         - "true"
     needs:
-      - build-dist
+        - build-dist
 
 deploy-to-production:
     stage: deploy

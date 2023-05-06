@@ -38,7 +38,7 @@ public class WebsiteService {
      */
     @Autowired
     public WebsiteService(WebsiteRepository websiteRepository,
-                          UserRepository userRepository) {
+            UserRepository userRepository) {
         this.websiteRepository = websiteRepository;
         this.userRepository = userRepository;
     }
@@ -48,8 +48,8 @@ public class WebsiteService {
      *
      * @param dto   the dto
      * @param token the token
-     * @throws GenericNotFoundError   the generic not found error
-     * @throws GenericForbiddenError  the generic forbidden error
+     * @throws GenericNotFoundError  the generic not found error
+     * @throws GenericForbiddenError the generic forbidden error
      */
     @Transactional
     public void createOne(CreateWebsiteDto dto, String token) throws GenericNotFoundError, GenericForbiddenError {
@@ -134,7 +134,7 @@ public class WebsiteService {
      * Find all in set ordered by comparable of Website.
      *
      * TreeSet is used because comparable doesn't include id.
-     * Having a set allows to have the collection sorted and 
+     * Having a set allows to have the collection sorted and
      * it will compare without an id so the Treeet will remove the redundant record.
      *
      * @return the set
@@ -149,7 +149,8 @@ public class WebsiteService {
     /**
      * Find all userid and website dictionary
      *
-     * The HashMap is used to have an easy access to the website display name by the key which is the website id.
+     * The HashMap is used to have an easy access to the website display name by the
+     * key which is the website id.
      *
      * @return the map
      */
