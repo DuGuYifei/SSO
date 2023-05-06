@@ -12,7 +12,6 @@ import javax.transaction.Transactional;
 import java.util.Optional;
 import java.util.UUID;
 
-
 /**
  * Service layer for all business actions regarding Log entity.
  */
