@@ -140,6 +140,7 @@ public class ManagementService {
      */
     /* Requirement 4.1 */
     private void subLongestFiveLogs(List<Log> logs, PriorityQueue<Log> response, int resultNum) {
+        System.out.println("Thread " + Thread.currentThread().getId() + " is running for " + logs.size() + " logs");
         if (logs.size() == 0) {
             return;
         }
@@ -155,6 +156,7 @@ public class ManagementService {
             }
         }
         synchronized (response) {
+            System.out.println("Thread " + Thread.currentThread().getId() + " is try to access the public asset - final PQ for 5 longest logs");
             while (!pq.isEmpty()) {
                 response.add(pq.poll());
                 if (response.size() > resultNum) {
