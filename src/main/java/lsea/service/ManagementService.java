@@ -61,6 +61,7 @@ public class ManagementService {
             throws InterruptedException, GenericNotFoundError, GenericForbiddenError {
         UUID userId = User.verifyToken(token);
 
+        /* Requirement 4.3 */
         Optional<User> user = userRepository.findById(userId);
 
         if (!user.isPresent()) {
@@ -101,6 +102,8 @@ public class ManagementService {
         List<Thread> threads = new ArrayList<>();
         PriorityQueue<Log> pqLogs = new PriorityQueue<>(resultNum + 1,
                 (a, b) -> a.getData().length() - b.getData().length());
+
+        /* Requirement 4.1.2 */
         long start = System.currentTimeMillis();
         for (int i = 0; i < numThreads; i++) {
             int finalI = i;
@@ -113,6 +116,7 @@ public class ManagementService {
         }
         long end = System.currentTimeMillis();
         long duration = end - start;
+        /* Requirement 4.1.2 */
         response.setMeta(new HashMap<String, Object>() {
             {
                 put("startTime", start);
@@ -139,7 +143,9 @@ public class ManagementService {
      * @param resultNum int
      */
     /* Requirement 4.1 */
+    /* Requirement 4.2 */
     private void subLongestFiveLogs(List<Log> logs, PriorityQueue<Log> response, int resultNum) {
+        /* Requirement 4.1.1 */
         System.out.println("Thread " + Thread.currentThread().getId() + " is running for " + logs.size() + " logs");
         if (logs.size() == 0) {
             return;
@@ -155,7 +161,9 @@ public class ManagementService {
                 }
             }
         }
+        /* Requirement 4.2 */
         synchronized (response) {
+            /* Requirement 4.1.1 */
             System.out.println("Thread " + Thread.currentThread().getId() + " is try to access the public asset - final PQ for 5 longest logs");
             while (!pq.isEmpty()) {
                 response.add(pq.poll());
