@@ -105,6 +105,7 @@ In the `ManagementController.java`, we are handling two endpoints::
    * If we would not limit the number of threads to 15, the time with the number of threads used, would probably increase due to the following reasons:
       1. The limitation of hardware. (CPU, memory, etc.)
       2. The time of finishing each task at some point won't be longer than the time of handling a thread.
+      3. The locking mechanism in Java's multithreading has undergone upgrades. When using the synchronized keyword, it starts with biased locking. If multiple threads contend for the lock, it transitions to lightweight locking. However, if a task is computationally heavy or there are too many threads, and the spin count exceeds the limit, it escalates to heavyweight locking. In this case, the heavyweight lock utilizes operating system mutexes as the underlying mechanism, resulting in frequent user-and-kernel mode switches, which negatively impact performance.
    
 **So we create other tests for different number of data.**
      
