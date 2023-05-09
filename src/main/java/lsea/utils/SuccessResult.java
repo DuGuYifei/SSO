@@ -1,7 +1,6 @@
 package lsea.utils;
 
 import javax.annotation.Nullable;
-
 import lombok.*;
 
 /**
@@ -14,19 +13,20 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 public class SuccessResult {
-    /**
-     * The error message.
-     */
-    @Nullable
-    private String data;
 
-    /**
-     * The HTTP status code of the response.
-     */
-    private final boolean success = true;
+  /**
+   * The error message.
+   */
+  @Nullable
+  private String data;
 
-    /**
-     * The HTTP status code of the response.
-     */
-    private int status;
+  /**
+   * The HTTP status code of the response.
+   */
+  private final boolean success = true;
+
+  /**
+   * The HTTP status code of the response.
+   */
+  private int status;
 }

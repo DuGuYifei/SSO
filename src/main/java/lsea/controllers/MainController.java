@@ -13,35 +13,35 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 public class MainController {
 
-    /**
-     * The user controller that handles requests related to users.
-     */
-    @Autowired
-    private UserController userController;
+  /**
+   * The user controller that handles requests related to users.
+   */
+  @Autowired
+  private UserController userController;
 
-    /**
-     * The website controller that handles requests related to websites.
-     */
-    @Autowired
-    private WebsiteController websiteController;
+  /**
+   * The website controller that handles requests related to websites.
+   */
+  @Autowired
+  private WebsiteController websiteController;
 
-    /**
-     * Returns the user controller that handles requests related to users.
-     *
-     * @return The user controller.
-     */
-    @RequestMapping("/users")
-    public UserController userController() {
-        return userController;
-    }
+  /**
+   * Returns the user controller that handles requests related to users.
+   *
+   * @return The user controller.
+   */
+  @RequestMapping("/users")
+  public UserController userController() {
+    return userController;
+  }
 
-    /**
-     * Returns the website controller that handles requests related to websites.
-     *
-     * @return The website controller.
-     */
-    @RequestMapping("/websites")
-    public WebsiteController websiteController() {
-        return websiteController;
-    }
+  /**
+   * Returns the website controller that handles requests related to websites.
+   *
+   * @return The website controller.
+   */
+  @RequestMapping("/websites")
+  public WebsiteController websiteController() {
+    return websiteController;
+  }
 }

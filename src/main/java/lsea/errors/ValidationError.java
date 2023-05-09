@@ -6,12 +6,12 @@ package lsea.errors;
  */
 public class ValidationError extends HttpBaseError {
 
-    /**
-     * Creates a new instance of the ValidationError class with a message.
-     *
-     * @param message The message describing the validation error.
-     */
-    public ValidationError(String message) {
-        super(403, "A validation error occured: " + message);
-    }
+  /**
+   * Creates a new instance of the ValidationError class with a message.
+   *
+   * @param message The message describing the validation error.
+   */
+  public ValidationError(String message) {
+    super(403, "A validation error occured: " + message);
+  }
 }

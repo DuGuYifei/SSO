@@ -17,7 +17,7 @@ public abstract class PermissionedEntity {
 
   /**
    * Checks whether the entity has global access to a given permission level.
-   * 
+   *
    * @param permission the permission level to check for access
    * @return true if the entity has global access to the given permission level,
    *         false otherwise

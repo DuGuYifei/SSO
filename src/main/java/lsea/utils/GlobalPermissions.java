@@ -7,18 +7,18 @@ package lsea.utils;
  */
 public class GlobalPermissions {
 
-    /**
-     * Indicates that a user has administrator-level permissions.
-     */
-    public static int ADMIN = 99;
+  /**
+   * Indicates that a user has administrator-level permissions.
+   */
+  public static int ADMIN = 99;
 
-    /**
-     * Indicates that a user has moderator-level permissions.
-     */
-    public static int MODERATOR = 50;
+  /**
+   * Indicates that a user has moderator-level permissions.
+   */
+  public static int MODERATOR = 50;
 
-    /**
-     * Indicates that a user has basic user-level permissions.
-     */
-    public static int USER = 0;
+  /**
+   * Indicates that a user has basic user-level permissions.
+   */
+  public static int USER = 0;
 }
