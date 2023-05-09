@@ -1,10 +1,9 @@
 package lsea.utils;
 
-import lombok.*;
-import org.springframework.lang.Nullable;
-
 import java.util.List;
 import java.util.Map;
+import lombok.*;
+import org.springframework.lang.Nullable;
 
 /**
  * Represents a result containing a list of data, along with metadata and a
@@ -18,21 +17,20 @@ import java.util.Map;
 @ToString
 public class ListResult {
 
-    /**
-     * The number of items in the list.
-     */
-    private int count;
+  /**
+   * The number of items in the list.
+   */
+  private int count;
 
-    /**
-     * The list of data.
-     */
-    @Nullable
-    private List<Object> data;
+  /**
+   * The list of data.
+   */
+  @Nullable
+  private List<Object> data;
 
-    /**
-     * Additional metadata associated with the result.
-     */
-    @Nullable
-    private Map<String, Object> meta;
-
+  /**
+   * Additional metadata associated with the result.
+   */
+  @Nullable
+  private Map<String, Object> meta;
 }

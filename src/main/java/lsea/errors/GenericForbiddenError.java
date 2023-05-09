@@ -8,23 +8,23 @@ package lsea.errors;
  */
 public class GenericForbiddenError extends HttpBaseError {
 
-    /* Requirement 2.7 */
-    /**
-     * Constructs a new GenericForbiddenError with the specified detail message.
-     *
-     * @param message the detail message.
-     */
-    public GenericForbiddenError(String message) {
-        super(403, message);
-    }
+  /* Requirement 2.7 */
+  /**
+   * Constructs a new GenericForbiddenError with the specified detail message.
+   *
+   * @param message the detail message.
+   */
+  public GenericForbiddenError(String message) {
+    super(403, message);
+  }
 
-    /* Requirement 2.7 */
-    /**
-     * Constructs a new GenericForbiddenError with the specified cause.
-     *
-     * @param e the cause.
-     */
-    public GenericForbiddenError(Exception e) {
-        super(403, e);
-    }
+  /* Requirement 2.7 */
+  /**
+   * Constructs a new GenericForbiddenError with the specified cause.
+   *
+   * @param e the cause.
+   */
+  public GenericForbiddenError(Exception e) {
+    super(403, e);
+  }
 }

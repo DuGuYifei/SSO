@@ -10,14 +10,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ProductionApplication {
 
-    /**
-     * Application main entry point. Starts Spring Boot application context.
-     * (Production Environment)
-     *
-     * @param args command line arguments
-     */
-    public static void main(String[] args) {
-        System.setProperty("spring.profiles.active", "prod");
-        SpringApplication.run(LaboratoryApplication.class, args);
-    }
+  /**
+   * Application main entry point. Starts Spring Boot application context.
+   * (Production Environment)
+   *
+   * @param args command line arguments
+   */
+  public static void main(String[] args) {
+    System.setProperty("spring.profiles.active", "prod");
+    SpringApplication.run(LaboratoryApplication.class, args);
+  }
 }

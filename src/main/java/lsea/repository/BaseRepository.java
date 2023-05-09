@@ -8,15 +8,15 @@ import java.util.Optional;
  * the system.
  */
 public abstract interface BaseRepository {
-    /* Requirement 2.9 */
-    /**
-     * Finds the entity with the given id as string.
-     * 
-     * @param id The id of the entity to find.
-     * @return An Optional containing the entity, or empty if the entity was not
-     *         found.
-     */
-    public default Optional<? extends Object> findOne(String id) {
-        return Optional.empty();
-    }
+  /* Requirement 2.9 */
+  /**
+   * Finds the entity with the given id as string.
+   *
+   * @param id The id of the entity to find.
+   * @return An Optional containing the entity, or empty if the entity was not
+   *         found.
+   */
+  public default Optional<? extends Object> findOne(String id) {
+    return Optional.empty();
+  }
 }

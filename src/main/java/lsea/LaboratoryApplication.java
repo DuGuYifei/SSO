@@ -10,14 +10,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class LaboratoryApplication {
 
-	/**
-	 * Application main entry point. Starts Spring Boot application context.
-	 *
-	 * @param args command line arguments
-	 */
-	public static void main(String[] args) {
-		System.setProperty("spring.profiles.active", "dev");
-		SpringApplication.run(LaboratoryApplication.class, args);
-	}
-
+  /**
+   * Application main entry point. Starts Spring Boot application context.
+   *
+   * @param args command line arguments
+   */
+  public static void main(String[] args) {
+    System.setProperty("spring.profiles.active", "dev");
+    SpringApplication.run(LaboratoryApplication.class, args);
+  }
 }
