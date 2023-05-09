@@ -49,7 +49,7 @@ test-javadoc:
 build-dist:
     stage: package
     script:
-        - "mvn $MAVEN_CLI_OPTS -Dmaven.main.skip=true -Dmaven.test.skip=true package"
+        - "mvn clean install -Dmaven.test.skip=true"
         - "mvn javadoc:javadoc"
     artifacts:
         paths:
