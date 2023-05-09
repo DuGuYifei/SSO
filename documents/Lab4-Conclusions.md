@@ -133,3 +133,9 @@ In the `ManagementController.java`, we are handling two endpoints::
 3. Conclusion:
 
     As the trendlines show above, the time of task is going down quickly at the beginning, and increasing slowly after we use too many threads.
+
+# Java multithreading
+
+Multithreading in java makes use of logical cores and physical cores.
+
+The host machine has 8 physical cores and 16 logical cores.

@@ -23,4 +23,11 @@ public class GenerateReportDto {
   @Min(1)
   @Max(15)
   private int numThreads;
+
+  /**
+   * The number of iterations to be used for analysis
+   */
+  @Min(1)
+  @Max(200)
+  private int iterations;
 }

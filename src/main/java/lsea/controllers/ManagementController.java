@@ -82,18 +82,51 @@ public class ManagementController {
   )
     throws GenericForbiddenError, ValidationError, InterruptedException, GenericNotFoundError {
     ValidationRouter.validate(dto);
+    int iterations = dto.getIterations();
     String token = ValidationRouter.getTokenFromRequest(request);
-    Map<Integer, String> result = new HashMap<>();
+    Map<Integer, String> resultLongest = new HashMap<>();
+
     for (int numThreads = 1; numThreads <= dto.getNumThreads(); numThreads++) {
-      ListResult listResult = managementService.longestFiveLogs(
-        token,
-        numThreads
-      );
-      String duration = listResult.getMeta().get("duration").toString();
-      result.put(numThreads, duration);
+      int sumOfDurations = 0;
+      for (int i = 0; i < iterations; i++) {
+        ListResult listResult = managementService.longestFiveLogs(
+          token,
+          numThreads
+        );
+        String duration = listResult.getMeta().get("duration").toString();
+        sumOfDurations += Integer.parseInt(duration);
+      }
+
+      // Calculate the new average
+      int average = sumOfDurations / iterations;
+      // Assign it to the thread
+      resultLongest.put(numThreads, String.valueOf(average));
     }
 
-    Workbook workbook = managementService.generateReport(dto, result);
+    Map<Integer, String> resultShortest = new HashMap<>();
+
+    for (int numThreads = 1; numThreads <= dto.getNumThreads(); numThreads++) {
+      int sumOfDurations = 0;
+      for (int i = 0; i < iterations; i++) {
+        ListResult listResult = managementService.shortestFiveLogs(
+          token,
+          numThreads
+        );
+        String duration = listResult.getMeta().get("duration").toString();
+        sumOfDurations += Integer.parseInt(duration);
+      }
+
+      // Calculate the new average
+      int average = sumOfDurations / iterations;
+      // Assign it to the thread
+      resultShortest.put(numThreads, String.valueOf(average));
+    }
+
+    Workbook workbook = managementService.generateReport(
+      dto,
+      resultLongest,
+      resultShortest
+    );
 
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     try {
