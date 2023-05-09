@@ -35,6 +35,22 @@ public class ManagementService {
     private final UserRepository userRepository;
 
     /**
+     * The class used for count total number of requests to be done;
+     */
+    public class Count{
+        int cnt = 0;
+
+        Count(int cnt){
+            this.cnt = cnt;
+        }
+    }
+
+    /**
+     * The total number of requests be done;
+     */
+    private final Count requestDone = new Count(0);
+
+    /**
      * The constructor of the ManagementService class.
      * 
      * @param logRepository  LogRepository
@@ -59,6 +75,10 @@ public class ManagementService {
     /* Requirement 4.2 */
     public ListResult longestFiveLogs(String token, int numThreads)
             throws InterruptedException, GenericNotFoundError, GenericForbiddenError {
+        synchronized (requestDone) {
+            requestDone.cnt++;
+        }
+
         UUID userId = User.verifyToken(token);
 
         /* Requirement 4.3 */
@@ -145,6 +165,9 @@ public class ManagementService {
     /* Requirement 4.1 */
     /* Requirement 4.2 */
     private void subLongestFiveLogs(List<Log> logs, PriorityQueue<Log> response, int resultNum) {
+        synchronized (requestDone) {
+            requestDone.cnt++;
+        }
         /* Requirement 4.1.1 */
         System.out.println("Thread " + Thread.currentThread().getId() + " is running for " + logs.size() + " logs");
         if (logs.size() == 0) {
