@@ -99,6 +99,24 @@ public class User extends PermissionedEntity implements Serializable {
   @Column(name = "global_permission", nullable = false)
   private int globalPermission;
 
+  /**
+   * The date the user was banned.
+   */
+  @SerializedName("banned_at")
+  private Date bannedAt;
+
+  /**
+   * The reason the user was banned.
+   */
+  @SerializedName("ban_reason")
+  private String banReason;
+
+  /**
+   * The ID of the admin who banned this user.
+   */
+  @SerializedName("banned_by_id")
+  private UUID bannedById;
+
   /* Requirement 2.6 */
   /**
    * Creates a new User instance based on the provided CreateUserDto.
@@ -119,6 +137,36 @@ public class User extends PermissionedEntity implements Serializable {
         .createdAt(new Date())
         .globalPermission(GlobalPermissions.USER)
         .build();
+  }
+
+  /**
+   * Assigns a ban related fields to the user
+   *
+   * @param id the ID of the admin who banned the user
+   * @param banReason the BanUserDto containing the user data
+   */
+  public void ban(UUID id, String banReason) {
+    this.setBannedAt(new Date());
+    this.setBannedById(id);
+    this.setBanReason(banReason);
+  }
+
+  /**
+   * Removes the ban related fields from the user
+   */
+  public void unBan() {
+    this.setBannedAt(null);
+    this.setBannedById(null);
+    this.setBanReason(null);
+  }
+
+  /**
+   * Checks if the user is banned.
+   *
+   * @return true if the user is banned, false otherwise
+   */
+  public boolean isBanned() {
+    return this.getBannedAt() != null;
   }
 
   /**

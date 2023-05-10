@@ -159,4 +159,125 @@ public class UsersTests {
     assertThat(cookieSet).isNotNull();
     assertThat(cookieSet).startsWith("token=");
   }
+
+  @Test
+  public void testBanAndUnBanUser() {
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+
+    String password = RandomBase64Generator.generateShort();
+    String email = "test_user@example.com";
+    String requestBody =
+            "{ \"username\": \"test_user\", \"password\": \"" +
+                    password +
+                    "\", \"email\": \"" +
+                    email +
+                    "\" }";
+    HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
+
+    ResponseEntity<String> response = restTemplate.postForEntity(
+            "http://localhost:" + port + "/api/v1/users",
+            request,
+            String.class
+    );
+
+    password = RandomBase64Generator.generateShort();
+    email = "test_user_not_admin@example.com";
+    requestBody =
+            "{ \"username\": \"test_user_not_admin\", \"password\": \"" +
+                    password +
+                    "\", \"email\": \"" +
+                    email +
+                    "\" }";
+    request = new HttpEntity<>(requestBody, headers);
+
+    response = restTemplate.postForEntity(
+            "http://localhost:" + port + "/api/v1/users",
+            request,
+            String.class
+    );
+
+    String requestBodyNotAdmin =
+            "{ \"email\": \"test_user_not_admin@example.com\", \"password\": \"" + password + "\" }";
+    request = new HttpEntity<>(requestBodyNotAdmin, headers);
+
+    response =
+            restTemplate.postForEntity(
+                    "http://localhost:" + port + "/api/v1/users/authorize",
+                    request,
+                    String.class
+            );
+
+    // Not admin user tries to ban another user
+
+    String cookieSetNotAdmin = response.getHeaders().getFirst("Set-Cookie");
+
+    headers.add("Cookie", cookieSetNotAdmin);
+    requestBody =
+            "{ \"emailAddress\": \"test_user@example.com\" }";
+    request = new HttpEntity<>(requestBody, headers);
+
+    response =
+            restTemplate.postForEntity(
+                    "http://localhost:" + port + "/api/v1/users/ban",
+                    request,
+                    String.class
+            );
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+
+    // Actual admin user tries to ban another user
+
+    String requestBodyAdmin =
+            "{ \"email\": \"admin@example.com\", \"password\": \"adminadmin\" }";
+    request = new HttpEntity<>(requestBodyAdmin, headers);
+
+    response =
+            restTemplate.postForEntity(
+                    "http://localhost:" + port + "/api/v1/users/authorize",
+                    request,
+                    String.class
+            );
+
+    String cookieSetAdmin = response.getHeaders().getFirst("Set-Cookie");
+
+    // Ban the user
+    headers.add("Cookie", cookieSetAdmin);
+    request = new HttpEntity<>(requestBody, headers);
+
+    response =
+            restTemplate.postForEntity(
+                    "http://localhost:" + port + "/api/v1/users/ban",
+                    request,
+                    String.class
+            );
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+    // Not admin user tries to unban another user
+    headers.add("Cookie", cookieSetNotAdmin);
+    request = new HttpEntity<>(requestBody, headers);
+
+    response =
+            restTemplate.postForEntity(
+                    "http://localhost:" + port + "/api/v1/users/unban",
+                    request,
+                    String.class
+            );
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+
+    // Actual admin user tries to unban another user
+    headers.add("Cookie", cookieSetAdmin);
+    request = new HttpEntity<>(requestBody, headers);
+
+    response =
+            restTemplate.postForEntity(
+                    "http://localhost:" + port + "/api/v1/users/unban",
+                    request,
+                    String.class
+            );
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+  }
 }
