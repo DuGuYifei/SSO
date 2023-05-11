@@ -41,13 +41,12 @@ public class WebsiteTest {
         field.setAccessible(true);
         assert field.get(cloned) != field.get(website);
         System.out.println(
-          field.getName() +
-          ":\n" +
-          field.get(cloned) +
-          "\n" +
-          field.get(website) +
-          "\n"
-        );
+            field.getName() +
+                ":\n" +
+                field.get(cloned) +
+                "\n" +
+                field.get(website) +
+                "\n");
       } catch (IllegalAccessException e) {
         e.printStackTrace();
       }

@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
  * system.
  */
 @Repository
-public interface LogRepository extends JpaRepository<Log, UUID> {}
+public interface LogRepository extends JpaRepository<Log, UUID> {
+}

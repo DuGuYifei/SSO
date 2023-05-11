@@ -34,9 +34,8 @@ public class WebsiteController {
    */
   @PostMapping
   public ResponseEntity<SuccessResult> createOne(
-    @RequestBody CreateWebsiteDto dto,
-    HttpServletRequest request
-  ) throws Exception {
+      @RequestBody CreateWebsiteDto dto,
+      HttpServletRequest request) throws Exception {
     ValidationRouter.validate(dto);
     String token = ValidationRouter.getTokenFromRequest(request);
     websiteService.createOne(dto, token);

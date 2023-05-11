@@ -16,7 +16,7 @@ In order to fulfil this task, we created service for **management** _(users in t
 
 In the `ManagementController.java`, we are handling two endpoints::
 
-1. `GET /analysis/{numThreads}` To get the list of results object, which have following fields:
+1. `GET /analysis-longest-five/{numThreads}` To get the list of results object, which have following fields:
     - `count`: 5
     - `data`: the longest 5 `log.data` in `logs` table
     - `meta`: Start time, end time and the overall duration of the task
@@ -133,3 +133,9 @@ In the `ManagementController.java`, we are handling two endpoints::
 3. Conclusion:
 
     As the trendlines show above, the time of task is going down quickly at the beginning, and increasing slowly after we use too many threads.
+
+# Java multithreading
+
+Multithreading in java makes use of logical cores and physical cores.
+
+The host machine has 8 physical cores and 16 logical cores.

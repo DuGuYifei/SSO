@@ -25,10 +25,10 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(HttpBaseError.class)
   public ResponseEntity<ErrorResult> handleException(HttpBaseError error) {
     ErrorResult result = ErrorResult
-      .builder()
-      .message(error.e.getMessage())
-      .status(error.statusCode)
-      .build();
+        .builder()
+        .message(error.e.getMessage())
+        .status(error.statusCode)
+        .build();
 
     return ResponseEntity.status(error.statusCode).body(result);
   }
@@ -48,10 +48,10 @@ public class GlobalExceptionHandler {
     System.out.println("Here is the stack trace:");
     e.printStackTrace();
     ErrorResult result = ErrorResult
-      .builder()
-      .message("Something went wrong")
-      .status(422)
-      .build();
+        .builder()
+        .message("Something went wrong")
+        .status(422)
+        .build();
 
     return ResponseEntity.status(422).body(result);
   }

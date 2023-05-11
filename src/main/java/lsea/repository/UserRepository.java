@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface UserRepository
-  extends JpaRepository<User, UUID>, BaseRepository {
+    extends JpaRepository<User, UUID>, BaseRepository {
   /**
    * Finds the user with the given username.
    *

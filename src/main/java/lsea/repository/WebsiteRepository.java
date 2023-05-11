@@ -28,9 +28,8 @@ public interface WebsiteRepository extends JpaRepository<Website, UUID> {
    * @return the list of websites
    */
   List<Website> findAllByCreatedByIdAndDisplayName(
-    UUID userId,
-    String displayName
-  );
+      UUID userId,
+      String displayName);
 
   /**
    * Find all by created by id and website redirect url.

@@ -79,14 +79,14 @@ public class Log {
    * @throws GenericForbiddenError - If the user is not found by the jwt.
    */
   public static Log create(CreateLogDto dto, User user)
-    throws GenericForbiddenError {
+      throws GenericForbiddenError {
     return Log
-      .builder()
-      .data(dto.getData())
-      .logType(LogType.values()[dto.getLogType()])
-      .userId(user.getId())
-      .createdAt(new Date())
-      .userCurrentState(user.toJson())
-      .build();
+        .builder()
+        .data(dto.getData())
+        .logType(LogType.values()[dto.getLogType()])
+        .userId(user.getId())
+        .createdAt(new Date())
+        .userCurrentState(user.toJson())
+        .build();
   }
 }

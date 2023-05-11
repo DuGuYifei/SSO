@@ -18,20 +18,14 @@ public class AddUserToUserGroupDto {
    * Unique identifier of the group of users
    */
   @NotBlank
-  @Pattern(
-    regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
-    message = "Invalid user group id"
-  )
+  @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$", message = "Invalid user group id")
   private String userGroupId;
 
   /**
    * Id of the user in the group
    */
   @NotBlank
-  @Pattern(
-    regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
-    message = "Invalid user id"
-  )
+  @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$", message = "Invalid user id")
   private String userId;
 
   /**

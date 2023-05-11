@@ -20,10 +20,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
  * The LogControllerTests class contains unit tests for the LogController class.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(
-  classes = { LaboratoryApplication.class },
-  webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-)
+@SpringBootTest(classes = { LaboratoryApplication.class }, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 public class LogControllerTests {
 
@@ -39,52 +36,47 @@ public class LogControllerTests {
   @Test
   @DisplayName("Test of LogController")
   public void createOne() throws Exception {
-    String userRequest =
-      "{\n" +
-      "    \"username\": \"test\",\n" +
-      "    \"password\": \"12345678\",\n" +
-      "    \"email\": \"123@11.com\"\n" +
-      "}";
+    String userRequest = "{\n" +
+        "    \"username\": \"test\",\n" +
+        "    \"password\": \"12345678\",\n" +
+        "    \"email\": \"123@11.com\"\n" +
+        "}";
 
-    String userAuthRequest =
-      "{\n" +
-      "    \"password\": \"12345678\",\n" +
-      "    \"email\": \"123@11.com\"\n" +
-      "}";
+    String userAuthRequest = "{\n" +
+        "    \"password\": \"12345678\",\n" +
+        "    \"email\": \"123@11.com\"\n" +
+        "}";
 
-    String logRequest =
-      "{\n" + "    \"data\": \"test data\",\n" + "    \"logType\": 0\n" + "}";
+    String logRequest = "{\n" + "    \"data\": \"test data\",\n" + "    \"logType\": 0\n" + "}";
 
     mockMvc
-      .perform(
-        MockMvcRequestBuilders
-          .post("/api/v1/users")
-          .contentType("application/json;charset=UTF-8")
-          .content(userRequest)
-      )
-      .andReturn();
+        .perform(
+            MockMvcRequestBuilders
+                .post("/api/v1/users")
+                .contentType("application/json;charset=UTF-8")
+                .content(userRequest))
+        .andReturn();
 
     MvcResult result = mockMvc
-      .perform(
-        MockMvcRequestBuilders
-          .post("/api/v1/users/authorize")
-          .contentType("application/json;charset=UTF-8")
-          .content(userAuthRequest)
-      )
-      .andReturn();
+        .perform(
+            MockMvcRequestBuilders
+                .post("/api/v1/users/authorize")
+                .contentType("application/json;charset=UTF-8")
+                .content(userAuthRequest))
+        .andReturn();
 
     Cookie cookie = result.getResponse().getCookie("token");
 
     MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-      .post("/api/v1/logs")
-      .cookie(cookie)
-      .contentType("application/json;charset=UTF-8")
-      .content(logRequest);
+        .post("/api/v1/logs")
+        .cookie(cookie)
+        .contentType("application/json;charset=UTF-8")
+        .content(logRequest);
 
     mockMvc
-      .perform(requestBuilder)
-      .andExpect(MockMvcResultMatchers.status().isOk())
-      .andDo(MockMvcResultHandlers.print())
-      .andReturn();
+        .perform(requestBuilder)
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andDo(MockMvcResultHandlers.print())
+        .andReturn();
   }
 }

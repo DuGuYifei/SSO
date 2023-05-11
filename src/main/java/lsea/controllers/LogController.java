@@ -47,13 +47,12 @@ public class LogController {
    *                               valid
    * @throws ValidationError       if the request body is invalid or the cookie
    *                               not contains the token
-   * @throws GenericNotFoundError if the user is not found
+   * @throws GenericNotFoundError  if the user is not found
    */
   @PostMapping
   public ResponseEntity<SuccessResult> createOne(
-    @RequestBody CreateLogDto dto,
-    HttpServletRequest request
-  ) throws GenericForbiddenError, GenericNotFoundError, ValidationError {
+      @RequestBody CreateLogDto dto,
+      HttpServletRequest request) throws GenericForbiddenError, GenericNotFoundError, ValidationError {
     ValidationRouter.validate(dto);
 
     String token = ValidationRouter.getTokenFromRequest(request);
@@ -73,22 +72,21 @@ public class LogController {
    * @throws GenericForbiddenError if the cookie is not found or token is not
    *                               valid
    * @throws ValidationError       the cookie not contains the token
-   * @throws GenericNotFoundError if the user is not found
+   * @throws GenericNotFoundError  if the user is not found
    */
   /* Requirement 4.3 */
   @PostMapping("/generate-test-data")
   public ResponseEntity<SuccessResult> createOne(
-    @RequestBody int N,
-    HttpServletRequest request
-  ) throws GenericForbiddenError, ValidationError, GenericNotFoundError {
+      @RequestBody int N,
+      HttpServletRequest request) throws GenericForbiddenError, ValidationError, GenericNotFoundError {
     String token = ValidationRouter.getTokenFromRequest(request);
 
     for (int i = 0; i < N; i++) {
       CreateLogDto dto = CreateLogDto
-        .builder()
-        .data("test" + i)
-        .logType(0)
-        .build();
+          .builder()
+          .data("test" + i)
+          .logType(0)
+          .build();
       logService.createOne(dto, token);
     }
 

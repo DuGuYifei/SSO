@@ -36,9 +36,7 @@ public abstract class ValidationRouter {
     if (!violations.isEmpty()) {
       List<String> errors = new ArrayList<>();
       /* Requirement 2.3 */
-      violations.forEach(violation ->
-        errors.add(violation.getPropertyPath() + " " + violation.getMessage())
-      );
+      violations.forEach(violation -> errors.add(violation.getPropertyPath() + " " + violation.getMessage()));
       String joined = String.join(", ", errors);
       throw new ValidationError(joined);
     }
@@ -49,11 +47,11 @@ public abstract class ValidationRouter {
    *
    * @param request - the request to get the token from
    * @return the token
-   * @throws ValidationError if the token is not found in the cookies
+   * @throws ValidationError       if the token is not found in the cookies
    * @throws GenericForbiddenError if the cookies are not found
    */
   protected static String getTokenFromRequest(HttpServletRequest request)
-    throws ValidationError, GenericForbiddenError {
+      throws ValidationError, GenericForbiddenError {
     Cookie[] cookies = request.getCookies();
 
     if (cookies == null) {
