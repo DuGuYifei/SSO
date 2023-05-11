@@ -53,7 +53,7 @@ build-dist:
         - "mvn javadoc:javadoc"
     artifacts:
         paths:
-            - target/*.jar
+            - target/SSO-*.*.0.jar
             - target/site/
     needs:
         - run-api-tests

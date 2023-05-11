@@ -84,20 +84,19 @@ public class UserGroup extends PermissionedEntity implements Serializable {
    *                               access permissions to create a user group
    */
   public static UserGroup create(CreateUserGroupDto dto, User creator)
-    throws GenericForbiddenError {
+      throws GenericForbiddenError {
     if (!creator.hasGlobalAccess(GlobalPermissions.MODERATOR)) {
       throw new GenericForbiddenError(
-        "You are not authorized to create a user group"
-      );
+          "You are not authorized to create a user group");
     }
     return UserGroup
-      .builder()
-      .id(UUID.randomUUID())
-      .name(dto.getName())
-      .description(dto.getDescription())
-      .globalPermission(GlobalPermissions.USER)
-      .createdAt(new Date())
-      .build();
+        .builder()
+        .id(UUID.randomUUID())
+        .name(dto.getName())
+        .description(dto.getDescription())
+        .globalPermission(GlobalPermissions.USER)
+        .createdAt(new Date())
+        .build();
   }
 
   /**

@@ -33,13 +33,12 @@ public class WebsiteService {
    * Instantiates a new Website service.
    *
    * @param websiteRepository the website repository
-   * @param userRepository   the user repository
+   * @param userRepository    the user repository
    */
   @Autowired
   public WebsiteService(
-    WebsiteRepository websiteRepository,
-    UserRepository userRepository
-  ) {
+      WebsiteRepository websiteRepository,
+      UserRepository userRepository) {
     this.websiteRepository = websiteRepository;
     this.userRepository = userRepository;
   }
@@ -54,7 +53,7 @@ public class WebsiteService {
    */
   @Transactional
   public void createOne(CreateWebsiteDto dto, String token)
-    throws GenericNotFoundError, GenericForbiddenError {
+      throws GenericNotFoundError, GenericForbiddenError {
     UUID userId = User.verifyToken(token);
     Optional<User> user = userRepository.findById(userId);
 
@@ -62,8 +61,7 @@ public class WebsiteService {
       throw new GenericNotFoundError("User not found");
     } else if (user.get().hasGlobalAccess(GlobalPermissions.MODERATOR)) {
       throw new GenericForbiddenError(
-        "User has no permission to create a website"
-      );
+          "User has no permission to create a website");
     }
 
     final Website website = Website.create(dto, user.get());
@@ -79,19 +77,16 @@ public class WebsiteService {
    */
   /* @Requirement-3.4 */
   public List<Website> findAllByUserIdAndWebsiteDisplayName(
-    UUID id,
-    String displayName
-  ) {
+      UUID id,
+      String displayName) {
     List<Website> websites = websiteRepository.findAllByCreatedByIdAndDisplayName(
-      id,
-      displayName
-    );
+        id,
+        displayName);
 
     websites.sort(
-      Comparator
-        .comparing(Website::getUpdatedAt)
-        .thenComparing(Website::getCreatedAt)
-    );
+        Comparator
+            .comparing(Website::getUpdatedAt)
+            .thenComparing(Website::getCreatedAt));
 
     return websites;
   }
@@ -119,19 +114,16 @@ public class WebsiteService {
    */
   /* Requirement-3.4 */
   public PriorityQueue<Website> findAllByCreatedByIdAndRedirectUrl(
-    UUID userId,
-    String url
-  ) {
+      UUID userId,
+      String url) {
     List<Website> websites = websiteRepository.findAllByCreatedByIdAndRedirectUrl(
-      userId,
-      url
-    );
+        userId,
+        url);
 
     websites.sort(
-      Comparator
-        .comparing(Website::getUpdatedAt)
-        .thenComparing(Website::getCreatedAt)
-    );
+        Comparator
+            .comparing(Website::getUpdatedAt)
+            .thenComparing(Website::getCreatedAt));
 
     return new PriorityQueue<>(websites);
   }
@@ -150,10 +142,9 @@ public class WebsiteService {
     List<Website> websites = websiteRepository.findAllByCreatedById(userId);
 
     websites.sort(
-      Comparator
-        .comparing(Website::getUpdatedAt)
-        .thenComparing(Website::getCreatedAt)
-    );
+        Comparator
+            .comparing(Website::getUpdatedAt)
+            .thenComparing(Website::getCreatedAt));
 
     return websites;
   }

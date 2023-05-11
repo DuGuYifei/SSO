@@ -71,28 +71,25 @@ public class UserGroupUser {
    *                               and doesn't have permissions to do so
    */
   public static UserGroupUser create(
-    AddUserToUserGroupDto dto,
-    UserGroupUser adderUser
-  ) throws GenericForbiddenError {
+      AddUserToUserGroupDto dto,
+      UserGroupUser adderUser) throws GenericForbiddenError {
     if (adderUser.groupPermission.equals(GroupPermissions.SPECTATOR)) {
       throw new GenericForbiddenError(
-        "The user adding the new user to the group must have a permission level greater than SPECTATOR."
-      );
+          "The user adding the new user to the group must have a permission level greater than SPECTATOR.");
     }
 
     if (adderUser.groupPermission.ordinal() <= dto.getRole()) {
       throw new GenericForbiddenError(
-        "The user adding the new user to the group must have a permission level greater or equal than the new user."
-      );
+          "The user adding the new user to the group must have a permission level greater or equal than the new user.");
     }
 
     return UserGroupUser
-      .builder()
-      .id(UUID.randomUUID())
-      .userGroupId(UUID.fromString(dto.getUserGroupId()))
-      .userId(UUID.fromString(dto.getUserId()))
-      .addedAt(new Date())
-      .groupPermission(GroupPermissions.values()[dto.getRole()])
-      .build();
+        .builder()
+        .id(UUID.randomUUID())
+        .userGroupId(UUID.fromString(dto.getUserGroupId()))
+        .userId(UUID.fromString(dto.getUserId()))
+        .addedAt(new Date())
+        .groupPermission(GroupPermissions.values()[dto.getRole()])
+        .build();
   }
 }

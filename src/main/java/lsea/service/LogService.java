@@ -25,13 +25,12 @@ public class LogService {
   /**
    * Constructor of the LogService class.
    *
-   * @param logRepository - LogRepository
+   * @param logRepository  - LogRepository
    * @param userRepository - UserRepository
    */
   public LogService(
-    LogRepository logRepository,
-    UserRepository userRepository
-  ) {
+      LogRepository logRepository,
+      UserRepository userRepository) {
     this.logRepository = logRepository;
     this.userRepository = userRepository;
   }
@@ -39,15 +38,15 @@ public class LogService {
   /**
    * Creates a new log.
    *
-   * @param dto options from user input
+   * @param dto   options from user input
    * @param token to validate the authorization of the user
    * @return the created log
-   * @throws GenericNotFoundError when user is not found
+   * @throws GenericNotFoundError  when user is not found
    * @throws GenericForbiddenError when user is not authorized
    */
   @Transactional
   public Log createOne(CreateLogDto dto, String token)
-    throws GenericNotFoundError, GenericForbiddenError {
+      throws GenericNotFoundError, GenericForbiddenError {
     UUID userId = User.verifyToken(token);
 
     Optional<User> user = userRepository.findById(userId);

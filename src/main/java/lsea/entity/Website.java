@@ -89,15 +89,15 @@ public class Website implements Serializable, Comparable<Website>, Cloneable {
    */
   public static Website create(CreateWebsiteDto dto, User creator) {
     Website website = Website
-      .builder()
-      .id(UUID.randomUUID())
-      .displayName(dto.getDisplayName())
-      .createdById(creator.getId())
-      .createdAt(new Date())
-      .redirectUrl(dto.getRedirectUrl())
-      .privateKey(RandomBase64Generator.generateLong())
-      .isActive(false)
-      .build();
+        .builder()
+        .id(UUID.randomUUID())
+        .displayName(dto.getDisplayName())
+        .createdById(creator.getId())
+        .createdAt(new Date())
+        .redirectUrl(dto.getRedirectUrl())
+        .privateKey(RandomBase64Generator.generateLong())
+        .isActive(false)
+        .build();
     website.setUpdatedAt(website.getCreatedAt());
     return website;
   }
@@ -148,17 +148,13 @@ public class Website implements Serializable, Comparable<Website>, Cloneable {
       e.printStackTrace();
     }
     clonedWebsite.setId(
-      new UUID(
-        this.getId().getMostSignificantBits(),
-        this.getId().getLeastSignificantBits()
-      )
-    );
+        new UUID(
+            this.getId().getMostSignificantBits(),
+            this.getId().getLeastSignificantBits()));
     clonedWebsite.setCreatedById(
-      new UUID(
-        this.getCreatedById().getMostSignificantBits(),
-        this.getCreatedById().getLeastSignificantBits()
-      )
-    );
+        new UUID(
+            this.getCreatedById().getMostSignificantBits(),
+            this.getCreatedById().getLeastSignificantBits()));
     clonedWebsite.setCreatedAt(new Date(this.getCreatedAt().getTime()));
     clonedWebsite.setUpdatedAt(new Date(this.getUpdatedAt().getTime()));
     clonedWebsite.setDisplayName(new String(this.getDisplayName()));

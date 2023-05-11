@@ -31,13 +31,13 @@ public class SwaggerConfig {
     boolean flag = environment.acceptsProfiles(profiles);
 
     return new Docket(DocumentationType.SWAGGER_2)
-      .apiInfo(apiInfo())
-      .groupName("sso")
-      .enable(flag)
-      .select()
-      .apis(RequestHandlerSelectors.basePackage("lsea.controllers"))
-      .paths(PathSelectors.any())
-      .build();
+        .apiInfo(apiInfo())
+        .groupName("sso")
+        .enable(flag)
+        .select()
+        .apis(RequestHandlerSelectors.basePackage("lsea.controllers"))
+        .paths(PathSelectors.any())
+        .build();
   }
 
   /**
@@ -47,9 +47,9 @@ public class SwaggerConfig {
    */
   private ApiInfo apiInfo() {
     return new ApiInfoBuilder()
-      .title("Single-sign-on API Doc")
-      .description("Api doc of sso")
-      .version("v1.0")
-      .build();
+        .title("Single-sign-on API Doc")
+        .description("Api doc of sso")
+        .version("v1.0")
+        .build();
   }
 }

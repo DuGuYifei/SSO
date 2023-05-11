@@ -18,10 +18,7 @@ import springfox.documentation.spring.web.json.Json;
  * This is a JUnit test class for the IndexController class.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(
-  classes = { LaboratoryApplication.class },
-  webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-)
+@SpringBootTest(classes = { LaboratoryApplication.class }, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 public class IndexControllerTest {
 
@@ -42,17 +39,15 @@ public class IndexControllerTest {
   @DisplayName("Test of IndexController")
   public void sanityCheck() throws Exception {
     Json json = new Json(
-      "{\"count\":0,\"data\":null,\"meta\":{\"message\":\"Hello World!\"}}"
-    );
+        "{\"count\":0,\"data\":null,\"meta\":{\"message\":\"Hello World!\"}}");
     mockMvc
-      .perform(
-        MockMvcRequestBuilders
-          .get("/")
-          .contentType("application/json;charset=UTF-8")
-      )
-      .andExpect(MockMvcResultMatchers.status().isOk())
-      .andExpect(MockMvcResultMatchers.content().json(json.value()))
-      .andDo(MockMvcResultHandlers.print())
-      .andReturn();
+        .perform(
+            MockMvcRequestBuilders
+                .get("/")
+                .contentType("application/json;charset=UTF-8"))
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.content().json(json.value()))
+        .andDo(MockMvcResultHandlers.print())
+        .andReturn();
   }
 }

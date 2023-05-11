@@ -23,10 +23,7 @@ public class CreateUserGroupDto {
    */
   @NotBlank
   @Size(min = 3, max = 25, message = "Name must be between 3 and 50 characters")
-  @Pattern(
-    regexp = "^[a-zA-Z0-9_-]+$",
-    message = "Name must be alphanumeric with no spaces"
-  )
+  @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "Name must be alphanumeric with no spaces")
   private String name;
 
   /**
@@ -34,10 +31,6 @@ public class CreateUserGroupDto {
    * Must be between 0 and 500 characters.
    */
   @NotBlank
-  @Size(
-    min = 0,
-    max = 500,
-    message = "Description must be between 0 and 500 characters"
-  )
+  @Size(min = 0, max = 500, message = "Description must be between 0 and 500 characters")
   private String description;
 }

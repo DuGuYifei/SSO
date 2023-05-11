@@ -31,10 +31,10 @@ public class UserController {
   @GetMapping("/ping")
   public ResponseEntity<SuccessResult> ping() {
     SuccessResult result = SuccessResult
-      .builder()
-      .data("Pong from user controller!")
-      .status(200)
-      .build();
+        .builder()
+        .data("Pong from user controller!")
+        .status(200)
+        .build();
 
     return ResponseEntity.ok(result);
   }
@@ -49,8 +49,7 @@ public class UserController {
    */
   @PostMapping
   public ResponseEntity<SuccessResult> createOne(
-    @RequestBody CreateUserDto dto
-  ) throws Exception {
+      @RequestBody CreateUserDto dto) throws Exception {
     ValidationRouter.validate(dto);
     userService.createOne(dto);
     SuccessResult result = SuccessResult.builder().status(200).build();
@@ -70,16 +69,15 @@ public class UserController {
    */
   @PostMapping(path = "/authorize", produces = "application/json")
   public ResponseEntity<SuccessResult> authorize(
-    @RequestBody AuthorizeUserDto dto,
-    HttpServletResponse response
-  ) throws Exception {
+      @RequestBody AuthorizeUserDto dto,
+      HttpServletResponse response) throws Exception {
     ValidationRouter.validate(dto);
     String token = userService.authorize(dto);
     SuccessResult result = SuccessResult
-      .builder()
-      .status(200)
-      .data(token)
-      .build();
+        .builder()
+        .status(200)
+        .data(token)
+        .build();
 
     // Set the token as a cookie in the response
     Cookie cookie = new Cookie("token", token);

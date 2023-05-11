@@ -108,18 +108,17 @@ public class User extends PermissionedEntity implements Serializable {
    */
   public static User create(CreateUserDto dto) {
     String encryptedPassword = BCrypt.hashpw(
-      dto.getPassword(),
-      BCrypt.gensalt()
-    );
+        dto.getPassword(),
+        BCrypt.gensalt());
     return User
-      .builder()
-      .id(UUID.randomUUID())
-      .username(dto.getUsername())
-      .email(dto.getEmail())
-      .password(encryptedPassword)
-      .createdAt(new Date())
-      .globalPermission(GlobalPermissions.USER)
-      .build();
+        .builder()
+        .id(UUID.randomUUID())
+        .username(dto.getUsername())
+        .email(dto.getEmail())
+        .password(encryptedPassword)
+        .createdAt(new Date())
+        .globalPermission(GlobalPermissions.USER)
+        .build();
   }
 
   /**
@@ -130,7 +129,7 @@ public class User extends PermissionedEntity implements Serializable {
    * @throws GenericConflictError if the old password is incorrect
    */
   public void changePassword(String oldPassword, String newPassword)
-    throws GenericConflictError {
+      throws GenericConflictError {
     if (BCrypt.checkpw(oldPassword, this.getPassword())) {
       this.setPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
     } else {
@@ -162,13 +161,13 @@ public class User extends PermissionedEntity implements Serializable {
       secret = temporarySecret;
     }
     return Jwts
-      .builder()
-      .setId(UUID.randomUUID().toString())
-      .setSubject(id.toString())
-      .setIssuedAt(now)
-      .setExpiration(new Date(now.getTime() + 86400000)) // 24 hours
-      .signWith(SignatureAlgorithm.HS256, secret)
-      .compact();
+        .builder()
+        .setId(UUID.randomUUID().toString())
+        .setSubject(id.toString())
+        .setIssuedAt(now)
+        .setExpiration(new Date(now.getTime() + 86400000)) // 24 hours
+        .signWith(SignatureAlgorithm.HS256, secret)
+        .compact();
   }
 
   /**
@@ -195,10 +194,10 @@ public class User extends PermissionedEntity implements Serializable {
     }
     try {
       Claims claims = Jwts
-        .parser()
-        .setSigningKey(secret)
-        .parseClaimsJws(token)
-        .getBody();
+          .parser()
+          .setSigningKey(secret)
+          .parseClaimsJws(token)
+          .getBody();
       return UUID.fromString(claims.getSubject());
     } catch (Exception e) {
       throw new GenericForbiddenError("Invalid token");

@@ -22,10 +22,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  */
 @Api(value = "User Integration Tests")
 @RunWith(SpringRunner.class)
-@SpringBootTest(
-  classes = { LaboratoryApplication.class },
-  webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-)
+@SpringBootTest(classes = { LaboratoryApplication.class }, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UsersTests {
 
   /**
@@ -46,12 +43,10 @@ public class UsersTests {
   @Test
   public void testPing() {
     ResponseEntity<String> response = restTemplate.getForEntity(
-      "http://localhost:" + port + "/api/v1/users/ping",
-      String.class
-    );
+        "http://localhost:" + port + "/api/v1/users/ping",
+        String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    String expected =
-      "{\"data\":\"Pong from user controller!\",\"success\":true,\"status\":200}";
+    String expected = "{\"data\":\"Pong from user controller!\",\"success\":true,\"status\":200}";
     assertThat(response.getBody()).isEqualTo(expected);
   }
 
@@ -63,15 +58,13 @@ public class UsersTests {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
 
-    String requestBody =
-      "{ \"username\": \"testUser_first\", \"password\": \"password123\", \"email\": \"testuser1@example.com\" }";
+    String requestBody = "{ \"username\": \"testUser_first\", \"password\": \"password123\", \"email\": \"testuser1@example.com\" }";
     HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
     ResponseEntity<String> response = restTemplate.postForEntity(
-      "http://localhost:" + port + "/api/v1/users",
-      request,
-      String.class
-    );
+        "http://localhost:" + port + "/api/v1/users",
+        request,
+        String.class);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     String expected = "{\"data\":null,\"success\":true,\"status\":200}";
@@ -86,19 +79,16 @@ public class UsersTests {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
 
-    String requestBody =
-      "{ \"username\": \"testUser_second\", \"password\": \"password123\", \"email\": \"testuser2example.com\" }";
+    String requestBody = "{ \"username\": \"testUser_second\", \"password\": \"password123\", \"email\": \"testuser2example.com\" }";
     HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
     ResponseEntity<String> response = restTemplate.postForEntity(
-      "http://localhost:" + port + "/api/v1/users",
-      request,
-      String.class
-    );
+        "http://localhost:" + port + "/api/v1/users",
+        request,
+        String.class);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-    String expected =
-      "{\"message\":\"A validation error occured: email must match \\\"^[a-z0-9_.+-]+@[a-z0-9-]+\\\\.[a-z0-9-.]+$\\\"\",\"success\":false,\"status\":403}";
+    String expected = "{\"message\":\"A validation error occured: email must match \\\"^[a-z0-9_.+-]+@[a-z0-9-]+\\\\.[a-z0-9-.]+$\\\"\",\"success\":false,\"status\":403}";
     assertThat(response.getBody()).isEqualTo(expected);
   }
 
@@ -111,29 +101,24 @@ public class UsersTests {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
 
-    String requestBody =
-      "{ \"username\": \"testUser_third\", \"password\": \"password123\", \"email\": \"testuser3@example.com\" }";
+    String requestBody = "{ \"username\": \"testUser_third\", \"password\": \"password123\", \"email\": \"testuser3@example.com\" }";
     HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
     ResponseEntity<String> response = restTemplate.postForEntity(
-      "http://localhost:" + port + "/api/v1/users",
-      request,
-      String.class
-    );
+        "http://localhost:" + port + "/api/v1/users",
+        request,
+        String.class);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-    response =
-      restTemplate.postForEntity(
+    response = restTemplate.postForEntity(
         "http://localhost:" + port + "/api/v1/users",
         request,
-        String.class
-      );
+        String.class);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
 
-    String expected =
-      "{\"message\":\"User with email testuser3@example.com already exists.\",\"success\":false,\"status\":409}";
+    String expected = "{\"message\":\"User with email testuser3@example.com already exists.\",\"success\":false,\"status\":409}";
     assertThat(response.getBody()).isEqualTo(expected);
   }
 
@@ -145,33 +130,28 @@ public class UsersTests {
     // Create a user `testUser_fourth`
     String password = RandomBase64Generator.generateShort();
     String email = "testuser4@example.com";
-    String requestBody =
-      "{ \"username\": \"testUser_fourth\", \"password\": \"" +
-      password +
-      "\", \"email\": \"" +
-      email +
-      "\" }";
+    String requestBody = "{ \"username\": \"testUser_fourth\", \"password\": \"" +
+        password +
+        "\", \"email\": \"" +
+        email +
+        "\" }";
     HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
 
     ResponseEntity<String> response = restTemplate.postForEntity(
-      "http://localhost:" + port + "/api/v1/users",
-      request,
-      String.class
-    );
+        "http://localhost:" + port + "/api/v1/users",
+        request,
+        String.class);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
     // Authorize the user
-    requestBody =
-      "{ \"email\": \"" + email + "\", \"password\": \"" + password + "\" }";
+    requestBody = "{ \"email\": \"" + email + "\", \"password\": \"" + password + "\" }";
     request = new HttpEntity<>(requestBody, headers);
 
-    response =
-      restTemplate.postForEntity(
+    response = restTemplate.postForEntity(
         "http://localhost:" + port + "/api/v1/users/authorize",
         request,
-        String.class
-      );
+        String.class);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
