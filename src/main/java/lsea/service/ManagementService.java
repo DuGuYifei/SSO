@@ -196,7 +196,7 @@ public class ManagementService {
     List<Thread> threads = new ArrayList<>();
     PriorityQueue<Log> pqLogs = new PriorityQueue<>(
         resultNum + 1,
-        (a, b) -> a.getData().length() - b.getData().length());
+        (a, b) -> b.getData().length() - a.getData().length());
 
     /* Requirement 4.1.2 */
     long start = System.currentTimeMillis();
