@@ -49,13 +49,19 @@ public class LogService {
       throws GenericNotFoundError, GenericForbiddenError {
     UUID userId = User.verifyToken(token);
 
-    Optional<User> user = userRepository.findById(userId);
+    Optional<User> userOptional = userRepository.findById(userId);
 
-    if (!user.isPresent()) {
+    if (!userOptional.isPresent()) {
       throw new GenericNotFoundError("User not found");
     }
 
-    Log log = Log.create(dto, user.get());
+    User user = userOptional.get();
+
+    if (user.isBanned()) {
+      throw new GenericForbiddenError("User " + user.getEmail() + " is banned");
+    }
+
+    Log log = Log.create(dto, user);
     return logRepository.save(log);
   }
 }
