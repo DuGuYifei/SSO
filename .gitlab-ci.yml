@@ -49,11 +49,12 @@ test-javadoc:
 build-dist:
     stage: package
     script:
-        - "mvn clean install -Dmaven.test.skip=true"
+        - "mvn clean install -Dmaven.test.skip=true -Pclient"
         - "mvn javadoc:javadoc"
     artifacts:
         paths:
-            - target/SSO-*.*.0.jar
+            - target/SSO-*-server.jar
+            - target/SSO-*-client.jar
             - target/site/
     needs:
         - run-api-tests

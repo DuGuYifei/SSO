@@ -108,6 +108,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
+					<classifier>server</classifier>
 					<archive>
 						<manifest>
 							<mainClass>lsea.ProductionApplication</mainClass>
@@ -118,6 +119,9 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<classifier>server</classifier>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -135,21 +139,54 @@
 			</plugin>
 		</plugins>
 	</build>
-
+	
 	<profiles>
 		<profile>
-			<id>Production</id>
-			<properties>
-				<spring.boot.mainclass>lsea.ProductionApplication</spring.boot.mainclass>
-			</properties>
+		<id>client</id>
+		<build>
+			<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+				<execution>
+					<id>client-jar</id>
+					<phase>package</phase>
+					<goals>
+					<goal>jar</goal>
+					</goals>
+					<configuration>
+					<classifier>client</classifier>
+					<archive>
+						<manifest>
+						<mainClass>client.SSOManagementApplication</mainClass>
+						</manifest>
+					</archive>
+					</configuration>
+				</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+				<execution>
+					<id>copy-dependencies</id>
+					<phase>package</phase>
+					<goals>
+					<goal>copy-dependencies</goal>
+					</goals>
+					<configuration>
+					<classifier>client</classifier>
+					<outputDirectory>${project.build.directory}/client-libs</outputDirectory>
+					</configuration>
+				</execution>
+				</executions>
+			</plugin>
+			</plugins>
+		</build>
 		</profile>
-		<profile>
-			<id>Development</id>
-			<properties>
-				<spring.boot.mainclass>lsea.LaboratoryApplication</spring.boot.mainclass>
-			</properties>
-		</profile>
-	</profiles>
+  	</profiles>
 
 	<repositories>
 		<repository>
