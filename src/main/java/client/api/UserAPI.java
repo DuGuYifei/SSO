@@ -3,6 +3,9 @@ package client.api;
 import java.io.*;
 import java.nio.file.*;
 
+/**
+ * UserAPI class for the SSO Management Application (Client)
+ */
 public class UserAPI {
     public String endpoint;
     public final String COOKIE_FILE = "cookie.txt";

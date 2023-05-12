@@ -4,6 +4,9 @@ import java.util.OptionalInt;
 
 import client.api.UserAPI;
 
+/**
+ * Application main class for SSO Management Application. (Client)
+ */
 public class SSOManagementApplication {
     private static UserAPI userAPI;
 
