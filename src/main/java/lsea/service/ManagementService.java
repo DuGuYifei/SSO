@@ -1,6 +1,10 @@
 package lsea.service;
 
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import lsea.dto.GenerateReportDto;
 import lsea.entity.Log;
 import lsea.entity.User;
@@ -34,6 +38,16 @@ public class ManagementService {
   private final UserRepository userRepository;
 
   /**
+   * The poolSize attribute is used to set the number of threads to use.
+   */
+  private final int poolSize = 40;
+
+  /**
+   * The executor attribute is used to create a thread pool.
+   */
+  private final ExecutorService executor = Executors.newFixedThreadPool(poolSize);
+
+  /**
    * The constructor of the ManagementService class.
    *
    * @param logRepository  LogRepository
@@ -51,6 +65,7 @@ public class ManagementService {
    *
    * @param numThreads number of threads to use
    * @param token      String containing the token
+   * @param logs       List of logs, if null will get all logs from the database
    * @return ListResult object containing the five longest logs
    * @throws GenericForbiddenError if the user does not have the permission
    * @throws InterruptedException  if the thread is interrupted
@@ -58,27 +73,30 @@ public class ManagementService {
    */
   /* Requirement 4.1 */
   /* Requirement 4.2 */
-  public ListResult longestFiveLogs(String token, int numThreads)
+  public ListResult longestFiveLogs(String token, int numThreads, List<Log> logs)
       throws InterruptedException, GenericNotFoundError, GenericForbiddenError {
-    UUID userId = User.verifyToken(token);
+    if(logs == null) {
+      UUID userId = User.verifyToken(token);
 
-    /* Requirement 4.3 */
-    Optional<User> user = userRepository.findById(userId);
+      /* Requirement 4.3 */
+      Optional<User> user = userRepository.findById(userId);
 
-    if (!user.isPresent()) {
-      throw new GenericNotFoundError("User not found");
-    }
+      if (!user.isPresent()) {
+        throw new GenericNotFoundError("User not found");
+      }
 
-    if (user.get().getGlobalPermission() <= GlobalPermissions.MODERATOR) {
-      throw new GenericForbiddenError("Permission denied");
+      if (user.get().getGlobalPermission() <= GlobalPermissions.MODERATOR) {
+        throw new GenericForbiddenError("Permission denied");
+      }
+
+
+      logs = logRepository.findAll();
     }
 
     int resultNum = 5;
 
-    List<Log> logs = logRepository.findAll();
-
     ListResult response = new ListResult();
-    if (logs.size() <= 5) {
+    if (logs.size() <= resultNum) {
       response.setCount(logs.size());
       response.setData(Arrays.asList(logs.toArray()));
       response.setMeta(
@@ -101,22 +119,20 @@ public class ManagementService {
     for (int i = 0; i < n; i++) {
       subLogs.get(i % numThreads).add(logs.get(i));
     }
-    List<Thread> threads = new ArrayList<>();
+
     PriorityQueue<Log> pqLogs = new PriorityQueue<>(
         resultNum + 1,
         (a, b) -> a.getData().length() - b.getData().length());
 
     /* Requirement 4.1.2 */
+    CountDownLatch latch = new CountDownLatch(numThreads);
     long start = System.currentTimeMillis();
     for (int i = 0; i < numThreads; i++) {
       int finalI = i;
-      Thread thread = new Thread(() -> subLongestFiveLogs(subLogs.get(finalI), pqLogs, resultNum));
-      thread.start();
-      threads.add(thread);
+      List<List<Log>> finalSubLogs = subLogs;
+      executor.execute(() -> subLongestFiveLogs(finalSubLogs.get(finalI), pqLogs, resultNum, latch));
     }
-    for (Thread thread : threads) {
-      thread.join();
-    }
+    latch.await();
     long end = System.currentTimeMillis();
     long duration = end - start;
     /* Requirement 4.1.2 */
@@ -137,6 +153,7 @@ public class ManagementService {
       result.add(pqLogs.poll());
     }
     response.setData(Arrays.asList(result.toArray()));
+
     return response;
   }
 
@@ -145,32 +162,36 @@ public class ManagementService {
    *
    * @param token      to authenticate the user
    * @param numThreads int
+   * @param logs       List of logs, if null will get all logs from the database
    * @return ListResult object containing the five shortest logs
    * @throws InterruptedException  if the thread is interrupted
    * @throws GenericNotFoundError  if the user is not found
    * @throws GenericForbiddenError if the user does not have the permission
    */
-  public ListResult shortestFiveLogs(String token, int numThreads)
+  public ListResult shortestFiveLogs(String token, int numThreads, List<Log> logs)
       throws InterruptedException, GenericNotFoundError, GenericForbiddenError {
-    UUID userId = User.verifyToken(token);
+    if(logs == null) {
+      UUID userId = User.verifyToken(token);
 
-    /* Requirement 4.3 */
-    Optional<User> user = userRepository.findById(userId);
+      /* Requirement 4.3 */
+      Optional<User> user = userRepository.findById(userId);
 
-    if (!user.isPresent()) {
-      throw new GenericNotFoundError("User not found");
-    }
+      if (!user.isPresent()) {
+        throw new GenericNotFoundError("User not found");
+      }
 
-    if (user.get().getGlobalPermission() <= GlobalPermissions.MODERATOR) {
-      throw new GenericForbiddenError("Permission denied");
+      if (user.get().getGlobalPermission() <= GlobalPermissions.MODERATOR) {
+        throw new GenericForbiddenError("Permission denied");
+      }
+
+
+      logs = logRepository.findAll();
     }
 
     int resultNum = 5;
 
-    List<Log> logs = logRepository.findAll();
-
     ListResult response = new ListResult();
-    if (logs.size() <= 5) {
+    if (logs.size() <= resultNum) {
       response.setCount(logs.size());
       response.setData(Arrays.asList(logs.toArray()));
       response.setMeta(
@@ -193,22 +214,20 @@ public class ManagementService {
     for (int i = 0; i < n; i++) {
       subLogs.get(i % numThreads).add(logs.get(i));
     }
-    List<Thread> threads = new ArrayList<>();
+
     PriorityQueue<Log> pqLogs = new PriorityQueue<>(
         resultNum + 1,
         (a, b) -> b.getData().length() - a.getData().length());
 
     /* Requirement 4.1.2 */
+    CountDownLatch latch = new CountDownLatch(numThreads);
     long start = System.currentTimeMillis();
     for (int i = 0; i < numThreads; i++) {
       int finalI = i;
-      Thread thread = new Thread(() -> subShortestFiveLogs(subLogs.get(finalI), pqLogs, resultNum));
-      thread.start();
-      threads.add(thread);
+      List<List<Log>> finalSubLogs = subLogs;
+      executor.execute(() -> subShortestFiveLogs(finalSubLogs.get(finalI), pqLogs, resultNum, latch));
     }
-    for (Thread thread : threads) {
-      thread.join();
-    }
+    latch.await();
     long end = System.currentTimeMillis();
     long duration = end - start;
     /* Requirement 4.1.2 */
@@ -224,11 +243,12 @@ public class ManagementService {
     List<Log> result = new ArrayList<>();
     // this loop is to add the element from the priority queue to the result list
     // if use pqLogs.toArray(), the order of the elements in the array is not
-    // guaranteedrm c
+    // guaranteed
     while (!pqLogs.isEmpty()) {
       result.add(pqLogs.poll());
     }
     response.setData(Arrays.asList(result.toArray()));
+
     return response;
   }
 
@@ -244,7 +264,8 @@ public class ManagementService {
   private void subLongestFiveLogs(
       List<Log> logs,
       PriorityQueue<Log> response,
-      int resultNum) {
+      int resultNum,
+      CountDownLatch latch) {
     /* Requirement 4.1.1 */
     System.out.println(
         "Thread " +
@@ -268,6 +289,7 @@ public class ManagementService {
         }
       }
     }
+
     /* Requirement 4.2 */
     synchronized (response) {
       /* Requirement 4.1.1 */
@@ -281,6 +303,7 @@ public class ManagementService {
           response.poll();
         }
       }
+      latch.countDown();
     }
   }
 
@@ -294,7 +317,8 @@ public class ManagementService {
   private void subShortestFiveLogs(
       List<Log> logs,
       PriorityQueue<Log> response,
-      int resultNum) {
+      int resultNum,
+      CountDownLatch latch) {
     /* Requirement 4.1.1 */
     System.out.println(
         "Thread " +
@@ -318,6 +342,7 @@ public class ManagementService {
         }
       }
     }
+
     /* Requirement 4.2 */
     synchronized (response) {
       /* Requirement 4.1.1 */
@@ -332,6 +357,65 @@ public class ManagementService {
         }
       }
     }
+    latch.countDown();
+  }
+
+
+  /**
+   * The reportCalculator method is used to calculate the average time of the
+   * longestFiveLogs method or the shortestFiveLogs method.
+   *
+   * @param maximumNumberOfThreads the maximum number of threads
+   * @param iterations the number of iterations
+   * @param token the token of the user
+   * @return a list contains two maps of the average time of
+   * the longestFiveLogs method and the shortestFiveLogs method
+   * @throws GenericForbiddenError if the token is invalid
+   * @throws GenericNotFoundError if the token is not found
+   * @throws InterruptedException if the thread is interrupted
+   */
+  public List<Map<Integer, String>> reportCalculator(int maximumNumberOfThreads, int iterations, String token) throws GenericForbiddenError, GenericNotFoundError, InterruptedException {
+    UUID userId = User.verifyToken(token);
+
+    /* Requirement 4.3 */
+    Optional<User> user = userRepository.findById(userId);
+
+    if (!user.isPresent()) {
+      throw new GenericNotFoundError("User not found");
+    }
+
+    if (user.get().getGlobalPermission() <= GlobalPermissions.MODERATOR) {
+      throw new GenericForbiddenError("Permission denied");
+    }
+
+
+    List<Log> logs = logRepository.findAll();
+
+    List<Map<Integer, String>> result = new ArrayList<>();
+    result.add(new HashMap<>());
+    result.add(new HashMap<>());
+
+    ListResult listResult;
+
+    for (int numThreads = 1; numThreads <= maximumNumberOfThreads; numThreads++) {
+      int sumOfDurationsLongest = 0;
+      int sumOfDurationsShortest = 0;
+      for (int i = 0; i < iterations; i++) {
+        listResult = longestFiveLogs(token, numThreads, logs);
+        String duration = listResult.getMeta().get("duration").toString();
+        sumOfDurationsLongest += Integer.parseInt(duration);
+
+        listResult = shortestFiveLogs(token, numThreads, logs);
+        duration = listResult.getMeta().get("duration").toString();
+        sumOfDurationsShortest += Integer.parseInt(duration);
+      }
+
+      int average = sumOfDurationsLongest / iterations;
+      result.get(0).put(numThreads, String.valueOf(average));
+      average = sumOfDurationsShortest / iterations;
+      result.get(1).put(numThreads, String.valueOf(average));
+    }
+    return result;
   }
 
   /**
