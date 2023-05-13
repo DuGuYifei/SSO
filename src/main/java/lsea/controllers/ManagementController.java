@@ -3,7 +3,7 @@ package lsea.controllers;
 import io.swagger.annotations.Api;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import lsea.dto.GenerateReportDto;
@@ -58,7 +58,7 @@ public class ManagementController {
       throws ValidationError, GenericForbiddenError, InterruptedException, GenericNotFoundError {
     String token = ValidationRouter.getTokenFromRequest(request);
 
-    return managementService.longestFiveLogs(token, numThreads);
+    return managementService.longestFiveLogs(token, numThreads, null);
   }
 
   /**
@@ -80,7 +80,7 @@ public class ManagementController {
       throws ValidationError, GenericForbiddenError, InterruptedException, GenericNotFoundError {
     String token = ValidationRouter.getTokenFromRequest(request);
 
-    return managementService.shortestFiveLogs(token, numThreads);
+    return managementService.shortestFiveLogs(token, numThreads, null);
   }
 
   /**
@@ -105,37 +105,13 @@ public class ManagementController {
     String token = ValidationRouter.getTokenFromRequest(request);
     int maximumNumberOfThreads = dto.getNumThreads();
 
-    Map<Integer, String> resultLongest = new HashMap<>();
-    for (int numThreads = 1; numThreads <= maximumNumberOfThreads; numThreads++) {
-      int sumOfDurations = 0;
-      for (int i = 0; i < iterations; i++) {
-        ListResult listResult = managementService.longestFiveLogs(
-            token,
-            numThreads);
-        String duration = listResult.getMeta().get("duration").toString();
-        sumOfDurations += Integer.parseInt(duration);
-      }
+    List<Map<Integer, String>> result = managementService.reportCalculator(
+        maximumNumberOfThreads,
+        iterations,
+        token);
 
-      int average = sumOfDurations / iterations;
-      // Assign it to the thread
-      resultLongest.put(numThreads, String.valueOf(average));
-    }
-
-    Map<Integer, String> resultShortest = new HashMap<>();
-    for (int numThreads = 1; numThreads <= maximumNumberOfThreads; numThreads++) {
-      int sumOfDurations = 0;
-      for (int i = 0; i < iterations; i++) {
-        ListResult listResult = managementService.shortestFiveLogs(
-            token,
-            numThreads);
-        String duration = listResult.getMeta().get("duration").toString();
-        sumOfDurations += Integer.parseInt(duration);
-      }
-
-      int average = sumOfDurations / iterations;
-      // Assign it to the thread
-      resultShortest.put(numThreads, String.valueOf(average));
-    }
+    Map<Integer, String> resultLongest = result.get(0);
+    Map<Integer, String> resultShortest = result.get(1);
 
     Workbook workbook = managementService.generateReport(
         dto,

@@ -21,7 +21,7 @@ public class GenerateReportDto {
    * The number of threads to be used for analysis
    */
   @Min(1)
-  @Max(15)
+  @Max(40)
   private int numThreads;
 
   /**
