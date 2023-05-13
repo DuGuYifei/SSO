@@ -1,105 +1,172 @@
 package client;
 
-import java.util.OptionalInt;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import client.api.UserAPI;
 
 /**
  * Application main class for SSO Management Application. (Client)
  */
-public class SSOManagementApplication {
+public class SSOManagementApplication extends JFrame implements ActionListener {
+    /**
+     * Serial version UID
+     */
+    private static final long serialVersionUID = 1L;
+    /**
+     * The UserAPI instance
+     */
     private static UserAPI userAPI;
+    /**
+     * The email field
+     */
+    private JTextField emailField;
+    /**
+     * The password field
+     */
+    private JPasswordField passwordField;
 
-    public static void main(String[] args) {
+    /**
+     * Constructor for the SSO Management Application
+     */
+    public SSOManagementApplication() {
         userAPI = new UserAPI();
-        loginScreen();
+
+        setTitle("SSO Management Application");
+        setSize(700, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        createLoginForm();
     }
 
     /**
-     * Display the login screen with login and password fields
+     * Main method
+     * 
+     * @param args - command line arguments
      */
-    private static void loginScreen() {
-        try {
-            System.out.println("Please enter your credentials:");
-
-            System.out.print("E-mail: ");
-            String email = System.console().readLine();
-            System.out.print("Password: ");
-            char[] passwordChars = System.console().readPassword();
-            String password = new String(passwordChars);
-
-            boolean loginSuccessful = userAPI.login(email, password);
-
-            if (loginSuccessful) {
-                mainScreen();
-            } else {
-                System.out.println("Invalid credentials. Please try again.");
-                loginScreen();
-            }
-        } catch (Exception e) {
-            System.out.println("An error occurred. Please try again.");
-            loginScreen();
-        }
+    public static void main(String[] args) {
+        new SSOManagementApplication();
     }
 
     /**
-     * Display the main screen with the available options
+     * Create the login screen
      */
-    private static void mainScreen() {
+    private void createLoginForm() {
+        Container pane = resetScreen();
+
+        JLabel emailLabel = new JLabel("Email:");
+        emailField = new JTextField(20);
+        JPanel emailPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        emailPanel.add(emailLabel);
+        emailPanel.add(emailField);
+
+        JLabel passwordLabel = new JLabel("Password:");
+        passwordField = new JPasswordField(20);
+        JPanel passwordPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        passwordPanel.add(passwordLabel);
+        passwordPanel.add(passwordField);
+
+        JButton loginButton = new JButton("Login");
+        loginButton.addActionListener(this);
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(loginButton);
+
+        pane.add(emailPanel);
+        pane.add(passwordPanel);
+        pane.add(buttonPanel);
+
+        doneScreen();
+    }
+
+    /**
+     * Create the main screen
+     */
+    private void createMainScreen() {
+        Container pane = resetScreen();
+
         displayWelcomeMessage();
-        displayOptions();
 
-        String choiceStr;
-        OptionalInt choiceOptional = OptionalInt.empty();
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.addActionListener(this);
+        JPanel logoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        logoutPanel.add(logoutButton);
 
-        while (!choiceOptional.isPresent()) {
-            choiceStr = System.console().readLine("Please enter your choice: ")
-                    .trim();
-            try {
-                choiceOptional = OptionalInt.of(Integer.parseInt(choiceStr));
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid choice. Please try again.");
-            }
-        }
+        JButton exitButton = new JButton("Exit the program");
+        exitButton.addActionListener(this);
+        JPanel exitPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        exitPanel.add(exitButton);
 
-        int choice = choiceOptional.getAsInt();
-        switch (choice) {
-            case 1:
-                userAPI.logout();
-                break;
-            case 2:
-                exit();
-                break;
-            default:
-                System.out.println("Invalid choice. Please try again.");
-                mainScreen();
-                break;
-        }
+        pane.add(logoutPanel);
+        pane.add(exitPanel);
+
+        doneScreen();
     }
 
     /**
-     * Logout and then exit the program
+     * Reset the screen
+     * 
+     * @return the pane
      */
-    private static void exit() {
-        userAPI.logout();
-        System.out.println("Exiting the program.");
-        System.exit(0);
+    private Container resetScreen() {
+        setVisible(false);
+        Container pane = getContentPane();
+        pane.removeAll();
+        pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
+        return pane;
     }
 
     /**
-     * Display all available options
+     * Called when the screen is done being created
      */
-    private static void displayOptions() {
-        System.out.println("1. Logout");
-        System.out.println("2. Exit the program");
+    private void doneScreen() {
+        setVisible(true);
+        validate();
+        repaint();
     }
 
     /**
      * Display the welcome message
      */
-    private static void displayWelcomeMessage() {
-        System.out.println("SSO Management Application");
-        System.out.println("--------------------------");
-        System.out.println("Welcome to the application!");
+    private void displayWelcomeMessage() {
+        JLabel welcomeLabel = new JLabel("Welcome to the application!");
+        welcomeLabel.setFont(new Font("Serif", Font.BOLD, 20));
+        welcomeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel appLabel = new JLabel("SSO Management Application");
+        appLabel.setFont(new Font("Serif", Font.BOLD, 24));
+        appLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JPanel labelPanel = new JPanel();
+        labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.Y_AXIS));
+        labelPanel.add(appLabel);
+        labelPanel.add(welcomeLabel);
+
+        getContentPane().add(labelPanel);
+    }
+
+    /**
+     * Handle the action performed
+     */
+    public void actionPerformed(ActionEvent e) {
+        if (e.getActionCommand().equals("Login")) {
+            String email = emailField.getText();
+            String password = new String(passwordField.getPassword());
+            boolean loginSuccessful = userAPI.login(email, password);
+
+            if (loginSuccessful) {
+                createMainScreen();
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid credentials. Please try again.");
+            }
+        } else if (e.getActionCommand().equals("Logout")) {
+            userAPI.logout();
+            createLoginForm();
+        } else if (e.getActionCommand().equals("Exit the program")) {
+            userAPI.logout();
+            System.out.println("Exiting the program.");
+            System.exit(0);
+        }
     }
 }

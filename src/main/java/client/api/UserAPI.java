@@ -1,13 +1,22 @@
 package client.api;
 
 import java.io.*;
+import java.net.URI;
+import java.net.http.*;
 import java.nio.file.*;
 
 /**
  * UserAPI class for the SSO Management Application (Client)
  */
 public class UserAPI {
+    /**
+     * The endpoint to use for the API
+     */
     public String endpoint;
+
+    /**
+     * The file to store the cookie token in
+     */
     public final String COOKIE_FILE = "cookie.txt";
 
     /**
@@ -19,16 +28,36 @@ public class UserAPI {
      */
     public boolean login(String email, String password) {
         try {
-            // Make a request to the server to login the user
-            // and get the cookie token
+            // Set up the request
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(endpoint + "/api/v1/users/authorize"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers
+                            .ofString("{\"email\": \"" + email + "\", \"password\": \"" + password + "\"}"))
+                    .build();
 
-            String cookieToken = "some_cookie_token";
-            Files.write(Paths.get(COOKIE_FILE), cookieToken.getBytes());
-            return true;
+            // Send the request and get the response
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // Check if the response was successful
+            if (response.statusCode() == 200) {
+                String body = response.body();
+                String[] _splitted = body.split("\"data\":\"");
+                String[] splitted = _splitted[1].split("\"");
+                String token = splitted[0];
+
+                if (token != null) {
+                    Files.write(Paths.get(COOKIE_FILE), token.getBytes());
+                    return true;
+                }
+            }
         } catch (IOException e) {
             System.out.println("Failed to save the cookie token.");
-            return false;
+        } catch (Exception e) {
+            System.out.println("Failed to login: " + e.getMessage());
         }
+        return false;
     }
 
     /**
@@ -51,7 +80,7 @@ public class UserAPI {
      * UserAPI Constructor with a default endpoint
      */
     public UserAPI() {
-        this.endpoint = "http://localhost:8080";
+        this.endpoint = "http://localhost:8081";
     }
 
     /**
