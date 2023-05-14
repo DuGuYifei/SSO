@@ -9,7 +9,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import client.api.UserAPI;
-import lsea.entity.Log;
+import client.models.Log;
 
 /**
  * Application main class for SSO Management Application. (Client)
@@ -28,15 +28,35 @@ public class SSOManagementApplication extends JFrame implements ActionListener {
      */
     private JPasswordField passwordField;
 
+    /**
+     * The table to display the logs
+     */
     private JTable table;
+
+    /**
+     * The table model for the table
+     */
     private DefaultTableModel tableModel;
 
+    /**
+     * Default values for offset in order not to get overflown by the logs
+     */
     private int offset = 0;
+
+    /**
+     * Default values for limit in order not to get overflown by the logs
+     */
     private int limit = 10;
 
-    private Thread liveCaptureThread; // Thread for live capture logs
-    private boolean isLiveCapture = false; // Flag to control live capture process
+    /**
+     * Thread for live capture logs
+     */
+    private Thread liveCaptureThread;
 
+    /**
+     * Flag to control live capture process
+     */
+    private boolean isLiveCapture = false;
 
     /**
      * Constructor for the SSO Management Application
@@ -141,7 +161,7 @@ public class SSOManagementApplication extends JFrame implements ActionListener {
         pane.add(buttonPanel, BorderLayout.WEST);
 
         // Create the table model with column names
-        String[] columnNames = {"ID", "Data", "Log Type", "User ID", "Created At", "User Current State"};
+        String[] columnNames = { "ID", "Data", "Log Type", "User ID", "Created At", "User Current State" };
         tableModel = new DefaultTableModel(columnNames, 0);
         // Create the JTable with the table model
         table = new JTable(tableModel);
@@ -165,7 +185,6 @@ public class SSOManagementApplication extends JFrame implements ActionListener {
 
         doneScreen();
     }
-
 
     /**
      * Reset the screen
@@ -209,6 +228,11 @@ public class SSOManagementApplication extends JFrame implements ActionListener {
         getContentPane().add(labelPanel);
     }
 
+    /**
+     * Handle the action events
+     * 
+     * @param logs - the logs to add
+     */
     public void setLogs(List<Log> logs) {
         // Clear the table
         tableModel.setRowCount(0);
@@ -227,6 +251,11 @@ public class SSOManagementApplication extends JFrame implements ActionListener {
         }
     }
 
+    /**
+     * Add logs to the table
+     * 
+     * @param logs - the logs to add
+     */
     public void addLogs(List<Log> logs) {
         // Add each log to the table
         for (Log log : logs) {
@@ -244,12 +273,14 @@ public class SSOManagementApplication extends JFrame implements ActionListener {
 
     /**
      * Handle the action performed
+     * 
+     * @param e - the action event
      */
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("Login")) {
             String email = emailField.getText();
             String password = new String(passwordField.getPassword());
-            boolean loginSuccessful = userAPI.login("admin@example.com", "adminadmin");
+            boolean loginSuccessful = userAPI.login(email, password);
 
             if (loginSuccessful) {
                 createMainScreen();
@@ -303,6 +334,9 @@ public class SSOManagementApplication extends JFrame implements ActionListener {
         }
     }
 
+    /**
+     * Start the live capture thread
+     */
     private void startLiveCapture() {
         isLiveCapture = true;
         Runnable liveCaptureTask = () -> {
@@ -326,6 +360,9 @@ public class SSOManagementApplication extends JFrame implements ActionListener {
         liveCaptureThread.start();
     }
 
+    /**
+     * Stop the live capture thread
+     */
     private void stopLiveCapture() {
         isLiveCapture = false;
         try {

@@ -1,6 +1,6 @@
 package client.api;
 
-import lsea.entity.Log;
+import client.models.Log;
 
 import java.io.*;
 import java.net.Socket;
@@ -18,6 +18,16 @@ public class UserAPI {
      * The endpoint to use for the API
      */
     public static String endpoint;
+
+    /**
+     * The endpoint to use for the TCP socket connection
+     */
+    public static String socketEndpoint;
+
+    /**
+     * The port to use for the TCP socket connection
+     */
+    public static int socketPort;
 
     /**
      * The file to store the cookie token in
@@ -50,7 +60,10 @@ public class UserAPI {
         try {
             // Set up the request
             HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(endpoint + "/api/v1/users/authorize")).header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString("{\"email\": \"" + email + "\", \"password\": \"" + password + "\"}")).build();
+            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(endpoint + "/api/v1/users/authorize"))
+                    .header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers
+                            .ofString("{\"email\": \"" + email + "\", \"password\": \"" + password + "\"}"))
+                    .build();
 
             // Send the request and get the response
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -214,15 +227,21 @@ public class UserAPI {
      * UserAPI Constructor with a default endpoint
      */
     public UserAPI() {
-        this.endpoint = "http://localhost:8081";
+        UserAPI.endpoint = "http://localhost:8081";
+        UserAPI.socketEndpoint = "localhost";
+        UserAPI.socketPort = 3000;
     }
 
     /**
-     * UserAPI Constructor with a custom endpoint.
-     *
-     * @param endpoint - the endpoint to use
+     * User API Constructor with custom endpoints
+     * 
+     * @param endpoint       - the API endpoint
+     * @param socketEndpoint - the socket endpoint
+     * @param socketPort     - the socket port
      */
-    public UserAPI(String endpoint) {
-        this.endpoint = endpoint;
+    public UserAPI(String endpoint, String socketEndpoint, int socketPort) {
+        UserAPI.endpoint = endpoint;
+        UserAPI.socketEndpoint = socketEndpoint;
+        UserAPI.socketPort = socketPort;
     }
 }
