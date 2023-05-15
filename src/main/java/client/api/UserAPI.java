@@ -1,6 +1,6 @@
 package client.api;
 
-import client.models.Log;
+import lsea.entity.Log;
 
 import java.io.*;
 import java.net.Socket;

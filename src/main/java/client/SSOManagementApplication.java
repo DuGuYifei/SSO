@@ -9,7 +9,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import client.api.UserAPI;
-import client.models.Log;
+import lsea.entity.Log;
 
 /**
  * Application main class for SSO Management Application. (Client)
@@ -304,7 +304,7 @@ public class SSOManagementApplication extends JFrame implements ActionListener {
                 throw new RuntimeException(ex);
             }
         } else if (e.getActionCommand().equals("Retrieve 10 logs")) {
-            List<Log> logs = null;
+            List<Log> logs;
             try {
                 logs = userAPI.retrieveLogs(offset, limit);
             } catch (IOException ex) {
@@ -313,7 +313,7 @@ public class SSOManagementApplication extends JFrame implements ActionListener {
             setLogs(logs);
         } else if (e.getActionCommand().equals("Next")) {
             offset += 10;
-            List<Log> logs = null;
+            List<Log> logs;
             try {
                 logs = userAPI.retrieveLogs(offset, limit);
             } catch (IOException ex) {
@@ -324,7 +324,7 @@ public class SSOManagementApplication extends JFrame implements ActionListener {
             if (offset >= 10) {
                 offset -= 10;
             }
-            List<Log> logs = null;
+            List<Log> logs;
             try {
                 logs = userAPI.retrieveLogs(offset, limit);
             } catch (IOException ex) {
@@ -339,6 +339,7 @@ public class SSOManagementApplication extends JFrame implements ActionListener {
      */
     private void startLiveCapture() {
         isLiveCapture = true;
+        tableModel.setRowCount(0);
         Runnable liveCaptureTask = () -> {
             while (isLiveCapture) {
                 List<Log> logs;

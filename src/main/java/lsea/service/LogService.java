@@ -1,5 +1,7 @@
 package lsea.service;
 
+import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.transaction.Transactional;
@@ -10,6 +12,8 @@ import lsea.errors.GenericForbiddenError;
 import lsea.errors.GenericNotFoundError;
 import lsea.repository.LogRepository;
 import lsea.repository.UserRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -18,8 +22,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class LogService {
 
+  /**
+   * The log repository.
+   */
   private final LogRepository logRepository;
 
+  /**
+   * The user repository.
+   */
   private final UserRepository userRepository;
 
   /**
@@ -63,5 +73,29 @@ public class LogService {
 
     Log log = Log.create(dto, user);
     return logRepository.save(log);
+  }
+
+  /**
+   * Returns a list of logs of a user.
+   *
+   * @param userId - UUID
+   * @param offset - int
+   * @param limit  - int
+   * @return a list of logs
+   */
+  public List<Log> findUserLogs(UUID userId, int offset, int limit) {
+    Pageable pageable = PageRequest.of(offset, limit);
+    return logRepository.findUserLogs(userId, pageable);
+  }
+
+  /**
+   * Returns a list of logs of a user that were created after a given timestamp.
+   *
+   * @param userId    - UUID
+   * @param timestamp - Timestamp
+   * @return a list of logs
+   */
+  public List<Log> findUserLiveLogs(UUID userId, Timestamp timestamp) {
+    return logRepository.findUserLiveLogs(userId, timestamp);
   }
 }
