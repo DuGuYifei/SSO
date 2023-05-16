@@ -49,11 +49,10 @@ public class UserService extends BaseService {
    * Saves a new User to the UserRepository.
    *
    * @param dto a new User instance
-   * @throws Exception if a user with the same email address already exists in the
-   *                   UserRepository
+   * @throws GenericConflictError if a user with the same email already exists
    */
   @Transactional
-  public void createOne(CreateUserDto dto) throws Exception {
+  public void createOne(CreateUserDto dto) throws GenericConflictError {
     Optional<User> existingUser = userRepository.findByEmail(dto.getEmail());
     if (existingUser.isPresent()) {
       throw new GenericConflictError(
@@ -68,9 +67,9 @@ public class UserService extends BaseService {
    *
    * @param dto the user credentials
    * @return a JWT token
-   * @throws Exception if the user credentials are invalid
+   * @throws GenericForbiddenError if the user credentials are invalid
    */
-  public String authorize(AuthorizeUserDto dto) throws Exception {
+  public String authorize(AuthorizeUserDto dto) throws GenericForbiddenError {
     Optional<User> userOptional = userRepository.findByEmail(dto.getEmail());
     if (!userOptional.isPresent()) {
       throw new GenericForbiddenError("Invalid e-mail or password");

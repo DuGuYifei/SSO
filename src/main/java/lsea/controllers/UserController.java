@@ -1,5 +1,6 @@
 package lsea.controllers;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.Api;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -8,12 +9,12 @@ import lsea.dto.AuthorizeUserDto;
 import lsea.dto.BanUserDto;
 import lsea.dto.CreateUserDto;
 import lsea.dto.UnBanUserDto;
+import lsea.errors.GenericConflictError;
 import lsea.errors.GenericForbiddenError;
 import lsea.errors.GenericNotFoundError;
 import lsea.errors.ValidationError;
 import lsea.service.UserService;
 import lsea.utils.SuccessResult;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,8 +26,26 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/users")
 public class UserController {
 
-  @Autowired
-  private UserService userService;
+  /**
+   * The user service that handles requests related to users.
+   */
+  private final UserService userService;
+
+  /**
+   * The request meter registry of the application.
+   */
+  private final MeterRegistry requestMeterRegistry;
+
+  /**
+   * The UserController constructor.
+   *
+   * @param userService UserService
+   * @param requestMeterRegistry request MeterRegistry
+   */
+  public UserController(UserService userService, MeterRegistry requestMeterRegistry) {
+    this.userService = userService;
+    this.requestMeterRegistry = requestMeterRegistry;
+  }
 
   /**
    * The ping method is used to test if the server is alive.
@@ -36,6 +55,10 @@ public class UserController {
    */
   @GetMapping("/ping")
   public ResponseEntity<SuccessResult> ping() {
+    requestMeterRegistry.counter("request.count").increment();
+    requestMeterRegistry.counter("request.count", "method", "GET").increment();
+    requestMeterRegistry.counter("request.count", "controller", "UserController").increment();
+
     SuccessResult result = SuccessResult
         .builder()
         .data("Pong from user controller!")
@@ -51,11 +74,17 @@ public class UserController {
    * @param dto CreateUserDto object containing the user data.
    * @return ResponseEntity object containing { status: 200, success: true }
    *         object.
-   * @throws Exception if any of the steps fail.
+   * @throws ValidationError      if the request body is invalid or the cookie
+   *                             not contains the token.
+   * @throws GenericConflictError if the user already exists.
    */
   @PostMapping
   public ResponseEntity<SuccessResult> createOne(
-      @RequestBody CreateUserDto dto) throws Exception {
+      @RequestBody CreateUserDto dto) throws ValidationError, GenericConflictError {
+    requestMeterRegistry.counter("request.count").increment();
+    requestMeterRegistry.counter("request.count", "method", "POST").increment();
+    requestMeterRegistry.counter("request.count", "controller", "UserController").increment();
+
     ValidationRouter.validate(dto);
     userService.createOne(dto);
     SuccessResult result = SuccessResult.builder().status(200).build();
@@ -71,12 +100,17 @@ public class UserController {
    *                 user.
    * @param response HttpServletResponse object to set the cookie token.
    * @return ResponseEntity object containing { data: "token" } object.
-   * @throws Exception if any of the steps fail.
+   * @throws GenericForbiddenError if the user is not authorized.
+   * @throws ValidationError      if the request body is invalid.
    */
   @PostMapping(path = "/authorize", produces = "application/json")
   public ResponseEntity<SuccessResult> authorize(
       @RequestBody AuthorizeUserDto dto,
-      HttpServletResponse response) throws Exception {
+      HttpServletResponse response) throws GenericForbiddenError, ValidationError {
+    requestMeterRegistry.counter("request.count").increment();
+    requestMeterRegistry.counter("request.count", "method", "POST").increment();
+    requestMeterRegistry.counter("request.count", "controller", "UserController").increment();
+
     ValidationRouter.validate(dto);
     String token = userService.authorize(dto);
     SuccessResult result = SuccessResult
@@ -110,6 +144,10 @@ public class UserController {
           @RequestBody BanUserDto dto,
           HttpServletRequest request
   ) throws GenericForbiddenError, GenericNotFoundError, ValidationError {
+    requestMeterRegistry.counter("request.count").increment();
+    requestMeterRegistry.counter("request.count", "method", "POST").increment();
+    requestMeterRegistry.counter("request.count", "controller", "UserController").increment();
+
     ValidationRouter.validate(dto);
 
     String token = ValidationRouter.getTokenFromRequest(request);
@@ -137,6 +175,10 @@ public class UserController {
           @RequestBody UnBanUserDto dto,
           HttpServletRequest request
   ) throws GenericForbiddenError, GenericNotFoundError, ValidationError {
+    requestMeterRegistry.counter("request.count").increment();
+    requestMeterRegistry.counter("request.count", "method", "POST").increment();
+    requestMeterRegistry.counter("request.count", "controller", "UserController").increment();
+
     ValidationRouter.validate(dto);
 
     String token = ValidationRouter.getTokenFromRequest(request);
