@@ -39,8 +39,9 @@ public class LogService {
    * @param userRepository - UserRepository
    */
   public LogService(
-      LogRepository logRepository,
-      UserRepository userRepository) {
+    LogRepository logRepository,
+    UserRepository userRepository
+  ) {
     this.logRepository = logRepository;
     this.userRepository = userRepository;
   }
@@ -56,7 +57,7 @@ public class LogService {
    */
   @Transactional
   public Log createOne(CreateLogDto dto, String token)
-      throws GenericNotFoundError, GenericForbiddenError {
+    throws GenericNotFoundError, GenericForbiddenError {
     UUID userId = User.verifyToken(token);
 
     Optional<User> userOptional = userRepository.findById(userId);
@@ -76,26 +77,24 @@ public class LogService {
   }
 
   /**
-   * Returns a list of logs of a user.
+   * Returns a list of logs.
    *
-   * @param userId - UUID
-   * @param offset - int
-   * @param limit  - int
+   * @param offset - the offset
+   * @param limit - the limit
    * @return a list of logs
    */
-  public List<Log> findUserLogs(UUID userId, int offset, int limit) {
+  public List<Log> findLogs(int offset, int limit) {
     Pageable pageable = PageRequest.of(offset, limit);
-    return logRepository.findUserLogs(userId, pageable);
+    return logRepository.findLogs(pageable);
   }
 
   /**
-   * Returns a list of logs of a user that were created after a given timestamp.
+   * Returns a list of logs that were created after a given timestamp.
    *
-   * @param userId    - UUID
    * @param timestamp - Timestamp
    * @return a list of logs
    */
-  public List<Log> findUserLiveLogs(UUID userId, Timestamp timestamp) {
-    return logRepository.findUserLiveLogs(userId, timestamp);
+  public List<Log> findLiveLogs(Timestamp timestamp) {
+    return logRepository.findLiveLogs(timestamp);
   }
 }
