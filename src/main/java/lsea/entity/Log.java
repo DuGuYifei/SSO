@@ -1,6 +1,8 @@
 package lsea.entity;
 
 import com.google.gson.annotations.SerializedName;
+
+import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 import javax.persistence.*;
@@ -21,7 +23,12 @@ import lsea.utils.LogType;
 @ToString
 @Entity
 @Table(name = "logs")
-public class Log {
+public class Log implements Serializable {
+
+  /**
+   * The serial version UID.
+   */
+  private static final long serialVersionUID = 1L;
 
   /**
    * The unique identifier for the log entry.
