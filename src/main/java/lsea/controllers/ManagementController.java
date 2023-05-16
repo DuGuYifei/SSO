@@ -1,10 +1,12 @@
 package lsea.controllers;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.Api;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import lsea.dto.GenerateReportDto;
 import lsea.errors.GenericForbiddenError;
@@ -31,12 +33,19 @@ public class ManagementController {
   private final ManagementService managementService;
 
   /**
+   * The request meter registry of the application.
+   */
+  private final MeterRegistry requestMeterRegistry;
+
+  /**
    * The constructor of the ManagementController class.
    *
    * @param managementService ManagementService
+   * @param requestMeterRegistry request MeterRegistry
    */
-  public ManagementController(ManagementService managementService) {
+  public ManagementController(ManagementService managementService, MeterRegistry requestMeterRegistry) {
     this.managementService = managementService;
+    this.requestMeterRegistry = requestMeterRegistry;
   }
 
   /**
@@ -56,6 +65,10 @@ public class ManagementController {
       @RequestParam int numThreads,
       HttpServletRequest request)
       throws ValidationError, GenericForbiddenError, InterruptedException, GenericNotFoundError {
+    requestMeterRegistry.counter("request.count").increment();
+    requestMeterRegistry.counter("request.count", "method", "GET").increment();
+    requestMeterRegistry.counter("request.count", "controller", "ManagementController").increment();
+
     String token = ValidationRouter.getTokenFromRequest(request);
 
     return managementService.longestFiveLogs(token, numThreads, null);
@@ -78,6 +91,10 @@ public class ManagementController {
       @RequestParam int numThreads,
       HttpServletRequest request)
       throws ValidationError, GenericForbiddenError, InterruptedException, GenericNotFoundError {
+    requestMeterRegistry.counter("request.count").increment();
+    requestMeterRegistry.counter("request.count", "method", "GET").increment();
+    requestMeterRegistry.counter("request.count", "controller", "ManagementController").increment();
+
     String token = ValidationRouter.getTokenFromRequest(request);
 
     return managementService.shortestFiveLogs(token, numThreads, null);
@@ -100,6 +117,10 @@ public class ManagementController {
       @RequestBody GenerateReportDto dto,
       HttpServletRequest request)
       throws GenericForbiddenError, ValidationError, InterruptedException, GenericNotFoundError {
+    requestMeterRegistry.counter("request.count").increment();
+    requestMeterRegistry.counter("request.count", "method", "POST").increment();
+    requestMeterRegistry.counter("request.count", "controller", "ManagementController").increment();
+
     ValidationRouter.validate(dto);
     int iterations = dto.getIterations();
     String token = ValidationRouter.getTokenFromRequest(request);

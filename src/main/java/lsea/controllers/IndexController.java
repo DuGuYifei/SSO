@@ -1,5 +1,6 @@
 package lsea.controllers;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.util.HashMap;
@@ -16,6 +17,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class IndexController {
 
   /**
+   * The request meter registry of the application.
+   */
+  private final MeterRegistry requestMeterRegistry;
+
+  /**
+   * The IndexController constructor.
+   *
+   * @param requestMeterRegistry request MeterRegistry
+   */
+    public IndexController(MeterRegistry requestMeterRegistry) {
+        this.requestMeterRegistry = requestMeterRegistry;
+    }
+
+  /**
    * A sanity check
    *
    * @return ListResult
@@ -23,6 +38,10 @@ public class IndexController {
   @GetMapping
   @ApiOperation(value = "sanity check", response = ListResult.class)
   public ListResult sanityCheck() {
+    requestMeterRegistry.counter("request.count").increment();
+    requestMeterRegistry.counter("request.count", "method", "GET").increment();
+    requestMeterRegistry.counter("request.count", "controller", "IndexController").increment();
+
     ListResult response = new ListResult();
     response.setMeta(new HashMap<>());
     response.getMeta().put("message", "Hello World!");

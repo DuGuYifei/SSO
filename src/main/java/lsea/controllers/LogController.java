@@ -1,5 +1,6 @@
 package lsea.controllers;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.Api;
 import javax.servlet.http.HttpServletRequest;
 import lsea.dto.CreateLogDto;
@@ -29,12 +30,19 @@ public class LogController {
   private final LogService logService;
 
   /**
+   * The request meter registry of the application.
+   */
+    private final MeterRegistry requestMeterRegistry;
+
+  /**
    * The LogController constructor.
    *
    * @param logService LogService
+   * @param requestMeterRegistry request MeterRegistry
    */
-  public LogController(LogService logService) {
+  public LogController(LogService logService, MeterRegistry requestMeterRegistry) {
     this.logService = logService;
+    this.requestMeterRegistry = requestMeterRegistry;
   }
 
   /**
@@ -53,6 +61,10 @@ public class LogController {
   public ResponseEntity<SuccessResult> createOne(
       @RequestBody CreateLogDto dto,
       HttpServletRequest request) throws GenericForbiddenError, GenericNotFoundError, ValidationError {
+    requestMeterRegistry.counter("request.count").increment();
+    requestMeterRegistry.counter("request.count", "method", "POST").increment();
+    requestMeterRegistry.counter("request.count", "controller", "LogController").increment();
+
     ValidationRouter.validate(dto);
 
     String token = ValidationRouter.getTokenFromRequest(request);
@@ -76,9 +88,13 @@ public class LogController {
    */
   /* Requirement 4.3 */
   @PostMapping("/generate-test-data")
-  public ResponseEntity<SuccessResult> createOne(
+  public ResponseEntity<SuccessResult> generateData(
       @RequestBody int N,
       HttpServletRequest request) throws GenericForbiddenError, ValidationError, GenericNotFoundError {
+    requestMeterRegistry.counter("request.count").increment();
+    requestMeterRegistry.counter("request.count", "method", "POST").increment();
+    requestMeterRegistry.counter("request.count", "controller", "LogController").increment();
+
     String token = ValidationRouter.getTokenFromRequest(request);
 
     for (int i = 0; i < N; i++) {

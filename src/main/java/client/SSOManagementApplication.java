@@ -10,11 +10,22 @@ import java.io.IOException;
 
 import client.api.UserAPI;
 import lsea.entity.Log;
+import client.metrics.MetricsFrame;
+import client.metrics.MetricsUdpReceiver;
 
 /**
  * Application main class for SSO Management Application. (Client)
  */
 public class SSOManagementApplication extends JFrame implements ActionListener {
+
+    /**
+     * The port to use for the UDP receiver
+     */
+    private final int metricsUdpPort = 3001;
+    /**
+     * The UDP receiver
+     */
+    private MetricsUdpReceiver metricsUdpReceiver;
     /**
      * The UserAPI instance
      */
@@ -149,6 +160,12 @@ public class SSOManagementApplication extends JFrame implements ActionListener {
 
         pane.setLayout(new BorderLayout());
 
+        metricsUdpReceiver = new MetricsUdpReceiver(metricsUdpPort);
+        JButton metricsButton = new JButton("View Metrics");
+        metricsButton.addActionListener(e -> MetricsFrame.showDynamicDataWindow(metricsUdpReceiver));
+        JPanel metricsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        metricsPanel.add(metricsButton);
+
         // Add the buttons to a separate panel
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
@@ -157,6 +174,8 @@ public class SSOManagementApplication extends JFrame implements ActionListener {
         buttonPanel.add(liveCaptureLogsPanel);
         buttonPanel.add(stopLogsPanel);
         buttonPanel.add(exitPanel);
+        buttonPanel.add(metricsPanel);
+
 
         pane.add(buttonPanel, BorderLayout.WEST);
 
@@ -372,5 +391,4 @@ public class SSOManagementApplication extends JFrame implements ActionListener {
             e.printStackTrace();
         }
     }
-
 }
