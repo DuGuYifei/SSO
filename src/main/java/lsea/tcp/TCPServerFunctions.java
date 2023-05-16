@@ -38,16 +38,17 @@ public class TCPServerFunctions {
    * Handles the communication with a client.
    *
    * @param clientSocket the client socket
-   * @throws IOException if an I/O error occurs when creating the input stream, the socket is closed, the
-   * @throws InterruptedException if the current thread is interrupted by another thread while it is waiting
+   * @throws IOException          if an I/O error occurs when creating the input
+   *                              stream, the socket is closed, the
+   * @throws InterruptedException if the current thread is interrupted by another
+   *                              thread while it is waiting
    */
   public static void handleClient(Socket clientSocket)
-    throws IOException, InterruptedException {
+      throws IOException, InterruptedException {
     // Get the input stream from the client socket
     InputStream inputStream = clientSocket.getInputStream();
     ObjectOutputStream outputStream = new ObjectOutputStream(
-      clientSocket.getOutputStream()
-    );
+        clientSocket.getOutputStream());
 
     // Create a byte array to store the incoming data
     byte[] buffer = new byte[1024];
@@ -62,9 +63,8 @@ public class TCPServerFunctions {
       } catch (GenericForbiddenError e) {
         clientSocket.close();
         System.out.println(
-          "Invalid token. Client disconnected: " +
-          clientSocket.getInetAddress().getHostAddress()
-        );
+            "Invalid token. Client disconnected: " +
+                clientSocket.getInetAddress().getHostAddress());
       }
     }
 
@@ -129,8 +129,7 @@ public class TCPServerFunctions {
 
     clientSocket.close();
     System.out.println(
-      "Client disconnected: " + clientSocket.getInetAddress().getHostAddress()
-    );
+        "Client disconnected: " + clientSocket.getInetAddress().getHostAddress());
   }
 
   /**
@@ -145,8 +144,7 @@ public class TCPServerFunctions {
         // Accept incoming connections
         Socket clientSocket = serverSocket.accept();
         System.out.println(
-          "Client connected: " + clientSocket.getInetAddress().getHostAddress()
-        );
+            "Client connected: " + clientSocket.getInetAddress().getHostAddress());
 
         // Handle the client connection in a separate thread
         Thread clientThread = new Thread(() -> {

@@ -13,25 +13,25 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 @Configuration
 public class LocaleConfig {
 
-  /**
-   * The active profile: prod or dev
-   */
-  @Value("${spring.profiles.active}")
-  private String profile;
+	/**
+	 * The active profile: prod or dev
+	 */
+	@Value("${spring.profiles.active}")
+	private String profile;
 
-  /**
-   * Sets the default locale to US if the profile is dev. Otherwise, the default
-   *
-   * @return the locale resolver
-   */
-  @Bean
-  LocaleResolver localeResolver() {
-    SessionLocaleResolver slr = new SessionLocaleResolver();
-    System.out.println("Using profile: " + profile);
-    if (profile != null && profile.equals("dev")) {
-      slr.setDefaultLocale(Locale.ENGLISH);
-      Locale.setDefault(Locale.ENGLISH);
-    }
-    return slr;
-  }
+	/**
+	 * Sets the default locale to US if the profile is dev. Otherwise, the default
+	 *
+	 * @return the locale resolver
+	 */
+	@Bean
+	LocaleResolver localeResolver() {
+		SessionLocaleResolver slr = new SessionLocaleResolver();
+		System.out.println("Using profile: " + profile);
+		if (profile != null && profile.equals("dev")) {
+			slr.setDefaultLocale(Locale.ENGLISH);
+			Locale.setDefault(Locale.ENGLISH);
+		}
+		return slr;
+	}
 }

@@ -26,9 +26,9 @@ public class IndexController {
    *
    * @param requestMeterRegistry request MeterRegistry
    */
-    public IndexController(MeterRegistry requestMeterRegistry) {
-        this.requestMeterRegistry = requestMeterRegistry;
-    }
+  public IndexController(MeterRegistry requestMeterRegistry) {
+    this.requestMeterRegistry = requestMeterRegistry;
+  }
 
   /**
    * A sanity check

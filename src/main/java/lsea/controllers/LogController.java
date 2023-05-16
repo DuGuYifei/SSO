@@ -32,12 +32,12 @@ public class LogController {
   /**
    * The request meter registry of the application.
    */
-    private final MeterRegistry requestMeterRegistry;
+  private final MeterRegistry requestMeterRegistry;
 
   /**
    * The LogController constructor.
    *
-   * @param logService LogService
+   * @param logService           LogService
    * @param requestMeterRegistry request MeterRegistry
    */
   public LogController(LogService logService, MeterRegistry requestMeterRegistry) {

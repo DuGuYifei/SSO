@@ -39,9 +39,8 @@ public class LogService {
    * @param userRepository - UserRepository
    */
   public LogService(
-    LogRepository logRepository,
-    UserRepository userRepository
-  ) {
+      LogRepository logRepository,
+      UserRepository userRepository) {
     this.logRepository = logRepository;
     this.userRepository = userRepository;
   }
@@ -57,7 +56,7 @@ public class LogService {
    */
   @Transactional
   public Log createOne(CreateLogDto dto, String token)
-    throws GenericNotFoundError, GenericForbiddenError {
+      throws GenericNotFoundError, GenericForbiddenError {
     UUID userId = User.verifyToken(token);
 
     Optional<User> userOptional = userRepository.findById(userId);
@@ -80,7 +79,7 @@ public class LogService {
    * Returns a list of logs.
    *
    * @param offset - the offset
-   * @param limit - the limit
+   * @param limit  - the limit
    * @return a list of logs
    */
   public List<Log> findLogs(int offset, int limit) {
