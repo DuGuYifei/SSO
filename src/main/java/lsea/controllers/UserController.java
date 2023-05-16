@@ -39,7 +39,7 @@ public class UserController {
   /**
    * The UserController constructor.
    *
-   * @param userService UserService
+   * @param userService          UserService
    * @param requestMeterRegistry request MeterRegistry
    */
   public UserController(UserService userService, MeterRegistry requestMeterRegistry) {
@@ -75,7 +75,7 @@ public class UserController {
    * @return ResponseEntity object containing { status: 200, success: true }
    *         object.
    * @throws ValidationError      if the request body is invalid or the cookie
-   *                             not contains the token.
+   *                              not contains the token.
    * @throws GenericConflictError if the user already exists.
    */
   @PostMapping
@@ -101,7 +101,7 @@ public class UserController {
    * @param response HttpServletResponse object to set the cookie token.
    * @return ResponseEntity object containing { data: "token" } object.
    * @throws GenericForbiddenError if the user is not authorized.
-   * @throws ValidationError      if the request body is invalid.
+   * @throws ValidationError       if the request body is invalid.
    */
   @PostMapping(path = "/authorize", produces = "application/json")
   public ResponseEntity<SuccessResult> authorize(
@@ -136,14 +136,13 @@ public class UserController {
    *         object.
    * @throws GenericForbiddenError if the user does not have the required
    *                               permissions.
-   * @throws GenericNotFoundError if the user is not found.
-   * @throws ValidationError if the request body is invalid.
+   * @throws GenericNotFoundError  if the user is not found.
+   * @throws ValidationError       if the request body is invalid.
    */
   @PostMapping(path = "/ban")
   public ResponseEntity<SuccessResult> ban(
-          @RequestBody BanUserDto dto,
-          HttpServletRequest request
-  ) throws GenericForbiddenError, GenericNotFoundError, ValidationError {
+      @RequestBody BanUserDto dto,
+      HttpServletRequest request) throws GenericForbiddenError, GenericNotFoundError, ValidationError {
     requestMeterRegistry.counter("request.count").increment();
     requestMeterRegistry.counter("request.count", "method", "POST").increment();
     requestMeterRegistry.counter("request.count", "controller", "UserController").increment();
@@ -167,14 +166,13 @@ public class UserController {
    *         object.
    * @throws GenericForbiddenError if the user does not have the required
    *                               permissions.
-   * @throws GenericNotFoundError if the user is not found.
-   * @throws ValidationError if the request body is invalid.
+   * @throws GenericNotFoundError  if the user is not found.
+   * @throws ValidationError       if the request body is invalid.
    */
   @PostMapping(path = "/unban")
   public ResponseEntity<SuccessResult> unBan(
-          @RequestBody UnBanUserDto dto,
-          HttpServletRequest request
-  ) throws GenericForbiddenError, GenericNotFoundError, ValidationError {
+      @RequestBody UnBanUserDto dto,
+      HttpServletRequest request) throws GenericForbiddenError, GenericNotFoundError, ValidationError {
     requestMeterRegistry.counter("request.count").increment();
     requestMeterRegistry.counter("request.count", "method", "POST").increment();
     requestMeterRegistry.counter("request.count", "controller", "UserController").increment();

@@ -40,7 +40,7 @@ public class ManagementController {
   /**
    * The constructor of the ManagementController class.
    *
-   * @param managementService ManagementService
+   * @param managementService    ManagementService
    * @param requestMeterRegistry request MeterRegistry
    */
   public ManagementController(ManagementService managementService, MeterRegistry requestMeterRegistry) {

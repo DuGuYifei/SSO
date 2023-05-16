@@ -67,16 +67,13 @@ public class UserAPI {
                     .header("Content-Type", "application/json")
                     .POST(
                             HttpRequest.BodyPublishers.ofString(
-                                    "{\"email\": \"" + email + "\", \"password\": \"" + password + "\"}"
-                            )
-                    )
+                                    "{\"email\": \"" + email + "\", \"password\": \"" + password + "\"}"))
                     .build();
 
             // Send the request and get the response
             HttpResponse<String> response = client.send(
                     request,
-                    HttpResponse.BodyHandlers.ofString()
-            );
+                    HttpResponse.BodyHandlers.ofString());
 
             // Check if the response was successful
             if (response.statusCode() == 200) {
@@ -148,8 +145,7 @@ public class UserAPI {
             return true;
         } catch (IOException e) {
             System.out.println(
-                    "Failed to disconnect from the server: " + e.getMessage()
-            );
+                    "Failed to disconnect from the server: " + e.getMessage());
         }
         return false;
     }

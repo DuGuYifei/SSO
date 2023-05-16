@@ -142,7 +142,7 @@ public class User extends PermissionedEntity implements Serializable {
   /**
    * Assigns a ban related fields to the user
    *
-   * @param id the ID of the admin who banned the user
+   * @param id        the ID of the admin who banned the user
    * @param banReason the BanUserDto containing the user data
    */
   public void ban(UUID id, String banReason) {

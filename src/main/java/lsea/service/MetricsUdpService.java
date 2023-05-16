@@ -3,7 +3,6 @@ package lsea.service;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -30,7 +29,16 @@ public class MetricsUdpService {
      */
     private final DatagramPacket metricsDatagramPacket;
 
-    public MetricsUdpService(MetricsService metricsService, DatagramSocket metricsDatagramSocket, DatagramPacket metricsDatagramPacket) {
+    /**
+     * The constructor of the MetricsUdpService class.
+     * 
+     * @param metricsService        the metrics service of the application
+     * @param metricsDatagramSocket the metrics datagram socket of the client app
+     * @param metricsDatagramPacket the metrics datagram packet used to send the
+     *                              metrics to the client
+     */
+    public MetricsUdpService(MetricsService metricsService, DatagramSocket metricsDatagramSocket,
+            DatagramPacket metricsDatagramPacket) {
         this.metricsService = metricsService;
         this.metricsDatagramSocket = metricsDatagramSocket;
         this.metricsDatagramPacket = metricsDatagramPacket;

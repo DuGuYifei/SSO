@@ -31,10 +31,10 @@ public class WebsiteController {
    */
   private final MeterRegistry requestMeterRegistry;
 
-
   /**
    * The WebsiteController constructor.
-   * @param websiteService WebsiteService
+   * 
+   * @param websiteService       WebsiteService
    * @param requestMeterRegistry request MeterRegistry
    */
   public WebsiteController(WebsiteService websiteService, MeterRegistry requestMeterRegistry) {
@@ -49,9 +49,9 @@ public class WebsiteController {
    * @param request HttpServletRequest containing the token cookie
    * @return ResponseEntity object containing { status: 200, success: true }
    * @throws GenericForbiddenError if the cookie is not found or token is not
-   *                              valid
+   *                               valid
    * @throws ValidationError       if the request body is invalid or the cookie
-   *                              not contains the token
+   *                               not contains the token
    * @throws GenericNotFoundError  if the user is not found
    */
   @PostMapping

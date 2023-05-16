@@ -13,6 +13,7 @@ public class MetricsFrame {
 
     /**
      * The monitor frame of the metrics.
+     * 
      * @param metricsUdpReceiver The metrics udp receiver.
      */
     public static void showDynamicDataWindow(MetricsUdpReceiver metricsUdpReceiver) {
@@ -38,7 +39,7 @@ public class MetricsFrame {
                     "<html>" +
                             "Usage percent of memory: " + metricsIndex.get().getMemoryUsagePercent() + "<br>" +
                             "-------[Total of memory: " + metricsIndex.get().getTotalMemory() + "]<br>" +
-                            "Thread using: "+ metricsIndex.get().getThreadCount() + "<br>" +
+                            "Thread using: " + metricsIndex.get().getThreadCount() + "<br>" +
                             "Request count: " + metricsIndex.get().getRequestCount() + "<br>" +
                             "-------IndexController: " + metricsIndex.get().getIndexRequestCount() + "<br>" +
                             "---------LogController: " + metricsIndex.get().getLogRequestCount() + "<br>" +
@@ -47,8 +48,7 @@ public class MetricsFrame {
                             "-----WebsiteController: " + metricsIndex.get().getWebsiteRequestCount() + "<br>" +
                             "-------------------GET: " + metricsIndex.get().getGetRequestCount() + "<br>" +
                             "------------------POST: " + metricsIndex.get().getPostRequestCount()
-                    + "</html>"
-                    );
+                            + "</html>");
 
             // refresh the frame
             frame.revalidate();
