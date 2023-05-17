@@ -8,9 +8,7 @@ CPU: R7-4800h 8 cores 16 threads(logical cores)
 
 memory: 16 G
 
-disk: SSD 512G \* 2
-
-![cpu.png](Lab4/cpu.png)
+disk: SSD 512G * 2
 
 ### purpose
 
@@ -157,54 +155,123 @@ In order to fulfil this task, we created service for **management** _(users in t
     ```
 
 ## Report part - Requirement 4~6
+Our proposed approach involves utilizing a dataset comprising 3 million entries and performing multiple iterations to calculate the average execution time of each test. The purpose of this procedure is to evaluate the performance of our multi-threaded program.
 
-### 1. test for 3 million data, 20 iterations for 1-15 threads (= 15 \* 20 tests)
+Both the dataset and the resulting Excel report will be generated through HTTP requests. This ensures that the data is retrieved dynamically and reflects real-time conditions for accurate performance analysis.
 
-1. count of logs:
+### 1. Preliminary attempts
 
-    ![](./Lab4/dataCount3m.jpg)
+#### 1.1 Reason for 3 million data and average time of iteration
 
-2. request of auth to get jwt token of admin account:
+In statistics, these observations in preliminary attempts highlight the need for robust statistical techniques, such as increasing the sample size, eliminating outliers, and utilizing robust measures of central tendency, to ensure reliable and accurate analyses.
 
-    ![](./Lab4/authRequest.jpg)
+1. Number of data
 
-3. request of get excel report:
+   When we employed a dataset consisting of 10,000 logs, the generated figure is presented below:
 
-    ![](./Lab4/reportRequest.jpg)
+<div align="center">
+<img src="Lab4/smalldata.jpg" width="700">
+</div>
+<div align="center">figure 1. Report of small number of data</div>
+    It is evident that the execution time for processing the 10,000 logs is significantly minimal, rendering it challenging to obtain precise measurements. Furthermore, our current system is capable of accommodating up to 3 million data entries. However, surpassing this threshold, such as reaching 3.5 million, leads to the program freezing due to excessive CPU utilization, ultimately reaching 100%.
 
-4. excel report:
+2. Average time of iteration
 
-    [Report for 3 millions data 15 threads](./Lab4/report15th.xlsx)
+   As an illustrative example, we have included a report containing the results of a single iteration for 3 million data:
 
-    ![report15th.jpg](Lab4/report15th.jpg)
+<div align="center">
+<img src="Lab4/oneiteration.jpg" width="700">
+</div>
+<div align="center">figure 2. Report of only one iteration</div>
+    
+```r
+> data <- c(54, 27, 25, 20, 21, 58, 17, 13, 17, 16, 20, 17, 14, 19, 20)
+> sd_threshold <- 2
+> mean_val <- mean(data)
+> sd_val <- sd(data)
+> outliers <- data[data > mean_val + sd_threshold * sd_val | data < mean_val - sd_threshold * sd_val]
+> outliers: 
+[1] 54 58
+> var(data[4:15])
+[1] 142
+```
 
-5. Conclusion:
+<div align="center">
+<img src="Lab4/outlier.jpg" width="700">
+</div>
+<div align="center">figure 3. Boxplot for outlier of data with 1 iteration from number of threads 4 to 15</div>
 
-    - As the number of threads increases, the time of task decreases. However, the marginal effect is also decreasing.
-    - If we continue increase the number of threads, the time with the number of threads used would probably increase due to the following reasons:
-        1. The **limitation of hardware**, especially CPU mentioned at the beginning of report. (CPU, memory, etc.)
-        2. The **time of finishing each task** at some point won't be longer than the time of handling a thread.
-        3. The **locking mechanism** in Java's multithreading has undergone **upgrades**. When using the synchronized keyword, it starts with biased locking. If multiple threads contend for the lock, it transitions to lightweight locking. However, if a task is computationally heavy or there are too many threads, and the spin count exceeds the limit, it escalates to heavyweight locking. In this case, the **heavyweight lock** utilizes operating system mutexes as the underlying mechanism, resulting in frequent user-and-kernel mode switches, which negatively impact performance.
+Notably, from the outliers and variance from threads 4-12 which is 142, the execution time for a single iteration may exhibit outliers, implying the presence of anomalous values. In order to derive a more accurate estimation, it is imperative to conduct multiple iterations and calculate the average time.
+    
+(Note: the average variance of 3 times of 1 iteration test is 142.33 while, for the same number of threads range, the variance of 20 iteration is 64.76364)
 
-**So we create other tests below for larger number of threads.**
+#### 1.2 test for 3 million data, 20 iterations for 1-15 threads (= 15 \* 20 tests)
+
+1. **count of logs:**
+
+<div align="center">
+<img src="Lab4/dataCount3m.jpg" width="350">
+</div>
+<div align="center">figure 4. Count of logs</div>
+
+2. **excel report:**
+<div align="center">
+<img src="Lab4/report15th.jpg" width="700">
+</div>
+<div align="center">
+   figure 5. [Report for 3 millions data 1-15 threads](./Lab4/report15th.xlsx)
+</div>
+
+
+The graph in the report demonstrates a rapid decrease in task time as the number of threads increases from 1 to 5, followed by a slower decrease. 
+
+However, it would be expected for the task time to increase when the number of threads becomes too high. To investigate this situation, additional tests were conducted with larger numbers of threads.
 
 ### 2. test for 3 million data, 200 iterations for 1-40 threads (= 40 \* 200 tests)
 
-1. count of logs:
+**excel report:**
+<div align="center">
+<img src="Lab4/report36th.jpg" width="700">
+</div>
+<div align="center">
+    figure 6. [Report1 for 1-36 threads 20 iterations](./Lab4/report36th.xlsx)
+</div>
+<div align="center">
+<img src="Lab4/report40th.jpg" width="700">
+</div>
+<div align="center">
+    figure 7. [Report2 for 1-40 threads 200 iterations](./Lab4/report40th.xlsx)
+</div>
 
-    ![](./Lab4/dataCount3m.jpg)
 
-2. excel report:
-    - [report1 for 1-36 threads 20 iterations](./Lab4/report36th.xlsx)
-    - [report2 for 1-40 threads 200 iterations](./Lab4/report40th.xlsx)
-    - ![report36th.jpg](Lab4/report36th.jpg)
-    - ![report40th.jpg](Lab4/report40th.jpg)
-3. Conclusion:
+### Conclusion:
 
-    As the trendlines show above, the time of task is going down quickly at the beginning, and increasing slowly after we use too many threads.
+Based on the presented figure and trendlines, it is evident that the task time experiences a rapid decline initially until the thread count reaches 6. Afterward, there is a gradual increase in task time when the thread count exceeds 16 according to the figure line, and around 25 according to the trendline.
 
-## Java multithreading
+Key Findings:
+
+1. The task time decreases as the number of threads increases, but the rate of decrease diminishes as well.
+2. Further increasing the number of threads may lead to an increase in the total task time due to the following factors:
+   1. Limitations imposed by the **hardware**, particularly the CPU and memory, as mentioned at the beginning of the report.
+   2. At a certain point, the **time** required to complete each task may surpass the time spent on thread handling.
+   3. In Java's multithreading, the **locking mechanism** has evolved. Initially, the synchronized keyword employs biased locking. If multiple threads contend for the lock, it transitions to lightweight locking. However, if a task is computationally intensive or there are too many threads, and the spin count exceeds the limit, it escalates to heavyweight locking. In such cases, **heavyweight locks** utilize operating system mutexes as the underlying mechanism, resulting in frequent user-and-kernel mode switches that negatively impact performance.
+
+#### Java multithreading
 
 Multithreading in java makes use of physical cores and logical cores. In java, we create user-thread while JVM will manage to map our user-thread to kernel-thread which will be handled by Operating System.
 
-We have 8 physical cores and 16 logical cores in our CPU. So we can totally have 16 kernel threads at most.
+We have 8 physical cores and 16 logical cores in the test used CPU. So we can totally have 16 kernel threads at most.
+
+Java multithreading enables concurrent execution of multiple threads within a Java program. When multiple threads are utilized, they can execute tasks concurrently, potentially improving the overall performance and responsiveness of the application. We should consider the following concepts in the future:
+
+1. Threads: In Java, a thread is a lightweight unit of execution that operates independently. Each thread follows its own execution path and performs a specific task.
+
+2. Thread Synchronization: When multiple threads access shared resources or data concurrently, it can lead to race conditions and data inconsistency. Thread synchronization mechanisms, such as locks and semaphores, ensure that only one thread can access a shared resource at a given time, preventing conflicts and maintaining data integrity.
+
+3. Context Switching: Context switching is the process of switching between different threads in a multitasking environment. The operating system handles context switching by saving and restoring the state of each thread, allowing multiple threads to share the CPU resources effectively.
+
+4. Thread Safety: Thread safety refers to the ability of a program or data structure to function correctly and consistently in a multithreaded environment. Thread-safe code ensures that concurrent access to shared resources does not lead to unexpected behavior or data corruption.
+
+5. CPU and Memory Constraints: Multithreading can improve performance, but there are limitations. The CPU has a finite number of cores, and excessive thread creation may lead to resource contention, increased context switching overhead, and reduced performance. Additionally, memory usage increases as each thread requires its own stack and resources.
+
+6. Locking Mechanisms: Java provides various locking mechanisms to manage thread synchronization. The synchronized keyword allows exclusive access to a block of code or an object, preventing multiple threads from executing it simultaneously. However, as mentioned earlier, the locking mechanism evolves from biased locking to lightweight locking and heavyweight locking, depending on contention and system conditions.
