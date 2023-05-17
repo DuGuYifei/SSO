@@ -300,6 +300,7 @@ public class SSOManagementApplication extends JFrame implements ActionListener {
    *
    * @param e - the action event
    */
+  /* Requirement 6 */
   public void actionPerformed(ActionEvent e) {
     if (e.getActionCommand().equals("Login")) {
       String email = emailField.getText();
@@ -363,6 +364,7 @@ public class SSOManagementApplication extends JFrame implements ActionListener {
   /**
    * Start the live capture thread
    */
+  /* Requirement 6 */
   private void startLiveCapture() {
     isLiveCapture = true;
     tableModel.setRowCount(0);

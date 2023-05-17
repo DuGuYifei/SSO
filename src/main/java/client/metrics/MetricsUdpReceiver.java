@@ -13,6 +13,7 @@ import java.net.SocketException;
 /**
  * This class is used to receive the metrics of the server by udp transference.
  */
+/* Requirement 6 */
 public class MetricsUdpReceiver {
 
     /**
@@ -58,6 +59,7 @@ public class MetricsUdpReceiver {
     /**
      * Start a new thread to always receive the packet from the server.
      */
+    /* Requirement 6.UDP */
     public void receiveMetrics() {
         new Thread(() -> {
             byte[] myObj;

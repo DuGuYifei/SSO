@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * This class is used to show the metrics of the server in JFrame.
  */
+/* Requirement 6 */
 public class MetricsFrame {
 
     /**

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
  * This class contains all the functions used by the TCP server.
  */
 @Component
+/* Requirement 6.TCP */
 public class TCPServerFunctions {
 
   /**
