@@ -11,6 +11,7 @@ import java.net.DatagramSocket;
  * This service is responsible for handling udp service for the metrics
  * which are used for the monitoring the sso project by client.
  */
+/* Requirement 6 */
 @Service
 public class MetricsUdpService {
 
@@ -48,6 +49,7 @@ public class MetricsUdpService {
     /**
      * Start a new thread to always send the packet to the client.
      */
+    /* Requirement 6.UDP */
     public void sendMetrics() {
         new Thread(() -> {
 

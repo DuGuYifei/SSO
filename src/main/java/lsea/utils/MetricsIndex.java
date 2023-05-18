@@ -7,6 +7,7 @@ import java.io.Serializable;
 /**
  * It is used to store the metrics of the application.
  */
+/* Requirement 6.serialize */
 @NoArgsConstructor
 @Getter
 @Setter

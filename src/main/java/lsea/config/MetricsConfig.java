@@ -13,6 +13,7 @@ import java.net.*;
 /**
  * Configuration class for metrics of Micrometer.
  */
+/* Requirement 6 */
 @Configuration
 public class MetricsConfig {
 

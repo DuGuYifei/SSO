@@ -11,6 +11,7 @@ import javax.annotation.Resource;
  * This service is responsible for handling service for the metrics
  * which are used for the monitoring the sso project.
  */
+/* Requirement 6 */
 @Service
 public class MetricsService {
 

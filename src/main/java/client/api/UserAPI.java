@@ -158,6 +158,7 @@ public class UserAPI {
      * @return a list of the retrieved logs
      * @throws IOException - if the request fails
      */
+    /* Requirement 6.TCP */
     public List<Log> retrieveLogs(int offset, int limit) throws IOException {
         List<Log> retrievedLogs = new ArrayList<>();
         OutputStream outputStream = socket.getOutputStream();
@@ -193,6 +194,7 @@ public class UserAPI {
      * @return the new logs list
      * @throws IOException - if the request fails
      */
+    /* Requirement 6.TCP */
     public List<Log> liveCaptureLogs() throws IOException {
         List<Log> retrievedLogs = new ArrayList<>();
 
@@ -224,6 +226,7 @@ public class UserAPI {
      *
      * @throws IOException - if the request fails
      */
+    /* Requirement 6.TCP */
     public void serverStopLiveCapture() throws IOException {
         String request = "live-stop";
         outputStream.write(request.getBytes());
