@@ -2,54 +2,49 @@
 
 ## Description
 
-## Hardware
+### Technical specifications of the machine performing the measurements
 
-CPU: R7-4800h 8 cores 16 threads(logical cores)
+-   CPU: R7-4800h 8 cores 16 threads(logical cores)
 
-memory: 16 G
+-   Memory: 16 G
 
-disk: SSD 512G * 2
+-   Disk: SSD 512G \* 2
 
-### purpose
+### Benchmarking goal
 
 Our purpose is to get 5 longest and 5 shortest `log.data` in `logs` table by using thread pool to realize mapreducing.
 
-### the task for each thread
+### Task to perform for threads
 
-The array of logs is divided among the threads and each of them has a task to find 5 longest/shortest `log.data`. After that their results are merged into one, and reduced.
+The array of logs is divided among the threads and each of them has a task to find 5 longest and shortest `log.data` information. After that their results are merged into one, and reduced.
 
 ## Code part - Requirement 1~3
 
-In order to fulfil this task, we created service for **management** _(users in the system that are at least moderator in global permissions)_ and accordingly a controller _(following the MVC pattern)_. We also included integration and unit tests to verify whether the functionalities are working as intended. All of the incoming data is validated using class validators, so no malicious input can go through.
+In order to fulfil the task, we created service for **management** _(users in the system that are at least moderator in global permissions)_ and accordingly a controller _(following the controller-service-repository pattern)_. We also included integration and unit tests to verify whether the functionalities are working as intended. All of the incoming data is validated using class validators _(following data transfer object pattern)_, so no malicious input nor actor can go through.
 
 1. In the `ManagementController.java`, we are handling two endpoints:
 
     1. `GET /analysis-longest-five/{numThreads}` and `GET /analysis-shortest-five/{numThreads}` To get the list of results object, which have following fields:
         - `count`: 5
-        - `data`: the longest/shortest 5 `log.data` in `logs` table
-        - `meta`: Start time, end time and the overall duration of the task
-        - It is also for **Requirement 1.2 - show the execution time to the user**
+        - `data`: The longest/shortest 5 `log.data` from `logs` table
+        - `meta`: The metadata information about the task - Start time, end time and the overall duration of the task
     2. `POST /report` To generate an excel file with results and necessary graphs
-        - request body is
-            - the number of threads
-            - the number of iterations (calculate the average time for each number of threads)
-        - excel file will have
-            - the duration of each task starts from 1 thread to `numThreads` threads.
-            - the figure of the results.
-            - sheet1 for the longest 5 `log.data` in `logs` table
-            - sheet2 for the shortest 5 `log.data` in `logs` table
+        - Request body contains:
+            - The number of threads
+            - The number of iterations (calculate the average time for each number of threads)
+            - An automatically generated excel file containing:
+                - The average duration of each task starts from 1 thread to `numThreads` threads.
+                - Figures showing the results
+                - First excel sheet for the **longest** 5 `log.data` in `logs` table
+                - Second excel sheet for the **shortest** 5 `log.data` in `logs` table
 
 2. Create multi-threads and **Requirement 1.2 - the code for monitoring the execution time**
 
     We optimize the threads-using from create threads to use **thread pool**.
 
-    1. Create thread pool
+    1. Creating the thread pool
 
-        The pool size here is 40 which is obviously bad, but it is used for testing the performance of how the multi-threads work.
-
-        **Actually Our projects should be considered as CPU-intensive which means it should calculate as:**
-
-        > N threads = N cores + 1
+        Our multithreading task is CPU-bound and **not** I/O-bound. Therefore, the correct approach would be to calculate the number of threads as N_thread = N_core + 1 = 17. This means that the number of threads 40 in our thread pool is too large for our task, as the Fig. 6 shows.
 
     ```java
     /**
@@ -88,9 +83,11 @@ In order to fulfil this task, we created service for **management** _(users in t
         });
 
     List<Log> result = new ArrayList<>();
-    // this loop is to add the element from the priority queue to the result list
-    // if use pqLogs.toArray(), the order of the elements in the array is not
-    // guaranteed
+
+    // Following loop guarantees the order of the elements in the result list
+    // is the same as the order in the priority queue. If we have used
+    // `pgLogs.toArray()`, the order of the elements in the array wouldn't
+    // be guaranteed.
     while (!pqLogs.isEmpty()) {
       result.add(pqLogs.poll());
     }
@@ -99,11 +96,11 @@ In order to fulfil this task, we created service for **management** _(users in t
 
     3. In methods of subtasks, we use `latch.countDown()` to count down the number of threads that have finished their tasks.
 
-3. **Requirement 2 - 2 critical sections with multithreads that access the same data (read/write)**
+3. Critical sections of the task
 
-    In order to prevent such failures, we implemented a protection mechanism that looks as follows:
+    In order to prevent failures connected with accessing critical areas at the same time, we implemented a protection mechanisms using `synchronized` keyword. We used it in the following places:
 
-    **(Note: Codes below are in two different methods and `response` here are different objects)**
+    _(Note: Code snippets below are in two different methods and `response` variables are different objects in this context)_
 
     ```java
     synchronized (response) {
@@ -139,11 +136,11 @@ In order to fulfil this task, we created service for **management** _(users in t
     latch.countDown();
     ```
 
-4. **Requirement 3 - generate/load data**
+4. Generating and loading the data to the application
     - In `LogController.java`, there is a specific endpoint `POST /generate-test-data` which can create test logs.
-    - A python script was also created (`scripts/script.py`) in order to generate random users, websites using our SSO and logs. It's a very useful utility tool to perform load tests of the system, and performance tests. It makes use of `faker` library, so all of the data are very similar to the real-life scenario data.
-    - Loading the data is done by `findAll` method in `LogRepository.java`.
-5. **Requirement 1.1 - show proper message of tasks of the multi-threading**
+    - A python script was also created (`scripts/script.py`) in order to generate random users, websites using our SSO and logs for them. It's a very useful utility tool to perform load tests of the system, and performance tests. It makes use of `faker` library, so all of the data are very similar to the real-life scenario data.
+    - Getting the data is done by retrieving it from Log repository using `findAll` method defined in `LogRepository.java` interface.
+5. Logging proper information regarding the multi-threading
 
     - `ManagementService.java #longestFiveLogs() #subLongestFiveLogs()`
     - `ManagementService.java #shortestFiveLogs() #subShortestFiveLogs()`
@@ -154,43 +151,46 @@ In order to fulfil this task, we created service for **management** _(users in t
     System.out.println("Thread " + Thread.currentThread().getId() + " is trying to access a public asset - final PQ for 5 longest logs");
     ```
 
-## Report part - Requirement 4~6
-Our proposed approach involves utilizing a dataset comprising 3 million entries and performing multiple iterations to calculate the average execution time of each test. The purpose of this procedure is to evaluate the performance of our multi-threaded program.
+## Report
 
-Both the dataset and the resulting Excel report will be generated through HTTP requests. This ensures that the data is retrieved dynamically and reflects real-time conditions for accurate performance analysis.
+We used measuring endpoint that involves using a dataset with 3 million entries and performing multiple iterations to calculate the average execution time of each test. The purpose of this procedure is to evaluate the performance of our multi-threaded program.
+
+We have used average number of iterations in order to obtain a more accurate measurement of the execution time, and not to rely on a single measurement which can deviate based on external factors.
+
+Both the dataset and the resulting Excel report will be generated automatically through HTTP requests. This ensures that the data is retrieved dynamically and reflects real-time conditions for accurate performance analysis.
 
 ### 1. Preliminary attempts
 
 #### 1.1 Reason for 3 million data and average time of iteration
 
-In statistics, these observations in preliminary attempts highlight the need for robust statistical techniques, such as increasing the sample size, eliminating outliers, and utilizing robust measures of central tendency, to ensure reliable and accurate analyses.
+In statistics, these observations in preliminary attempts highlight the need for robust statistical techniques, such as increasing the sample size, eliminating outliers, and utilizing robust measures of central tendency, to ensure reliable and accurate analysis.
 
 1. Number of data
 
-   When we employed a dataset consisting of 10,000 logs, the generated figure is presented below:
+    When we populated the database with a dataset consisting of 10,000 logs, the generated Fig 1. is presented below:
 
 <div align="center">
 <img src="Lab4/smalldata.jpg" width="700">
 </div>
-<div align="center">figure 1. Report of small number of data</div>
-    It is evident that the execution time for processing the 10,000 logs is significantly minimal, rendering it challenging to obtain precise measurements. Furthermore, our current system is capable of accommodating up to 3 million data entries. However, surpassing this threshold, such as reaching 3.5 million, leads to the program freezing due to excessive CPU utilization, ultimately reaching 100%.
+<div align="center">Fig 1. Report of small number of data</div>
+    It is evident that the execution time for processing the 10,000 logs is significantly minimal. It is challenging to obtain precise measurements, because all of the measurements do not go higher than 4 ms. Due to that limitation we decided to use 3 million entries as our current system is capable of accommodating up to that number. However, surpassing this threshold, such as reaching 3.5 million, leads to the program freezing due to excessive CPU utilization, ultimately reaching 100%.
 
 2. Average time of iteration
 
-   As an illustrative example, we have included a report containing the results of a single iteration for 3 million data:
+    As an illustrative example, we have included a report containing the results of a **single** (so just one measurement) iteration for 3 million data - Fig. 2
 
 <div align="center">
 <img src="Lab4/oneiteration.jpg" width="700">
 </div>
-<div align="center">figure 2. Report of only one iteration</div>
-    
+<div align="center">Fig 2. Report of only one iteration</div>
+
 ```r
 > data <- c(54, 27, 25, 20, 21, 58, 17, 13, 17, 16, 20, 17, 14, 19, 20)
 > sd_threshold <- 2
 > mean_val <- mean(data)
 > sd_val <- sd(data)
 > outliers <- data[data > mean_val + sd_threshold * sd_val | data < mean_val - sd_threshold * sd_val]
-> outliers: 
+> outliers:
 [1] 54 58
 > var(data[4:15])
 [1] 142
@@ -199,62 +199,64 @@ In statistics, these observations in preliminary attempts highlight the need for
 <div align="center">
 <img src="Lab4/outlier.jpg" width="700">
 </div>
-<div align="center">figure 3. Boxplot for outlier of data with 1 iteration from number of threads 4 to 15</div>
+<div align="center">Fig 3. Boxplot for outliers of data with 1 iteration from 4 to 15 number of threads</div>
 
-Notably, from the outliers and variance from threads 4-12 which is 142, the execution time for a single iteration may exhibit outliers, implying the presence of anomalous values. In order to derive a more accurate estimation, it is imperative to conduct multiple iterations and calculate the average time.
-    
-(Note: the average variance of 3 times of 1 iteration test is 142.33 while, for the same number of threads range, the variance of 20 iteration is 64.76364)
+Notably, from the outliers and variance from threads 4-12 which is 142, the execution time for a single iteration may exhibit outliers, implying the presence of anomalous values. In order to derive a more accurate estimation, it is needed to conduct multiple iterations and calculate the average time.
 
-#### 1.2 test for 3 million data, 20 iterations for 1-15 threads (= 15 \* 20 tests)
+_(Note: the average variance of 3 times of 1 iteration test is 142.33 while, for the same number of threads range, the variance of 20 iteration is 64.76364)_
 
-1. **count of logs:**
+#### 1.2 test for 3 million data, 20 iterations for 1-15 threads (= 15 \* 20 = 300 tests)
 
-<div align="center">
-<img src="Lab4/dataCount3m.jpg" width="350">
-</div>
-<div align="center">figure 4. Count of logs</div>
+1. In order to verify the number of data present in the database we have run following SQL query directly in the managemnt console of the H2 database:
 
-2. **excel report:**
-<div align="center">
-<img src="Lab4/report15th.jpg" width="700">
-</div>
-<div align="center">
-   figure 5. [Report for 3 millions data 1-15 threads](./Lab4/report15th.xlsx)
-</div>
+    ```sql
+    SELECT COUNT(id) FROM LOGS;
+    ```
 
+    The result is 3,000,000 logs.
 
-The graph in the report demonstrates a rapid decrease in task time as the number of threads increases from 1 to 5, followed by a slower decrease. 
+2. Contents of an automatically generated excel report for 20 iterations for 1-15 threads:
+ <div align="center">
+ <img src="Lab4/report15th.jpg" width="700">
+ </div>
+ <div align="center">
+    [Report for 3 million entries, utilizing 1-15 threads](./Lab4/report15th.xlsx)
+ </div>
+
+The graph in the report demonstrates a rapid decrease in task execution time as the number of threads increases from 1 thread to 7 threads, the execution time drops from 182 ms to 57 ms, followed by oscillating values between 43 ms and 58 ms. The execution time for 15 threads is 43 ms, which is the lowest value in the graph.
 
 However, it would be expected for the task time to increase when the number of threads becomes too high. To investigate this situation, additional tests were conducted with larger numbers of threads.
 
-### 2. test for 3 million data, 200 iterations for 1-40 threads (= 40 \* 200 tests)
+### 2. Test for 3 million data, 200 iterations for 1-40 threads (= 40 \* 200 = 8000 tests)
 
 **excel report:**
+
 <div align="center">
 <img src="Lab4/report36th.jpg" width="700">
 </div>
 <div align="center">
-    figure 6. [Report1 for 1-36 threads 20 iterations](./Lab4/report36th.xlsx)
+    Fig. 5 [Report 1 for 1-36 threads 20 iterations with a trendline](./Lab4/report36th.xlsx)
 </div>
 <div align="center">
 <img src="Lab4/report40th.jpg" width="700">
 </div>
 <div align="center">
-    figure 7. [Report2 for 1-40 threads 200 iterations](./Lab4/report40th.xlsx)
+    Fig. 6 [Report 2 for 1-40 threads 200 iterations with a trendline](./Lab4/report40th.xlsx)
 </div>
-
 
 ### Conclusion:
 
-Based on the presented figure and trendlines, it is evident that the task time experiences a rapid decline initially until the thread count reaches 6. Afterward, there is a gradual increase in task time when the thread count exceeds 16 according to the figure line, and around 25 according to the trendline.
+Based on **Fig. 5** trendlines, the task execution time experiences a rapid decline initially until the thread count reaches 6 from 207 ms to 64 ms. Afterward, there is a slight increase from 6 threads to 8, from 64 ms up to 67 ms. After that the execution time decreases slowly from 8 threads until **15** inclusive from 67 ms to 47 ms. There is a gradual increase in task time when the thread count exceeds 16 according to the figure line, and around 25 according to the trendline. **The lowest registered average execution time value is specifically for utilizing 15 threads - 47 ms.**
+
+The same same conlcusions are drawn from **Fig. 6**. The lowest execution time still belongs to thread count of 15, which is 49 ms. The trendline tends to increase around 25-26 number of threads. 
 
 Key Findings:
 
 1. The task time decreases as the number of threads increases, but the rate of decrease diminishes as well.
-2. Further increasing the number of threads may lead to an increase in the total task time due to the following factors:
-   1. Limitations imposed by the **hardware**, particularly the CPU and memory, as mentioned at the beginning of the report.
-   2. At a certain point, the **time** required to complete each task may surpass the time spent on thread handling.
-   3. In Java's multithreading, the **locking mechanism** has evolved. Initially, the synchronized keyword employs biased locking. If multiple threads contend for the lock, it transitions to lightweight locking. However, if a task is computationally intensive or there are too many threads, and the spin count exceeds the limit, it escalates to heavyweight locking. In such cases, **heavyweight locks** utilize operating system mutexes as the underlying mechanism, resulting in frequent user-and-kernel mode switches that negatively impact performance.
+2. Increasing the number of threads over the available number of cores not only do not improve the execution time of the task, but may lead to an increase in the total task time due to the following factors:
+    1. Limitations imposed by the **hardware**, particularly the CPU and memory, as mentioned at the beginning of the report.
+    2. At a certain point, the **time** required to complete each task may surpass the time spent on thread handling.
+    3. In Java's multithreading, the **locking mechanism** has evolved. Initially, the synchronized keyword utilized biased locking. If multiple threads contend for the lock, it transitions to lightweight locking. However, if a task is computationally intensive or there are too many threads, and the spin count exceeds the limit, it escalates to heavyweight locking. In such cases, **heavyweight locks** utilize operating system mutexes as the underlying mechanism, resulting in frequent user-and-kernel mode switches that negatively impact performance.
 
 #### Java multithreading
 
