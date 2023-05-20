@@ -5,10 +5,8 @@ import io.swagger.annotations.Api;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import lsea.dto.AuthorizeUserDto;
-import lsea.dto.BanUserDto;
-import lsea.dto.CreateUserDto;
-import lsea.dto.UnBanUserDto;
+
+import lsea.dto.*;
 import lsea.errors.GenericConflictError;
 import lsea.errors.GenericForbiddenError;
 import lsea.errors.GenericNotFoundError;
@@ -182,6 +180,36 @@ public class UserController {
     String token = ValidationRouter.getTokenFromRequest(request);
 
     userService.unBan(dto, token);
+
+    SuccessResult result = SuccessResult.builder().status(200).build();
+    return ResponseEntity.ok(result);
+  }
+
+  /**
+   * The updateUsername method is used to update the username of a user.
+   *
+   * @param dto UpdateUsernameDto object containing the new username.
+   * @param request HttpServletRequest object containing the token.
+   * @return ResponseEntity object containing { status: 200, success: true }
+   * @throws GenericForbiddenError if the user does not have the required permissions.
+   * @throws GenericNotFoundError if the user is not found.
+   * @throws ValidationError if the request body is invalid.
+   */
+  /* Requirement 7.5 */
+  /* Requirement 7.2 */
+  @PutMapping(path = "/")
+  public ResponseEntity<SuccessResult> updateUser(
+      @RequestBody UpdateUserDto dto,
+      HttpServletRequest request) throws GenericForbiddenError, GenericNotFoundError, ValidationError {
+    requestMeterRegistry.counter("request.count").increment();
+    requestMeterRegistry.counter("request.count", "method", "PUT").increment();
+    requestMeterRegistry.counter("request.count", "controller", "UserController").increment();
+
+    ValidationRouter.validate(dto);
+
+    String token = ValidationRouter.getTokenFromRequest(request);
+
+    userService.updateOne(token, dto);
 
     SuccessResult result = SuccessResult.builder().status(200).build();
     return ResponseEntity.ok(result);
