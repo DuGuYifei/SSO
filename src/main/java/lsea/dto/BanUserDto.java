@@ -15,6 +15,8 @@ import javax.validation.constraints.Size;
 @Builder
 @ToString
 @EqualsAndHashCode
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BanUserDto {
 
     /**
