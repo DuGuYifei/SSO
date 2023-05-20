@@ -19,6 +19,9 @@ public interface UserRepository
    * @param username The username of the user to find.
    * @return An Optional containing the user, or empty if the user was not found.
    */
+  /* Requirement 7.4 */
+  // Based on https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods.query-creation,
+  // it is "where x.username = ?1"
   Optional<User> findByUsername(String username);
 
   /**
@@ -27,5 +30,8 @@ public interface UserRepository
    * @param email The email address of the user to find.
    * @return An Optional containing the user, or empty if the user was not found.
    */
+  /* Requirement 7.4 */
+  // Based on https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods.query-creation,
+  // it is "where x.email = ?1"
   Optional<User> findByEmail(String email);
 }
