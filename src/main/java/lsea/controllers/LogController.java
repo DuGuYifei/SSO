@@ -87,6 +87,7 @@ public class LogController {
    * @throws GenericNotFoundError  if the user is not found
    */
   /* Requirement 4.3 */
+  /* Requirement 7.3 */
   @PostMapping("/generate-test-data")
   public ResponseEntity<SuccessResult> generateData(
       @RequestBody int N,
