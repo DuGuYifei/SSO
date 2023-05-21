@@ -1,0 +1,38 @@
+```{r}
+library(ggplot2)
+```
+
+```{r}
+
+# Original values
+values <- result$Requests.per.second
+
+# Indices for rearrangement
+indices <- c(1, 7, 13, 19, 25, 31, 2, 8, 14, 20, 26, 32, 3, 9, 15, 21, 27, 33, 4, 10, 16, 22, 28, 34, 5, 11, 17, 23, 29, 35, 6, 12, 18, 24, 30, 36)
+
+# Rearranged values
+rearranged_values <- values[indices]
+
+data <- data.frame(
+  Endpoint = c(
+    rep("/api/v1/logs", 6),
+    rep("/api/v1/users", 6),
+    rep("/api/v1/users/authorize", 6),
+    rep("/api/v1/users/ban", 6),
+    rep("/api/v1/users/unban", 6),
+    rep("/api/v1/websites", 6)
+  ),
+  Concurrency_Level = rep(c(10, 100, 200, 300, 800, 1000), 6),
+  Time_per_request_ms = rearranged_values
+)
+
+# Plot the line graph
+ggplot(data, aes(x = Concurrency_Level, y = Time_per_request_ms, color = Endpoint, group = Endpoint)) +
+  geom_line() +
+  labs(title = "Time per request by Concurrency Level",
+       x = "Concurrency Level",
+       y = "Time per request (ms)") +
+  theme_minimal()
+
+```
+

@@ -1,0 +1,4 @@
+{
+    ”banReadon": "test",
+    "emailAddress;": "test@example.com",
+}
