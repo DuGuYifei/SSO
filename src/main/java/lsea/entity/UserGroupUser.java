@@ -9,6 +9,7 @@ import lsea.dto.AddUserToUserGroupDto;
 import lsea.errors.GenericForbiddenError;
 import lsea.utils.GroupPermissions;
 
+/* Requirement 7.1 */
 /**
  * Entity class representing the relationship between a user and a user group.
  */

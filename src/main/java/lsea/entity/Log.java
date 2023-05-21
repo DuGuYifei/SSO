@@ -12,6 +12,7 @@ import lsea.dto.CreateLogDto;
 import lsea.errors.GenericForbiddenError;
 import lsea.utils.LogType;
 
+/* Requirement 7.1 */
 /**
  * This class represents a log entry in the database.
  */
