@@ -53,6 +53,7 @@ public class WebsiteService {
    * @throws GenericNotFoundError  the generic not found error
    * @throws GenericForbiddenError the generic forbidden error
    */
+  /* Requirement 7.2 */
   @Transactional
   public void createOne(CreateWebsiteDto dto, String token)
       throws GenericNotFoundError, GenericForbiddenError {

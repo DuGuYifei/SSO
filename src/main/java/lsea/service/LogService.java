@@ -54,6 +54,7 @@ public class LogService {
    * @throws GenericNotFoundError  when user is not found
    * @throws GenericForbiddenError when user is not authorized
    */
+  /* Requirement 7.2 */
   @Transactional
   public Log createOne(CreateLogDto dto, String token)
       throws GenericNotFoundError, GenericForbiddenError {
