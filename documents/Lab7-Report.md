@@ -8,8 +8,6 @@ terms of **concurrent user load**, **response times**, **system throughput**, **
 part of **stress testing**. Please note that the performance of the `ManagementController`, which pertains to the
 administrator interface, has been previously tested and documented in [Lab4-Conclusion](./Lab4-Conclusions.md).
 
-To ensure a comprehensive evaluation of the system's performance, we extended our testing scope to include the
-performance of the database which will be displayed in the next section.
 
 ## Database model
 
@@ -20,14 +18,14 @@ performance of the database which will be displayed in the next section.
 3. websites - stores the website information of the user
 4. usergroups - the group of user
 5. usergroup_user - the relationship between user and usergroup
-6. websites - the website information of the user
+6. login_history - the login history of the user
 
 ### ER Diagram
 
 <div align="center">
 <img src="Lab7/erd.png" width="1000">
 </div>
-<div align="center">Fig 1. ERD of database</div>
+<div align="center">Figure 1. ERD of database</div>
 
 ### Database chosen
 
@@ -40,8 +38,8 @@ often used for development purposes.
    This is typically achieved by using the "create-drop" mode in the database configuration. In this mode, the database
    schema is created when the application starts, and it is dropped and recreated each time the application stops. This
    ensures a clean and consistent database state for development and testing purposes. 【In our case, we set it
-   as `update` in the current state, because we have 3 million data in table `logs` which is used for test.】
-3. **Database Migration:** H2 and Derby support various mechanisms for database schema migration and versioning. They
+   as `update` in the current state, because we have 3 million data in table `logs` which is used for test. We don't want to recreate them everytime we reboot.】
+3. **Database Migration:** H2 and Derby support various mechanisms for database schema migration and versioning. These mechanisms can
    provide tools or libraries that allow you to manage database schema changes over time, such as adding new tables or
    modifying existing ones. This facilitates the evolution of the database schema during the development process.
 4. **Data Persistence:** Both H2 and Derby allow you to persist data to disk, providing durability and data integrity.
@@ -54,19 +52,27 @@ often used for development purposes.
    connecting Java applications to databases. This means that you can use standard JDBC APIs to interact with the
    databases, making them compatible with a wide range of Java frameworks and libraries.
 
-### JPA repository connects/interacts with DB
+### JPA repository connects/interacts with database
 
 1. **Configuration:**
 
 ```properties
+# persistence in the ./db folder
 spring.datasource.url=jdbc:h2:file:./db/lsea
+# use h2 database
 spring.datasource.driverClassName=org.h2.Driver
+# use admin as username and password
 spring.datasource.username=admin
 spring.datasource.password=admin
+# use hibernate dialect
 spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+# generate ddl
 spring.jpa.generate-ddl=true
+# When a new field is added to a java entity class, when the application is re-run, the field will be added to the new column in the database table, but the pre-existing column or constraint will not be removed
 spring.jpa.hibernate.ddl-auto=update
+# disable open-in-view
 spring.jpa.open-in-view=false
+# enable h2 console (http:ip:port/h2-console)
 spring.h2.console.enabled=true
 ```
 
@@ -117,11 +123,16 @@ spring.h2.console.enabled=true
    way to persist entities to the database. When we invoke the `save()` method on a JpaRepository instance, behind the
    scenes, the EntityManager is utilized to perform the actual persistence operation. The EntityManager manages the
    persistence context and interacts with the underlying database.
-
-### Database testing
-
+   
 
 ## Performance testing
+
+### Target
+Conduct backend performance testing by performing load tests to obtain data on 
+concurrent user counts, response times, system throughput, resource utilization 
+(including CPU usage, memory usage, disk I/O, network I/O), and other metrics. 
+We hope, through data analysis, to examine the limits in specific server environments 
+and provided recommendations for software optimization.
 
 ### Preparation
 
@@ -131,8 +142,16 @@ spring.h2.console.enabled=true
     - RAM: 8GB
     - Disk: 32GB
 2. Monitoring System:
-    - Springboot: Actuator + Prometheus (MicroMeter)
-    - Server: Prometheus + Grafana
+    - Springboot:
+      - Actuator: Open endpoint `/actuator/prometheus` to get metrics data 
+      - Prometheus (MicroMeter): Collect metrics data to `/actuator/prometheus`
+    - Servers:
+      - Prometheus: Collect metrics data from `/actuator/prometheus` and present them
+        in a web UI default at `http://ip:9090`. In `/graph` page, we can get visualized data by query. 
+      - Grafana: Distributed monitoring system, visualize metrics data from Prometheus server.
+        In Grafana, we can create dashboard to show metrics data in a more intuitive way. Also we can set alert rules or
+        ask Grafana to send report to us.
+   
 3. Server conditions before start test environment:
 ```
 top - 20:58:21 up  1:04,  0 users,  load average: 0.09, 0.16, 0.17
@@ -142,51 +161,53 @@ MiB Mem :   7957.7 total,   6266.6 free,   1123.6 used,    567.5 buff/cache
 MiB Swap:      0.0 total,      0.0 free,      0.0 used.   6575.7 avail Mem
 ```
 
-### Apache Bench Testing
+4. Testing tool: Apache Bench (ab)
+   
+   In [an article of Tencent](https://cloud.tencent.com/developer/article/1066196), during their load testing by `wrk`
+   , `http_load` and `apache bench`, based on recording the backend logs, they found that the error margin of the number of
+   requests in Apache Bench (ab) was around 0.2%. However, for the other two tools, the error margin was around 0.5%.
+   So we choose `apache bench` to do the performance testing.
 
-In [the article of Tencent](https://cloud.tencent.com/developer/article/1066196), during their load testing by `wrk`
-, `http_load` and `apache bench`, based on recording the backend logs, they found that the error margin of the number of
-requests in Apache Bench (ab) was around 0.2%. However, for the other two tools, the error margin was around 0.5%.
-So we choose `apache bench` to do the performance testing.
+### Apache Bench Testing result
 
-| Endpoint         | Path       | Method | Concurrency Level | Time taken for tests (s) | Complete requests | Total transferred (bytes) | Requests per second | Time per request (ms) | Time per request (ms) (across all concurrent requests) | Transfer rate (Kbytes/sec) |
-| ---------------- | ---------- | ------ | ----------------- | ------------------------ | ----------------- | ------------------------- | ------------------- | --------------------- | ------------------------------------------------------ | -------------------------- |
-| /api/v1/logs     | /          | POST   | 10                | 0.602                    | 100               | 16100                     | 166.22              | 60.160                | 6.016                                                  | 26.13                      |
-| /api/v1/users    | /          | POST   | 10                | 0.545                    | 100               | 19550                     | 183.37              | 54.535                | 5.453                                                  | 35.01                      |
-| /api/v1/users    | /authorize | POST   | 10                | 0.508                    | 100               | 16800                     | 196.92              | 50.781                | 5.078                                                  | 32.31                      |
-| /api/v1/users    | /ban       | POST   | 10                | 0.569                    | 100               | 16800                     | 175.85              | 56.865                | 5.687                                                  | 28.85                      |
-| /api/v1/users    | /unban     | POST   | 10                | 0.181                    | 100               | 16100                     | 553.11              | 18.080                | 1.808                                                  | 86.96                      |
-| /api/v1/websites | /          | POST   | 10                | 0.522                    | 100               | 16800                     | 191.47              | 52.227                | 5.223                                                  | 31.41                      |
-| /api/v1/logs     | /          | POST   | 100               | 0.896                    | 1000              | 161000                    | 1115.84             | 89.618                | 0.896                                                  | 175.44                     |
-| /api/v1/users    | /          | POST   | 100               | 0.952                    | 1000              | 196000                    | 1050.35             | 95.206                | 0.952                                                  | 201.04                     |
-| /api/v1/users    | /authorize | POST   | 100               | 5.582                    | 1000              | 168000                    | 179.14              | 558.238               | 5.582                                                  | 29.39                      |
-| /api/v1/users    | /ban       | POST   | 100               | 4.909                    | 1000              | 168000                    | 203.71              | 490.896               | 4.909                                                  | 33.42                      |
-| /api/v1/users    | /unban     | POST   | 100               | 0.675                    | 1000              | 161000                    | 1480.94             | 67.525                | 0.675                                                  | 232.84                     |
-| /api/v1/websites | /          | POST   | 100               | 5.390                    | 1000              | 168000                    | 185.54              | 538.973               | 5.390                                                  | 30.44                      |
-| /api/v1/logs     | /          | POST   | 200               | 0.716                    | 1000              | 161000                    | 1395.76             | 143.291               | 0.716                                                  | 219.45                     |
-| /api/v1/users    | /          | POST   | 200               | 0.546                    | 1000              | 196000                    | 1832.86             | 109.119               | 0.546                                                  | 350.82                     |
-| /api/v1/users    | /authorize | POST   | 200               | 5.068                    | 1000              | 168000                    | 197.31              | 1013.623              | 5.068                                                  | 32.37                      |
-| /api/v1/users    | /ban       | POST   | 200               | 5.024                    | 1000              | 168000                    | 199.06              | 1004.728              | 5.024                                                  | 32.66                      |
-| /api/v1/users    | /unban     | POST   | 200               | 0.396                    | 1000              | 161000                    | 2527.83             | 79.119                | 0.396                                                  | 397.44                     |
-| /api/v1/websites | /          | POST   | 200               | 4.500                    | 1000              | 168000                    | 222.21              | 900.033               | 4.500                                                  | 36.46                      |
-| /api/v1/logs     | /          | POST   | 300               | 0.498                    | 1200              | 193200                    | 2412.00             | 124.378               | 0.415                                                  | 379.23                     |
-| /api/v1/users    | /          | POST   | 300               | 0.776                    | 1200              | 235200                    | 1545.80             | 194.074               | 0.647                                                  | 295.88                     |
-| /api/v1/users    | /authorize | POST   | 300               | 6.107                    | 1200              | 201600                    | 196.50              | 1526.755              | 5.089                                                  | 32.24                      |
-| /api/v1/users    | /ban       | POST   | 300               | 5.434                    | 1200              | 201600                    | 220.85              | 1358.400              | 4.528                                                  | 36.23                      |
-| /api/v1/users    | /unban     | POST   | 300               | 0.453                    | 1200              | 193200                    | 2649.04             | 113.249               | 0.377                                                  | 416.50                     |
-| /api/v1/websites | /          | POST   | 300               | 5.278                    | 1200              | 201600                    | 227.35              | 1319.555              | 4.399                                                  | 37.30                      |
-| /api/v1/logs     | /          | POST   | 800               | 0.881                    | 2400              | 386400                    | 2723.54             | 293.735               | 0.367                                                  | 428.21                     |
-| /api/v1/users    | /          | POST   | 800               | 0.813                    | 2400              | 470400                    | 2950.61             | 271.130               | 0.339                                                  | 564.77                     |
-| /api/v1/users    | /authorize | POST   | 800               | 13.489                   | 2400              | 403200                    | 177.92              | 4496.427              | 5.621                                                  | 29.19                      |
-| /api/v1/users    | /ban       | POST   | 800               | 12.548                   | 2400              | 403200                    | 191.27              | 4182.584              | 5.228                                                  | 31.38                      |
-| /api/v1/users    | /unban     | POST   | 800               | 0.743                    | 2400              | 386400                    | 3231.25             | 247.582               | 0.309                                                  | 508.04                     |
-| /api/v1/websites | /          | POST   | 800               | 14.373                   | 2400              | 403200                    | 166.97              | 4791.138              | 5.989                                                  | 27.39                      |
-| /api/v1/logs     | /          | POST   | 1000              | 2.436                    | 10000             | 1610000                   | 4104.87             | 243.613               | 0.244                                                  | 645.39                     |
-| /api/v1/users    | /          | POST   | 1000              | 2.966                    | 10000             | 1960000                   | 3371.69             | 296.587               | 0.297                                                  | 645.36                     |
-| /api/v1/users    | /authorize | POST   | 1000              | 58.884                   | 10000             | 1680000                   | 169.83              | 5888.406              | 5.888                                                  | 27.86                      |
-| /api/v1/users    | /ban       | POST   | 1000              | 50.587                   | 10000             | 1680000                   | 197.68              | 5058.725              | 5.059                                                  | 32.43                      |
-| /api/v1/users    | /unban     | POST   | 1000              | 2.277                    | 10000             | 1610000                   | 4391.15             | 227.731               | 0.228                                                  | 690.40                     |
-| /api/v1/websites | /          | POST   | 1000              | 52.230                   | 10000             | 1680000                   | 191.46              | 5222.962              | 5.223                                                  | 31.41                      |
+| Endpoint         | Path       | Method | Concurrency Level | Time taken for tests (s) | Complete requests | Total transferred (bytes) | Requests per second(RPS) | Time per request (ms) (mean) | Time per request (ms) (mean, across all concurrent requests) | Transfer rate (Kbytes/sec) |
+| ---------------- | ---------- | ------ | ----------------- | ------------------------ | ----------------- | ------------------------- | ------------------------ | ---------------------------- | ------------------------------------------------------------ | -------------------------- |
+| /api/v1/logs     | /          | POST   | 10                | 0.602                    | 100               | 16100                     | 166.22                   | 60.160                       | 6.016                                                        | 26.13                      |
+| /api/v1/users    | /          | POST   | 10                | 0.545                    | 100               | 19550                     | 183.37                   | 54.535                       | 5.453                                                        | 35.01                      |
+| /api/v1/users    | /authorize | POST   | 10                | 0.508                    | 100               | 16800                     | 196.92                   | 50.781                       | 5.078                                                        | 32.31                      |
+| /api/v1/users    | /ban       | POST   | 10                | 0.569                    | 100               | 16800                     | 175.85                   | 56.865                       | 5.687                                                        | 28.85                      |
+| /api/v1/users    | /unban     | POST   | 10                | 0.181                    | 100               | 16100                     | 553.11                   | 18.080                       | 1.808                                                        | 86.96                      |
+| /api/v1/websites | /          | POST   | 10                | 0.522                    | 100               | 16800                     | 191.47                   | 52.227                       | 5.223                                                        | 31.41                      |
+| /api/v1/logs     | /          | POST   | 100               | 0.896                    | 1000              | 161000                    | 1115.84                  | 89.618                       | 0.896                                                        | 175.44                     |
+| /api/v1/users    | /          | POST   | 100               | 0.952                    | 1000              | 196000                    | 1050.35                  | 95.206                       | 0.952                                                        | 201.04                     |
+| /api/v1/users    | /authorize | POST   | 100               | 5.582                    | 1000              | 168000                    | 179.14                   | 558.238                      | 5.582                                                        | 29.39                      |
+| /api/v1/users    | /ban       | POST   | 100               | 4.909                    | 1000              | 168000                    | 203.71                   | 490.896                      | 4.909                                                        | 33.42                      |
+| /api/v1/users    | /unban     | POST   | 100               | 0.675                    | 1000              | 161000                    | 1480.94                  | 67.525                       | 0.675                                                        | 232.84                     |
+| /api/v1/websites | /          | POST   | 100               | 5.390                    | 1000              | 168000                    | 185.54                   | 538.973                      | 5.390                                                        | 30.44                      |
+| /api/v1/logs     | /          | POST   | 200               | 0.716                    | 1000              | 161000                    | 1395.76                  | 143.291                      | 0.716                                                        | 219.45                     |
+| /api/v1/users    | /          | POST   | 200               | 0.546                    | 1000              | 196000                    | 1832.86                  | 109.119                      | 0.546                                                        | 350.82                     |
+| /api/v1/users    | /authorize | POST   | 200               | 5.068                    | 1000              | 168000                    | 197.31                   | 1013.623                     | 5.068                                                        | 32.37                      |
+| /api/v1/users    | /ban       | POST   | 200               | 5.024                    | 1000              | 168000                    | 199.06                   | 1004.728                     | 5.024                                                        | 32.66                      |
+| /api/v1/users    | /unban     | POST   | 200               | 0.396                    | 1000              | 161000                    | 2527.83                  | 79.119                       | 0.396                                                        | 397.44                     |
+| /api/v1/websites | /          | POST   | 200               | 4.500                    | 1000              | 168000                    | 222.21                   | 900.033                      | 4.500                                                        | 36.46                      |
+| /api/v1/logs     | /          | POST   | 300               | 0.498                    | 1200              | 193200                    | 2412.00                  | 124.378                      | 0.415                                                        | 379.23                     |
+| /api/v1/users    | /          | POST   | 300               | 0.776                    | 1200              | 235200                    | 1545.80                  | 194.074                      | 0.647                                                        | 295.88                     |
+| /api/v1/users    | /authorize | POST   | 300               | 6.107                    | 1200              | 201600                    | 196.50                   | 1526.755                     | 5.089                                                        | 32.24                      |
+| /api/v1/users    | /ban       | POST   | 300               | 5.434                    | 1200              | 201600                    | 220.85                   | 1358.400                     | 4.528                                                        | 36.23                      |
+| /api/v1/users    | /unban     | POST   | 300               | 0.453                    | 1200              | 193200                    | 2649.04                  | 113.249                      | 0.377                                                        | 416.50                     |
+| /api/v1/websites | /          | POST   | 300               | 5.278                    | 1200              | 201600                    | 227.35                   | 1319.555                     | 4.399                                                        | 37.30                      |
+| /api/v1/logs     | /          | POST   | 800               | 0.881                    | 2400              | 386400                    | 2723.54                  | 293.735                      | 0.367                                                        | 428.21                     |
+| /api/v1/users    | /          | POST   | 800               | 0.813                    | 2400              | 470400                    | 2950.61                  | 271.130                      | 0.339                                                        | 564.77                     |
+| /api/v1/users    | /authorize | POST   | 800               | 13.489                   | 2400              | 403200                    | 177.92                   | 4496.427                     | 5.621                                                        | 29.19                      |
+| /api/v1/users    | /ban       | POST   | 800               | 12.548                   | 2400              | 403200                    | 191.27                   | 4182.584                     | 5.228                                                        | 31.38                      |
+| /api/v1/users    | /unban     | POST   | 800               | 0.743                    | 2400              | 386400                    | 3231.25                  | 247.582                      | 0.309                                                        | 508.04                     |
+| /api/v1/websites | /          | POST   | 800               | 14.373                   | 2400              | 403200                    | 166.97                   | 4791.138                     | 5.989                                                        | 27.39                      |
+| /api/v1/logs     | /          | POST   | 1000              | 2.436                    | 10000             | 1610000                   | 4104.87                  | 243.613                      | 0.244                                                        | 645.39                     |
+| /api/v1/users    | /          | POST   | 1000              | 2.966                    | 10000             | 1960000                   | 3371.69                  | 296.587                      | 0.297                                                        | 645.36                     |
+| /api/v1/users    | /authorize | POST   | 1000              | 58.884                   | 10000             | 1680000                   | 169.83                   | 5888.406                     | 5.888                                                        | 27.86                      |
+| /api/v1/users    | /ban       | POST   | 1000              | 50.587                   | 10000             | 1680000                   | 197.68                   | 5058.725                     | 5.059                                                        | 32.43                      |
+| /api/v1/users    | /unban     | POST   | 1000              | 2.277                    | 10000             | 1610000                   | 4391.15                  | 227.731                      | 0.228                                                        | 690.40                     |
+| /api/v1/websites | /          | POST   | 1000              | 52.230                   | 10000             | 1680000                   | 191.46                   | 5222.962                     | 5.223                                                        | 31.41                      |
 
 ### Analysis
 
@@ -196,7 +217,7 @@ So we choose `apache bench` to do the performance testing.
 <div align="center">
 <img src="Lab7/timePerRequestByConcurrencyLevel.png" width="800">
 </div>
-<div align="center">Fig 2. Time per request By Concurrency level</div>
+<div align="center">Figure 2. Time per request By Concurrency level</div>
 
 At lower concurrency levels (e.g., 10), the time per request is relatively lower compared to higher concurrency levels. This is because the server can handle a smaller number of concurrent requests more efficiently, resulting in faster response times.
 
@@ -211,7 +232,7 @@ Time per request=Time taken for tests/(Complete requests/Concurrency Level)
 <div align="center">
 <img src="Lab7/throughput.png" width="800">
 </div>
-<div align="center">Fig 3. Throughput By Concurrency level</div>
+<div align="center">Figure 3. Throughput By Concurrency level</div>
 
 It's clear that the throughput increases as the concurrency level increases. This is because the server can handle a larger number of concurrent requests more efficiently, resulting in faster response times.
 
@@ -231,7 +252,7 @@ Therefore, we can also see the throughput from : Time per request (across all co
 <div align="center">
 <img src="Lab7/timePerRequestAcrossByConcurrencyLevel.png" width="800">
 </div>
-<div align="center">Fig 4. Time per request across all concurrent requests By Concurrency level.png By Concurrency level</div>
+<div align="center">Figure 4. Time per request across all concurrent requests By Concurrency level.png By Concurrency level</div>
 
 From the line of `websites` and `authorize`, time per request across all concurrent requests start increase when concurrency is 300, which means the throughput of this two endpoints start to decrease.
 
@@ -239,12 +260,12 @@ From the line of `websites` and `authorize`, time per request across all concurr
 <div align="center">
 <img src="Lab7/io-jvm.png" width="1200">
 </div>
-<div align="center">Fig 5. IO Overview and JVM Memory during Apache Bench test</div>
+<div align="center">Figure 5. IO Overview and JVM Memory during Apache Bench test</div>
 
 <div align="center">
 <img src="Lab7/jvmmisc.png" width="1200">
 </div>
-<div align="center">Fig 6. JVM Misc during Apache Bench test</div>
+<div align="center">Figure 6. JVM Misc during Apache Bench test</div>
 
 Note: For more details of resource situation see [Grafana Report](./Lab7/grafana-test.pdf)
 
