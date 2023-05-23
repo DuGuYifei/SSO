@@ -7,6 +7,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import javax.persistence.*;
 import lombok.*;
@@ -19,6 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 
 /* Requirement 2.1 */
 /* Requirement 2.4 */
+/* Requirement 7.1 */
 /**
  * Represents a user in the system.
  */
@@ -116,6 +118,14 @@ public class User extends PermissionedEntity implements Serializable {
    */
   @SerializedName("banned_by_id")
   private UUID bannedById;
+
+  /**
+   * The list of websites owned by the user.
+   */
+  /* Requirement 7.1 */
+  @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "id")
+  @ToString.Exclude
+  private List<Website> websites;
 
   /* Requirement 2.6 */
   /**

@@ -50,6 +50,7 @@ public class UserService extends BaseService {
    * @throws GenericConflictError if a user with the same email already exists
    */
   @Transactional
+  /* Requirement 7.2 */
   public void createOne(CreateUserDto dto) throws GenericConflictError {
     Optional<User> existingUser = userRepository.findByEmail(dto.getEmail());
     if (existingUser.isPresent()) {
@@ -151,6 +152,7 @@ public class UserService extends BaseService {
    * @throws GenericNotFoundError  when user is not found
    * @throws GenericForbiddenError when user is not authorized
    */
+  /* Requirement 7.2 */
   @Transactional
   public void ban(BanUserDto dto, String token) throws GenericNotFoundError, GenericForbiddenError {
     User user = verifyWithPermissions(token, GlobalPermissions.ADMIN);
@@ -178,6 +180,7 @@ public class UserService extends BaseService {
    * @throws GenericNotFoundError  when user is not found
    * @throws GenericForbiddenError when user is not authorized
    */
+  /* Requirement 7.2 */
   @Transactional
   public void unBan(UnBanUserDto dto, String token) throws GenericNotFoundError, GenericForbiddenError {
     verifyWithPermissions(token, GlobalPermissions.ADMIN);

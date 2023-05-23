@@ -3,6 +3,7 @@ package lsea.service;
 import java.util.*;
 import javax.transaction.Transactional;
 import lsea.dto.CreateWebsiteDto;
+import lsea.dto.DeleteWebsiteDto;
 import lsea.entity.User;
 import lsea.entity.Website;
 import lsea.errors.GenericForbiddenError;
@@ -10,6 +11,7 @@ import lsea.errors.GenericNotFoundError;
 import lsea.repository.UserRepository;
 import lsea.repository.WebsiteRepository;
 import lsea.utils.GlobalPermissions;
+import org.hibernate.sql.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +53,7 @@ public class WebsiteService {
    * @throws GenericNotFoundError  the generic not found error
    * @throws GenericForbiddenError the generic forbidden error
    */
+  /* Requirement 7.2 */
   @Transactional
   public void createOne(CreateWebsiteDto dto, String token)
       throws GenericNotFoundError, GenericForbiddenError {
@@ -184,5 +187,28 @@ public class WebsiteService {
     }
 
     return idUrlMap;
+  }
+
+  /**
+   * Delete by id, but only the owner of the website can delete it
+   *
+   * @param dto   the dto
+   * @param token the token
+   * @throws GenericNotFoundError  the generic not found error
+   * @throws GenericForbiddenError the generic forbidden error
+   */
+  /* Requirement 7.6 */
+  public void deleteOne(DeleteWebsiteDto dto, String token)
+      throws GenericNotFoundError, GenericForbiddenError {
+    UUID userId = User.verifyToken(token);
+    List<Website> websites = websiteRepository.findAllByCreatedById(userId);
+    Website website = websiteRepository.findById(UUID.fromString(dto.getWebsiteId())).orElse(null);
+    if(website == null) {
+      throw new GenericNotFoundError("Website not found");
+    }
+    if(!websites.contains(website)) {
+      throw new GenericForbiddenError("User has no permission to delete this website");
+    }
+    websiteRepository.deleteById(website.getId());
   }
 }

@@ -12,6 +12,7 @@ import lsea.errors.GenericForbiddenError;
 import lsea.utils.GlobalPermissions;
 
 /* Requirement 2.1 */
+/* Requirement 7.1 */
 /**
  * Represents a user group entity in the system.
  * Extends PermissionedEntity to allow for checking of global access

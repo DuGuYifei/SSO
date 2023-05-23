@@ -3,6 +3,7 @@ import requests
 import json
 import re
 
+# /* Requirement 7.3 */
 fake = Faker()
 
 host = input("Server Host: ")

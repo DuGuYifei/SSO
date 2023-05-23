@@ -13,6 +13,7 @@ import lsea.dto.CreateWebsiteDto;
 import lsea.utils.RandomBase64Generator;
 
 /* Requirement 2.1 */
+/* Requirement 7.1 */
 /**
  * Represents a website in the system.
  */
@@ -43,6 +44,9 @@ public class Website implements Serializable, Comparable<Website>, Cloneable {
   /**
    * uuid reference to users table
    */
+  /* Requirement 7.1 */
+  @ManyToOne(targetEntity = User.class)
+  @JoinColumn(name = "createdById", referencedColumnName = "id")
   @SerializedName("createdById")
   private UUID createdById;
 

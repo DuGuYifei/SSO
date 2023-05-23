@@ -4,6 +4,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.annotations.Api;
 import javax.servlet.http.HttpServletRequest;
 import lsea.dto.CreateWebsiteDto;
+import lsea.dto.DeleteWebsiteDto;
 import lsea.errors.GenericForbiddenError;
 import lsea.errors.GenericNotFoundError;
 import lsea.errors.ValidationError;
@@ -69,4 +70,33 @@ public class WebsiteController {
 
     return ResponseEntity.ok(result);
   }
+
+  /**
+   * Delete the website by ID which is chosen by user in his own profile.
+   *
+   * @param dto     DeleteWebsiteDto
+   * @param request HttpServletRequest containing the token cookie
+   * @return ResponseEntity object containing { status: 200, success: true }
+   * @throws GenericForbiddenError if the cookie is not found or token is not
+   *                              valid
+   * @throws ValidationError      if the request body is invalid or the cookie not
+   *                             contains the token
+   * @throws GenericNotFoundError if the user is not found
+   */
+  /* Requirement 7.6 */
+  @PostMapping("/delete")
+  public ResponseEntity<SuccessResult> deleteOne(
+        @RequestBody DeleteWebsiteDto dto,
+        HttpServletRequest request) throws ValidationError, GenericForbiddenError, GenericNotFoundError {
+        requestMeterRegistry.counter("request.count").increment();
+        requestMeterRegistry.counter("request.count", "method", "PUT").increment();
+        requestMeterRegistry.counter("request.count", "controller", "WebsiteController").increment();
+
+        ValidationRouter.validate(dto);
+        String token = ValidationRouter.getTokenFromRequest(request);
+        websiteService.deleteOne(dto, token);
+        SuccessResult result = SuccessResult.builder().status(200).build();
+
+        return ResponseEntity.ok(result);
+    }
 }

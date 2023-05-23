@@ -196,6 +196,7 @@ public class UserController {
    * @throws ValidationError if the request body is invalid.
    */
   /* Requirement 7.5 */
+  /* Requirement 7.2 */
   @PutMapping(path = "/")
   public ResponseEntity<SuccessResult> updateUser(
       @RequestBody UpdateUserDto dto,
