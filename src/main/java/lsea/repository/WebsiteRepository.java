@@ -18,6 +18,14 @@ public interface WebsiteRepository extends JpaRepository<Website, UUID> {
    * @param userId the user id
    * @return the list of websites
    */
+  /* Requirement 7.4 */
+  /*
+   * Based on
+   * https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query
+   * -methods.query-creation,
+   * the following method declaration, under the hood works as a parametrized
+   * query like: "where x.createdById = ?1"
+   */
   List<Website> findAllByCreatedById(UUID userId);
 
   /**
@@ -26,6 +34,14 @@ public interface WebsiteRepository extends JpaRepository<Website, UUID> {
    * @param userId      the user id
    * @param displayName the name of the website
    * @return the list of websites
+   */
+  /* Requirement 7.4 */
+  /*
+   * Based on
+   * https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query
+   * -methods.query-creation,
+   * the following method declaration, under the hood works as a parametrized
+   * query like: "where x.createdById = ?1 and x.displayName = ?2"
    */
   List<Website> findAllByCreatedByIdAndDisplayName(
       UUID userId,
@@ -37,6 +53,14 @@ public interface WebsiteRepository extends JpaRepository<Website, UUID> {
    * @param userId the user id
    * @param url    the redirect url of the website
    * @return the list of websites
+   */
+  /* Requirement 7.4 */
+  /*
+   * Based on
+   * https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query
+   * -methods.query-creation,
+   * the following method declaration, under the hood works as a parametrized
+   * query like: "where x.createdById = ?1 and x.redirectUrl = ?2"
    */
   List<Website> findAllByCreatedByIdAndRedirectUrl(UUID userId, String url);
 }
