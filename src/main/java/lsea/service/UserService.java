@@ -103,6 +103,7 @@ public class UserService extends BaseService {
    * @throws GenericForbiddenError when user is not authorized
    * @throws GenericNotFoundError  when user is not found
    */
+  /* Requirement 7.2 */
   /* Requirement 7.5 */
   @Transactional
   public void updateOne(String token, UpdateUserDto dto) throws GenericForbiddenError, GenericNotFoundError {
