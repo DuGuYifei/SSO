@@ -2,7 +2,6 @@ package lsea.controllers;
 
 import lsea.LaboratoryApplication;
 import lsea.entity.User;
-import lsea.entity.Website;
 import lsea.repository.WebsiteRepository;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -95,7 +94,9 @@ public class WebsiteControllerTest {
                 .andReturn();
 
         // delete the website
-        UUID websiteId = websiteRepository.findAllByCreatedByIdAndDisplayName(userId, "test").get(0).getId();
+        User user = new User();
+        user.setId(userId);
+        UUID websiteId = websiteRepository.findByUserAndDisplayName(user, "test").get(0).getId();
 
         String deleteRequest = "{\n" +
                 "    \"websiteId\": \"" + websiteId.toString() + "\"\n" +

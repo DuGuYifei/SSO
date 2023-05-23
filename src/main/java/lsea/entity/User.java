@@ -123,7 +123,7 @@ public class User extends PermissionedEntity implements Serializable {
    * The list of websites owned by the user.
    */
   /* Requirement 7.1 */
-  @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "id")
+  @OneToMany(mappedBy = "user")
   @ToString.Exclude
   private List<Website> websites;
 

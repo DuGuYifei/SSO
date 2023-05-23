@@ -45,10 +45,10 @@ public class Website implements Serializable, Comparable<Website>, Cloneable {
    * uuid reference to users table
    */
   /* Requirement 7.1 */
-  @ManyToOne(targetEntity = User.class)
-  @JoinColumn(name = "createdById", referencedColumnName = "id")
   @SerializedName("createdById")
-  private UUID createdById;
+  @ManyToOne
+  @JoinColumn(name = "createdById")
+  private User user;
 
   /**
    * defaults to time.now
@@ -96,7 +96,7 @@ public class Website implements Serializable, Comparable<Website>, Cloneable {
         .builder()
         .id(UUID.randomUUID())
         .displayName(dto.getDisplayName())
-        .createdById(creator.getId())
+        .user(creator)
         .createdAt(new Date())
         .redirectUrl(dto.getRedirectUrl())
         .privateKey(RandomBase64Generator.generateLong())
@@ -117,7 +117,7 @@ public class Website implements Serializable, Comparable<Website>, Cloneable {
     if (result != 0) {
       return result;
     }
-    result = this.createdById.compareTo(o.getCreatedById());
+    result = this.user.getId().compareTo(o.getUser().getId());
     if (result != 0) {
       return result;
     }
@@ -155,10 +155,9 @@ public class Website implements Serializable, Comparable<Website>, Cloneable {
         new UUID(
             this.getId().getMostSignificantBits(),
             this.getId().getLeastSignificantBits()));
-    clonedWebsite.setCreatedById(
-        new UUID(
-            this.getCreatedById().getMostSignificantBits(),
-            this.getCreatedById().getLeastSignificantBits()));
+    clonedWebsite.setUser(
+        this.getUser()
+    );
     clonedWebsite.setCreatedAt(new Date(this.getCreatedAt().getTime()));
     clonedWebsite.setUpdatedAt(new Date(this.getUpdatedAt().getTime()));
     clonedWebsite.setDisplayName(new String(this.getDisplayName()));
