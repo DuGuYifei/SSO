@@ -11,7 +11,6 @@ import lsea.errors.GenericNotFoundError;
 import lsea.repository.UserRepository;
 import lsea.repository.WebsiteRepository;
 import lsea.utils.GlobalPermissions;
-import org.hibernate.sql.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -82,8 +81,9 @@ public class WebsiteService {
   public List<Website> findAllByUserIdAndWebsiteDisplayName(
       UUID id,
       String displayName) {
-    List<Website> websites = websiteRepository.findAllByCreatedByIdAndDisplayName(
-        id,
+    User user = userRepository.findById(id).get();
+    List<Website> websites = websiteRepository.findByUserAndDisplayName(
+        user,
         displayName);
 
     websites.sort(
@@ -119,8 +119,9 @@ public class WebsiteService {
   public PriorityQueue<Website> findAllByCreatedByIdAndRedirectUrl(
       UUID userId,
       String url) {
-    List<Website> websites = websiteRepository.findAllByCreatedByIdAndRedirectUrl(
-        userId,
+    User user = userRepository.findById(userId).get();
+    List<Website> websites = websiteRepository.findByUserAndRedirectUrl(
+        user,
         url);
 
     websites.sort(
@@ -142,7 +143,9 @@ public class WebsiteService {
    */
   /* Requirement-3.4 */
   public List<Website> findAllByCreatedByIdSorted(UUID userId) {
-    List<Website> websites = websiteRepository.findAllByCreatedById(userId);
+    User user = new User();
+    user.setId(userId);
+    List<Website> websites = websiteRepository.findByUser(user);
 
     websites.sort(
         Comparator
@@ -183,7 +186,7 @@ public class WebsiteService {
     Map<UUID, String> idUrlMap = new HashMap<>();
 
     for (Website website : websites) {
-      idUrlMap.put(website.getCreatedById(), website.getDisplayName());
+      idUrlMap.put(website.getUser().getId(), website.getDisplayName());
     }
 
     return idUrlMap;
@@ -201,7 +204,8 @@ public class WebsiteService {
   public void deleteOne(DeleteWebsiteDto dto, String token)
       throws GenericNotFoundError, GenericForbiddenError {
     UUID userId = User.verifyToken(token);
-    List<Website> websites = websiteRepository.findAllByCreatedById(userId);
+    User user = userRepository.findById(userId).orElse(null);
+    List<Website> websites = websiteRepository.findByUser(user);
     Website website = websiteRepository.findById(UUID.fromString(dto.getWebsiteId())).orElse(null);
     if(website == null) {
       throw new GenericNotFoundError("Website not found");

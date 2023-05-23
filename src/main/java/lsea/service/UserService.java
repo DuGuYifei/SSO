@@ -1,10 +1,8 @@
 package lsea.service;
 
 import java.util.*;
-import lsea.dto.AuthorizeUserDto;
-import lsea.dto.BanUserDto;
-import lsea.dto.CreateUserDto;
-import lsea.dto.UnBanUserDto;
+
+import lsea.dto.*;
 import lsea.entity.User;
 import lsea.errors.GenericConflictError;
 import lsea.errors.GenericForbiddenError;
@@ -95,6 +93,28 @@ public class UserService extends BaseService {
    */
   public Optional<User> findById(UUID id) {
     return userRepository.findById(id);
+  }
+
+  /**
+   * Update username of a user by id.
+   *
+   * @param token the token of the User instance to be updated
+   * @param dto   the dto containing the new username and email
+   * @throws GenericForbiddenError when user is not authorized
+   * @throws GenericNotFoundError  when user is not found
+   */
+  /* Requirement 7.5 */
+  @Transactional
+  public void updateOne(String token, UpdateUserDto dto) throws GenericForbiddenError, GenericNotFoundError {
+    UUID userId = User.verifyToken(token);
+    Optional<User> userOptional = userRepository.findById(userId);
+    if (!userOptional.isPresent()) {
+      throw new GenericNotFoundError("User not found");
+    }
+    User user = userOptional.get();
+    user.setUsername(dto.getUsername());
+    user.setEmail(dto.getEmail());
+    userRepository.save(user);
   }
 
   /**

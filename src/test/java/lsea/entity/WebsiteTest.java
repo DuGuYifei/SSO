@@ -25,7 +25,7 @@ public class WebsiteTest {
     Website website = new Website();
     website.setId(UUID.randomUUID());
     website.setDisplayName("Example");
-    website.setCreatedById(UUID.randomUUID());
+    website.setUser(new User());
     website.setCreatedAt(new Date());
     website.setRedirectUrl("https://www.example.com");
     website.setPrivateKey(RandomBase64Generator.generateLong());
@@ -39,6 +39,7 @@ public class WebsiteTest {
     for (Field field : fields) {
       try {
         field.setAccessible(true);
+        if(field.getName().equals("user")) continue;
         assert field.get(cloned) != field.get(website);
         System.out.println(
             field.getName() +

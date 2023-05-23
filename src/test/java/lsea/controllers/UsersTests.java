@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.swagger.annotations.Api;
 import lsea.LaboratoryApplication;
+import lsea.repository.UserRepository;
 import lsea.utils.RandomBase64Generator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /* Requirement 2.1 */
@@ -30,6 +32,12 @@ public class UsersTests {
          */
         @Autowired
         private TestRestTemplate restTemplate;
+
+        /**
+         * User repository is used to check data in the database
+         */
+        @Autowired
+        private UserRepository userRepository;
 
         /**
          * Port that is used by the test server.
@@ -122,6 +130,9 @@ public class UsersTests {
                 assertThat(response.getBody()).isEqualTo(expected);
         }
 
+        /**
+         * Following test verifies whether the user authorization endpoint works as expected.
+         */
         @Test
         public void testAuthorizeUser() {
                 HttpHeaders headers = new HttpHeaders();
@@ -160,6 +171,9 @@ public class UsersTests {
                 assertThat(cookieSet).startsWith("token=");
         }
 
+        /**
+         * Following test verifies whether the user authorization endpoint rejects
+         */
         @Test
         public void testBanAndUnBanUser() {
                 HttpHeaders headers = new HttpHeaders();
@@ -261,5 +275,61 @@ public class UsersTests {
                                 String.class);
 
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        }
+
+        /**
+         * Following test update user endpoint.
+         * Create a user and update it.
+         */
+        /* Requirement 7.5 */
+        @Test
+        public void testUpdateUser() {
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+
+                String password = RandomBase64Generator.generateShort();
+                String email = "test@test.com";
+                String requestBody = "{ \"username\": \"test\", \"password\": \"" +
+                                password +
+                                "\", \"email\": \"" +
+                                email +
+                                "\" }";
+                HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
+
+                ResponseEntity<String> response = restTemplate.postForEntity(
+                                "http://localhost:" + port + "/api/v1/users",
+                                request,
+                                String.class);
+
+                assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+                // Authorize the user
+                requestBody = "{ \"email\": \"" + email + "\", \"password\": \"" + password + "\" }";
+                request = new HttpEntity<>(requestBody, headers);
+
+                response = restTemplate.postForEntity(
+                                "http://localhost:" + port + "/api/v1/users/authorize",
+                                request,
+                                String.class);
+
+                assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+                // Update the user
+                headers.add("Cookie", response.getHeaders().getFirst("Set-Cookie"));
+
+                String requestBodyUpdate = "{ \"username\": \"testUpdate\", \"email\": \"test2@test.com\" }";
+
+                request = new HttpEntity<>(requestBodyUpdate, headers);
+
+                response = restTemplate.exchange(
+                                "http://localhost:" + port + "/api/v1/users/",
+                                HttpMethod.PUT,
+                                request,
+                                String.class);
+
+                assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+                String username = userRepository.findByEmail("test2@test.com").get().getUsername();
+                assertThat(username).isEqualTo("testUpdate");
         }
 }
