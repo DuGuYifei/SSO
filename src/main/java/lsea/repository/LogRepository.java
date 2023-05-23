@@ -21,6 +21,7 @@ public interface LogRepository extends JpaRepository<Log, UUID> {
    * @param pageable - the page
    * @return a list of logs for the user
    */
+  /* Requirement 7.4 */
   @Query("SELECT l FROM Log l ORDER BY l.createdAt DESC")
   List<Log> findLogs(Pageable pageable);
 
@@ -30,6 +31,7 @@ public interface LogRepository extends JpaRepository<Log, UUID> {
    * @param timestamp - the timestamp
    * @return a list of logs for the user
    */
+  /* Requirement 7.4 */
   @Query("SELECT l FROM Log l WHERE l.createdAt > ?1 ORDER BY l.createdAt DESC")
   List<Log> findLiveLogs(Timestamp timestamp);
 }

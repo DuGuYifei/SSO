@@ -6,15 +6,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import lsea.dto.GenerateReportDto;
 import lsea.errors.GenericForbiddenError;
 import lsea.errors.GenericNotFoundError;
 import lsea.errors.ValidationError;
+import lsea.service.LogService;
 import lsea.service.ManagementService;
 import lsea.utils.ListResult;
+import lsea.utils.SuccessResult;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +28,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/management")
 public class ManagementController {
+
+  /**
+   * The LogService attribute is used to access the LogService methods.
+   */
+  @Autowired
+  private LogService logService;
 
   /**
    * The ManagementService attribute is used to access the LogService methods.
@@ -157,5 +165,29 @@ public class ManagementController {
         headers,
         HttpStatus.OK);
     return response;
+  }
+
+  /**
+   * The analysis method is used to get the five most frequent logs.
+   *
+   * @param logsNumber int number of logs to generate
+   * @param request HttpServletRequest containing the token cookie
+   * @return status 200 if the request is successful
+   * @throws GenericForbiddenError if the user does not have the permission
+   * @throws GenericNotFoundError  if the user is not found
+   * @throws ValidationError       if the dto is not valid
+   */
+  @GetMapping("/perform-test-on-database")
+  public ResponseEntity<SuccessResult> testDatabase(@RequestParam("logsNumber") int logsNumber, HttpServletRequest request) throws GenericForbiddenError, GenericNotFoundError, ValidationError {
+    String token = ValidationRouter.getTokenFromRequest(request);
+
+    Map<String, Object> results = logService.generateTestData(logsNumber, token);
+
+    SuccessResult result = SuccessResult.builder()
+            .data(results.toString())
+            .status(200)
+            .build();
+
+    return ResponseEntity.ok().body(result);
   }
 }

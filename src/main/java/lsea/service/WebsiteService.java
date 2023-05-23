@@ -81,8 +81,7 @@ public class WebsiteService {
   public List<Website> findAllByUserIdAndWebsiteDisplayName(
       UUID id,
       String displayName) {
-    User user = new User();
-    user.setId(id);
+    User user = userRepository.findById(id).get();
     List<Website> websites = websiteRepository.findByUserAndDisplayName(
         user,
         displayName);
@@ -120,8 +119,7 @@ public class WebsiteService {
   public PriorityQueue<Website> findAllByCreatedByIdAndRedirectUrl(
       UUID userId,
       String url) {
-    User user = new User();
-    user.setId(userId);
+    User user = userRepository.findById(userId).get();
     List<Website> websites = websiteRepository.findByUserAndRedirectUrl(
         user,
         url);
