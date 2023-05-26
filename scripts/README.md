@@ -9,3 +9,10 @@
 -   Then script will generate the exemplary data and send the POST requests to the server with the data.
 -   In case of any errors (status code not equal to 200), the script will print them out.
 -   But firstly, run the script with: `python script.py`.
+
+## Performance tests
+
+### Apache Benchmark (ab) test
+- **Endpoint**: `/api/v1/logs`
+- **Endpoint**: `/api/v1/users`
+- **Endpoint**: `/api/v1/WebSites`
