@@ -131,7 +131,8 @@ public class UsersTests {
         }
 
         /**
-         * Following test verifies whether the user authorization endpoint works as expected.
+         * Following test verifies whether the user authorization endpoint works as
+         * expected.
          */
         @Test
         public void testAuthorizeUser() {

@@ -248,7 +248,7 @@ However, it would be expected for the task time to increase when the number of t
 
 Based on **Fig. 5** trendlines, the task execution time experiences a rapid decline initially until the thread count reaches 6 from 207 ms to 64 ms. Afterward, there is a slight increase from 6 threads to 8, from 64 ms up to 67 ms. After that the execution time decreases slowly from 8 threads until **15** inclusive from 67 ms to 47 ms. There is a gradual increase in task time when the thread count exceeds 16 according to the figure line, and around 25 according to the trendline. **The lowest registered average execution time value is specifically for utilizing 15 threads - 47 ms.**
 
-The same same conlcusions are drawn from **Fig. 6**. The lowest execution time still belongs to thread count of 15, which is 49 ms. The trendline tends to increase around 25-26 number of threads. 
+The same same conlcusions are drawn from **Fig. 6**. The lowest execution time still belongs to thread count of 15, which is 49 ms. The trendline tends to increase around 25-26 number of threads.
 
 Key Findings:
 

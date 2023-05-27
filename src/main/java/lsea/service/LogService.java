@@ -104,12 +104,13 @@ public class LogService {
    * Returns the map with the database performance tests results.
    *
    * @param logsNumber - the number of logs to be generated
-   * @param token - the token of the user
+   * @param token      - the token of the user
    * @return the map with the database performance tests results
    * @throws GenericForbiddenError when user is not authorized
    * @throws GenericNotFoundError  when user is not found
    */
-  public Map<String, Object> generateTestData(int logsNumber, String token) throws GenericForbiddenError, GenericNotFoundError {
+  public Map<String, Object> generateTestData(int logsNumber, String token)
+      throws GenericForbiddenError, GenericNotFoundError {
     List<Long> durationsWrite = new ArrayList<>();
     List<Long> durationsRead = new ArrayList<>();
     List<Log> logs = new ArrayList<>();
@@ -132,9 +133,9 @@ public class LogService {
 
     for (int i = 0; i < logsNumber; i++) {
       CreateLogDto dto = CreateLogDto.builder()
-        .data("test" + i)
-        .logType(0)
-        .build();
+          .data("test" + i)
+          .logType(0)
+          .build();
 
       Log log = Log.create(dto, user);
       logs.add(log);

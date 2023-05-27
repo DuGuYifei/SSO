@@ -156,8 +156,7 @@ public class Website implements Serializable, Comparable<Website>, Cloneable {
             this.getId().getMostSignificantBits(),
             this.getId().getLeastSignificantBits()));
     clonedWebsite.setUser(
-        this.getUser()
-    );
+        this.getUser());
     clonedWebsite.setCreatedAt(new Date(this.getCreatedAt().getTime()));
     clonedWebsite.setUpdatedAt(new Date(this.getUpdatedAt().getTime()));
     clonedWebsite.setDisplayName(new String(this.getDisplayName()));

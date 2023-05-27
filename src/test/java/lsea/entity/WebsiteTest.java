@@ -39,7 +39,8 @@ public class WebsiteTest {
     for (Field field : fields) {
       try {
         field.setAccessible(true);
-        if(field.getName().equals("user")) continue;
+        if (field.getName().equals("user"))
+          continue;
         assert field.get(cloned) != field.get(website);
         System.out.println(
             field.getName() +

@@ -78,25 +78,26 @@ public class WebsiteController {
    * @param request HttpServletRequest containing the token cookie
    * @return ResponseEntity object containing { status: 200, success: true }
    * @throws GenericForbiddenError if the cookie is not found or token is not
-   *                              valid
-   * @throws ValidationError      if the request body is invalid or the cookie not
-   *                             contains the token
-   * @throws GenericNotFoundError if the user is not found
+   *                               valid
+   * @throws ValidationError       if the request body is invalid or the cookie
+   *                               not
+   *                               contains the token
+   * @throws GenericNotFoundError  if the user is not found
    */
   /* Requirement 7.6 */
   @PostMapping("/delete")
   public ResponseEntity<SuccessResult> deleteOne(
-        @RequestBody DeleteWebsiteDto dto,
-        HttpServletRequest request) throws ValidationError, GenericForbiddenError, GenericNotFoundError {
-        requestMeterRegistry.counter("request.count").increment();
-        requestMeterRegistry.counter("request.count", "method", "PUT").increment();
-        requestMeterRegistry.counter("request.count", "controller", "WebsiteController").increment();
+      @RequestBody DeleteWebsiteDto dto,
+      HttpServletRequest request) throws ValidationError, GenericForbiddenError, GenericNotFoundError {
+    requestMeterRegistry.counter("request.count").increment();
+    requestMeterRegistry.counter("request.count", "method", "PUT").increment();
+    requestMeterRegistry.counter("request.count", "controller", "WebsiteController").increment();
 
-        ValidationRouter.validate(dto);
-        String token = ValidationRouter.getTokenFromRequest(request);
-        websiteService.deleteOne(dto, token);
-        SuccessResult result = SuccessResult.builder().status(200).build();
+    ValidationRouter.validate(dto);
+    String token = ValidationRouter.getTokenFromRequest(request);
+    websiteService.deleteOne(dto, token);
+    SuccessResult result = SuccessResult.builder().status(200).build();
 
-        return ResponseEntity.ok(result);
-    }
+    return ResponseEntity.ok(result);
+  }
 }
