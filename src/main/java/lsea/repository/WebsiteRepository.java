@@ -33,7 +33,7 @@ public interface WebsiteRepository extends JpaRepository<Website, UUID> {
   /**
    * Find all by created by id and website name.
    *
-   * @param user      the user id
+   * @param user        the user id
    * @param displayName the name of the website
    * @return the list of websites
    */
@@ -51,7 +51,7 @@ public interface WebsiteRepository extends JpaRepository<Website, UUID> {
    * Find all by created by id and website redirect url.
    *
    * @param user the user id
-   * @param url    the redirect url of the website
+   * @param url  the redirect url of the website
    * @return the list of websites
    */
   /* Requirement 7.4 */

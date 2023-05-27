@@ -13,6 +13,7 @@
 ## Performance tests
 
 ### Apache Benchmark (ab) test
-- **Endpoint**: `/api/v1/logs`
-- **Endpoint**: `/api/v1/users`
-- **Endpoint**: `/api/v1/WebSites`
+
+-   **Endpoint**: `/api/v1/logs`
+-   **Endpoint**: `/api/v1/users`
+-   **Endpoint**: `/api/v1/WebSites`

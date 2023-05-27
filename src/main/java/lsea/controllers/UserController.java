@@ -188,12 +188,13 @@ public class UserController {
   /**
    * The updateUsername method is used to update the username of a user.
    *
-   * @param dto UpdateUsernameDto object containing the new username.
+   * @param dto     UpdateUsernameDto object containing the new username.
    * @param request HttpServletRequest object containing the token.
    * @return ResponseEntity object containing { status: 200, success: true }
-   * @throws GenericForbiddenError if the user does not have the required permissions.
-   * @throws GenericNotFoundError if the user is not found.
-   * @throws ValidationError if the request body is invalid.
+   * @throws GenericForbiddenError if the user does not have the required
+   *                               permissions.
+   * @throws GenericNotFoundError  if the user is not found.
+   * @throws ValidationError       if the request body is invalid.
    */
   /* Requirement 7.5 */
   /* Requirement 7.2 */

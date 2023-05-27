@@ -8,7 +8,6 @@ terms of **concurrent user load**, **response times**, **system throughput**, **
 part of **stress testing**. Please note that the performance of the `ManagementController`, which pertains to the
 administrator interface, has been previously tested and documented in [Lab4-Conclusion](./Lab4-Conclusions.md).
 
-
 ## Database model
 
 ### Tables
@@ -78,17 +77,18 @@ spring.h2.console.enabled=true
 
 2. **Entity Mapping:**
 
-   JPA repositories use entity classes that represent the database tables or collections. These entities are typically
-   annotated with JPA annotations, such as @Entity, @Table, and @Column, to define their mapping to the database schema.
-   The mapping information allows JPA to automatically generate SQL statements and map the results to and from the
-   entities.
+    JPA repositories use entity classes that represent the database tables or collections. These entities are typically
+    annotated with JPA annotations, such as @Entity, @Table, and @Column, to define their mapping to the database schema.
+    The mapping information allows JPA to automatically generate SQL statements and map the results to and from the
+    entities.
 
 3. **Repository Interfaces:**
 
-   JPA repositories define interfaces that extend the JpaRepository interface or other related repository interfaces
-   provided by Spring Data JPA. These interfaces define the contract for accessing and manipulating the entities in the
-   database. By implementing these interfaces, Spring Data JPA automatically generates the necessary implementations at
-   runtime.
+    JPA repositories define interfaces that extend the JpaRepository interface or other related repository interfaces
+    provided by Spring Data JPA. These interfaces define the contract for accessing and manipulating the entities in the
+    database. By implementing these interfaces, Spring Data JPA automatically generates the necessary implementations at
+    runtime.
+
     ```java
     @Repository
     public interface LogRepository extends JpaRepository<Log, UUID> {
@@ -114,24 +114,24 @@ spring.h2.console.enabled=true
 
 4. **EntityManagerFactory and EntityManager:**
 
-   JPA repositories use the `EntityManagerFactory`, which is responsible for creating and managing EntityManager
-   instances. The `EntityManager` is the central interface for performing CRUD (Create, Read, Update, Delete) operations
-   in JPA.
+    JPA repositories use the `EntityManagerFactory`, which is responsible for creating and managing EntityManager
+    instances. The `EntityManager` is the central interface for performing CRUD (Create, Read, Update, Delete) operations
+    in JPA.
 
-   We here not use them directly, but use `JpaRepository` instead. For example, The `save()` method provided by
-   the `JpaRepository` interface abstracts away the underlying details of the `EntityManager` and provides a convenient
-   way to persist entities to the database. When we invoke the `save()` method on a JpaRepository instance, behind the
-   scenes, the EntityManager is utilized to perform the actual persistence operation. The EntityManager manages the
-   persistence context and interacts with the underlying database.
-   
+    We here not use them directly, but use `JpaRepository` instead. For example, The `save()` method provided by
+    the `JpaRepository` interface abstracts away the underlying details of the `EntityManager` and provides a convenient
+    way to persist entities to the database. When we invoke the `save()` method on a JpaRepository instance, behind the
+    scenes, the EntityManager is utilized to perform the actual persistence operation. The EntityManager manages the
+    persistence context and interacts with the underlying database.
 
 ## Performance testing
 
 ### Target
-Conduct backend performance testing by performing load tests to obtain data on 
-concurrent user counts, response times, system throughput, resource utilization 
-(including CPU usage, memory usage, disk I/O, network I/O), and other metrics. 
-We hope, through data analysis, to examine the limits in specific server environments 
+
+Conduct backend performance testing by performing load tests to obtain data on
+concurrent user counts, response times, system throughput, resource utilization
+(including CPU usage, memory usage, disk I/O, network I/O), and other metrics.
+We hope, through data analysis, to examine the limits in specific server environments
 and provided recommendations for software optimization.
 
 ### Preparation
@@ -143,16 +143,16 @@ and provided recommendations for software optimization.
     - Disk: 32GB
 2. Monitoring System:
     - Springboot:
-      - Actuator: Open endpoint `/actuator/prometheus` to get metrics data 
-      - Prometheus (MicroMeter): Collect metrics data to `/actuator/prometheus`
+        - Actuator: Open endpoint `/actuator/prometheus` to get metrics data
+        - Prometheus (MicroMeter): Collect metrics data to `/actuator/prometheus`
     - Servers:
-      - Prometheus: Collect metrics data from `/actuator/prometheus` and present them
-        in a web UI default at `http://ip:9090`. In `/graph` page, we can get visualized data by query. 
-      - Grafana: Distributed monitoring system, visualize metrics data from Prometheus server.
-        In Grafana, we can create dashboard to show metrics data in a more intuitive way. Also we can set alert rules or
-        ask Grafana to send report to us.
-   
+        - Prometheus: Collect metrics data from `/actuator/prometheus` and present them
+          in a web UI default at `http://ip:9090`. In `/graph` page, we can get visualized data by query.
+        - Grafana: Distributed monitoring system, visualize metrics data from Prometheus server.
+          In Grafana, we can create dashboard to show metrics data in a more intuitive way. Also we can set alert rules or
+          ask Grafana to send report to us.
 3. Server conditions before start test environment:
+
 ```
 top - 20:58:21 up  1:04,  0 users,  load average: 0.09, 0.16, 0.17
 Tasks:  22 total,   3 running,  19 sleeping,   0 stopped,   0 zombie
@@ -162,11 +162,11 @@ MiB Swap:      0.0 total,      0.0 free,      0.0 used.   6575.7 avail Mem
 ```
 
 4. Testing tool: Apache Bench (ab)
-   
-   In [an article of Tencent](https://cloud.tencent.com/developer/article/1066196), during their load testing by `wrk`
-   , `http_load` and `apache bench`, based on recording the backend logs, they found that the error margin of the number of
-   requests in Apache Bench (ab) was around 0.2%. However, for the other two tools, the error margin was around 0.5%.
-   So we choose `apache bench` to do the performance testing.
+
+    In [an article of Tencent](https://cloud.tencent.com/developer/article/1066196), during their load testing by `wrk`
+    , `http_load` and `apache bench`, based on recording the backend logs, they found that the error margin of the number of
+    requests in Apache Bench (ab) was around 0.2%. However, for the other two tools, the error margin was around 0.5%.
+    So we choose `apache bench` to do the performance testing.
 
 ### Apache Bench Testing result
 
@@ -212,6 +212,7 @@ MiB Swap:      0.0 total,      0.0 free,      0.0 used.   6575.7 avail Mem
 ### Analysis
 
 #### 1. Time per request (ms)
+
 **Formula:** Time per request=Time taken for tests/(Complete requests/Concurrency Level)
 
 <div align="center">
@@ -226,9 +227,11 @@ As the concurrency level increases (e.g., 100, 200, 300), the time per request a
 At very high concurrency levels (e.g., 800, 1000), the time per request may exhibit some fluctuations. This is often due to the server reaching its maximum capacity and becoming overloaded. The server may struggle to handle the increasing number of concurrent requests, resulting in varying response times.
 
 #### 2. Throughput (req/sec)
+
 **Formula:** Throughput = Complete requests/Time taken for tests
 
 Time per request=Time taken for tests/(Complete requests/Concurrency Level)
+
 <div align="center">
 <img src="Lab7/throughput.png" width="800">
 </div>
@@ -249,6 +252,7 @@ i.e.:
 Throughput = 1 / Time per request (ms) (across all concurrent requests)
 
 Therefore, we can also see the throughput from : Time per request (across all concurrent requests)
+
 <div align="center">
 <img src="Lab7/timePerRequestAcrossByConcurrencyLevel.png" width="800">
 </div>
@@ -257,6 +261,7 @@ Therefore, we can also see the throughput from : Time per request (across all co
 From the line of `websites` and `authorize`, time per request across all concurrent requests start increase when concurrency is 300, which means the throughput of this two endpoints start to decrease.
 
 ### Resource of the JVM and server
+
 <div align="center">
 <img src="Lab7/io-jvm.png" width="1200">
 </div>
@@ -275,22 +280,25 @@ From the JVM Misc in figure 6, we can find the max CPU usage is 83%. And when ch
 
 From the Thread panel in figure 6, we can see the max number of threads is 216. However, we can also find it creates new threads each time. But maximum of threads is stable in 216 since the concurrency level of request comes to 100.
 
-For the JVM Memory part in the figure 5, we can see the memory use has large gap between maximum value and used which means we handle the data read not bad. 
+For the JVM Memory part in the figure 5, we can see the memory use has large gap between maximum value and used which means we handle the data read not bad.
 Comparing to [Report of Lab4](./Lab4-Conclusions.md), which memory using limit the performance of the `management` endpoints, we should improve the algorithm in `management` point then can try new loading test.
 
 #### Conclusion
 
 Speed:
+
 1. At lower concurrency levels (e.g., 10), the system demonstrates relatively fast response times, with time per request ranging from 18.080 ms to 60.160 ms.
 2. As the concurrency level increases (e.g., 100, 200, 300), the response times tend to increase, indicating a decrease in overall system speed. The time per request ranges can reach to 1526.755 ms at these concurrency levels.
 3. At extremely high concurrency levels (e.g., 800, 1000), the response times can further increase, reaching up to 5888.406 ms. This suggests that the system starts to experience significant performance limitations when dealing with a large number of concurrent requests.
 
 Limitations:
+
 1. The system's performance appears to have limitations when handling higher concurrency levels. As the number of concurrent requests increases, the system may struggle to efficiently process and respond to each request within an acceptable time frame.
 2. Fluctuations in response times at extreme concurrency levels (800, 1000) indicate that the system may be reaching its maximum capacity and facing resource constraints or contention issues.
-3 The average response times per request at higher concurrency levels (1000) are considerably higher compared to lower concurrency levels, indicating a potential bottleneck or saturation point in the system's performance.
-   
+   3 The average response times per request at higher concurrency levels (1000) are considerably higher compared to lower concurrency levels, indicating a potential bottleneck or saturation point in the system's performance.
+
 Solution generated:
+
 1. Set up timeout limitation for request: For now, we didn't set up the timeout request, so each request will sit in the waiting list. However, from the time per request, it is obviously not a good experience to wait for more than 5 seconds for some simple task.
 2. Caching some results and check status of data in database: In `ban` endpoint, it will go through all algorithm of `ban()` even this user had been banned.
 3. Configure max request at the same time and set thread pool: During the test, it creates new threads each time while not all concurrency level will go to the maximum. Before deploying, we can set a maximum of request to handle at the same time and give a suitable size of thread pool based on the server of deploying will use.

@@ -28,88 +28,88 @@ import java.util.UUID;
 @AutoConfigureMockMvc
 public class WebsiteControllerTest {
 
-    /**
-     * This is the MockMvc object that is used to send requests to the endpoints.
-     */
-    @Resource
-    private MockMvc mockMvc;
+        /**
+         * This is the MockMvc object that is used to send requests to the endpoints.
+         */
+        @Resource
+        private MockMvc mockMvc;
 
-    /**
-     * This is website repository that is used to access the database.
-     */
-    @Autowired
-    private WebsiteRepository websiteRepository;
+        /**
+         * This is website repository that is used to access the database.
+         */
+        @Autowired
+        private WebsiteRepository websiteRepository;
 
-    /**
-     * Test for deleteOne method.
-     *
-     * @throws Exception if the request is invalid
-     */
-    /* Requirement 7.6 */
-    @Test
-    @DisplayName("Test of WebsiteController")
-    public void deleteOne() throws Exception {
-        // create a user and authorize it
-        String userRequest = "{\n" +
-                "    \"username\": \"test\",\n" +
-                "    \"password\": \"12345678\",\n" +
-                "    \"email\": \"123@11.com\"\n" +
-                "}";
+        /**
+         * Test for deleteOne method.
+         *
+         * @throws Exception if the request is invalid
+         */
+        /* Requirement 7.6 */
+        @Test
+        @DisplayName("Test of WebsiteController")
+        public void deleteOne() throws Exception {
+                // create a user and authorize it
+                String userRequest = "{\n" +
+                                "    \"username\": \"test\",\n" +
+                                "    \"password\": \"12345678\",\n" +
+                                "    \"email\": \"123@11.com\"\n" +
+                                "}";
 
-        String userAuthRequest = "{\n" +
-                "    \"password\": \"12345678\",\n" +
-                "    \"email\": \"123@11.com\"\n" +
-                "}";
+                String userAuthRequest = "{\n" +
+                                "    \"password\": \"12345678\",\n" +
+                                "    \"email\": \"123@11.com\"\n" +
+                                "}";
 
-        mockMvc.perform(
-                        MockMvcRequestBuilders
-                                .post("/api/v1/users")
-                                .contentType("application/json;charset=UTF-8")
-                                .content(userRequest))
-                .andReturn();
+                mockMvc.perform(
+                                MockMvcRequestBuilders
+                                                .post("/api/v1/users")
+                                                .contentType("application/json;charset=UTF-8")
+                                                .content(userRequest))
+                                .andReturn();
 
-        MvcResult result = mockMvc.perform(
-                        MockMvcRequestBuilders
-                                .post("/api/v1/users/authorize")
-                                .contentType("application/json;charset=UTF-8")
-                                .content(userAuthRequest))
-                .andReturn();
+                MvcResult result = mockMvc.perform(
+                                MockMvcRequestBuilders
+                                                .post("/api/v1/users/authorize")
+                                                .contentType("application/json;charset=UTF-8")
+                                                .content(userAuthRequest))
+                                .andReturn();
 
-        Cookie cookie = result.getResponse().getCookie("token");
+                Cookie cookie = result.getResponse().getCookie("token");
 
-        UUID userId = User.verifyToken(cookie.getValue());
+                UUID userId = User.verifyToken(cookie.getValue());
 
-        // create a website
-        String websiteRequest = "{\n" +
-                "    \"displayName\": \"test\",\n" +
-                "    \"redirectUrl\": \"test.com\"\n" +
-                "}" ;
+                // create a website
+                String websiteRequest = "{\n" +
+                                "    \"displayName\": \"test\",\n" +
+                                "    \"redirectUrl\": \"test.com\"\n" +
+                                "}";
 
-        mockMvc.perform(
-                        MockMvcRequestBuilders
-                                .post("/api/v1/websites")
+                mockMvc.perform(
+                                MockMvcRequestBuilders
+                                                .post("/api/v1/websites")
+                                                .cookie(cookie)
+                                                .contentType("application/json;charset=UTF-8")
+                                                .content(websiteRequest))
+                                .andReturn();
+
+                // delete the website
+                User user = new User();
+                user.setId(userId);
+                UUID websiteId = websiteRepository.findByUserAndDisplayName(user, "test").get(0).getId();
+
+                String deleteRequest = "{\n" +
+                                "    \"websiteId\": \"" + websiteId.toString() + "\"\n" +
+                                "}";
+
+                MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                                .post("/api/v1/websites/delete")
                                 .cookie(cookie)
                                 .contentType("application/json;charset=UTF-8")
-                                .content(websiteRequest))
-                .andReturn();
+                                .content(deleteRequest);
 
-        // delete the website
-        User user = new User();
-        user.setId(userId);
-        UUID websiteId = websiteRepository.findByUserAndDisplayName(user, "test").get(0).getId();
-
-        String deleteRequest = "{\n" +
-                "    \"websiteId\": \"" + websiteId.toString() + "\"\n" +
-                "}";
-
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/api/v1/websites/delete")
-                .cookie(cookie)
-                .contentType("application/json;charset=UTF-8")
-                .content(deleteRequest);
-
-        mockMvc.perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn();
-    }
+                mockMvc.perform(requestBuilder)
+                                .andExpect(MockMvcResultMatchers.status().isOk())
+                                .andReturn();
+        }
 }

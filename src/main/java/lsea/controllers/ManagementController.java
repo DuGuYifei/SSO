@@ -171,22 +171,23 @@ public class ManagementController {
    * The analysis method is used to get the five most frequent logs.
    *
    * @param logsNumber int number of logs to generate
-   * @param request HttpServletRequest containing the token cookie
+   * @param request    HttpServletRequest containing the token cookie
    * @return status 200 if the request is successful
    * @throws GenericForbiddenError if the user does not have the permission
    * @throws GenericNotFoundError  if the user is not found
    * @throws ValidationError       if the dto is not valid
    */
   @GetMapping("/perform-test-on-database")
-  public ResponseEntity<SuccessResult> testDatabase(@RequestParam("logsNumber") int logsNumber, HttpServletRequest request) throws GenericForbiddenError, GenericNotFoundError, ValidationError {
+  public ResponseEntity<SuccessResult> testDatabase(@RequestParam("logsNumber") int logsNumber,
+      HttpServletRequest request) throws GenericForbiddenError, GenericNotFoundError, ValidationError {
     String token = ValidationRouter.getTokenFromRequest(request);
 
     Map<String, Object> results = logService.generateTestData(logsNumber, token);
 
     SuccessResult result = SuccessResult.builder()
-            .data(results.toString())
-            .status(200)
-            .build();
+        .data(results.toString())
+        .status(200)
+        .build();
 
     return ResponseEntity.ok().body(result);
   }
