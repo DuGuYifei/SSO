@@ -86,7 +86,7 @@ public class UserGroup extends PermissionedEntity implements Serializable {
    */
   public static UserGroup create(CreateUserGroupDto dto, User creator)
       throws GenericForbiddenError {
-    if (!creator.hasGlobalAccess(GlobalPermissions.MODERATOR)) {
+    if (creator.getGlobalPermission() < GlobalPermissions.MODERATOR) {
       throw new GenericForbiddenError(
           "You are not authorized to create a user group");
     }

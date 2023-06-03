@@ -13,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /* Requirement 2.1 */
@@ -25,7 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @Api(value = "User Integration Tests")
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { LaboratoryApplication.class }, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class UsersTests {
+public class UsersControllerTests {
 
         /**
          * TestRestTemplate is used to send HTTP requests to the test server.
