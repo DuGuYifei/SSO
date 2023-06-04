@@ -31,13 +31,13 @@ public class ManagementControllerTest {
         private MockMvc mockMvc;
 
         /**
-         * This test method sends a Get request to the "/api/v1/management/analysis"
+         * This test method sends a Get request to the "/api/v1/management/analysis-longest-five"
          *
          * @throws Exception Exception of mockMvc.perform
          */
         @Test
         @DisplayName("Test of ManagementController")
-        public void analysis() throws Exception {
+        public void analysisLongest() throws Exception {
                 String userRequest = "{\n" +
                                 "    \"username\": \"test\",\n" +
                                 "    \"password\": \"12345678\",\n" +
@@ -111,6 +111,8 @@ public class ManagementControllerTest {
                                 .cookie(cookie)
                                 .contentType("application/json;charset=UTF-8");
 
+                /* Requirement 9 */
+                // isOK
                 mockMvc
                                 .perform(requestBuilder)
                                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -122,5 +124,175 @@ public class ManagementControllerTest {
                                                                 .jsonPath("$.data[4].data")
                                                                 .value("test data999999999"))
                                 .andDo(MockMvcResultHandlers.print());
+
+                requestBuilder = MockMvcRequestBuilders
+                        .get("/api/v1/management/analysis-longest-five")
+                        .param("numThreads", "5")
+                        .contentType("application/json;charset=UTF-8");
+
+                /* Requirement 9 */
+                // no cookies
+                mockMvc.perform(requestBuilder)
+                        .andExpect(MockMvcResultMatchers.status().isForbidden())
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("No cookies found"))
+                        .andDo(MockMvcResultHandlers.print());
+
+                requestBuilder = MockMvcRequestBuilders
+                        .get("/api/v1/management/analysis-longest-five")
+                        .cookie(cookie)
+                        .contentType("application/json;charset=UTF-8");
+
+                /* Requirement 9 */
+                // no content
+                mockMvc.perform(requestBuilder)
+                        .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Something went wrong"))
+                        .andDo(MockMvcResultHandlers.print());
+
+                requestBuilder = MockMvcRequestBuilders
+                        .get("/api/v1/management/analysis-longest-five")
+                        .param("numThreads", "5")
+                        .cookie(new Cookie("token", "test"))
+                        .contentType("application/json;charset=UTF-8");
+
+                /* Requirement 9 */
+                // invalid token
+                mockMvc.perform(requestBuilder)
+                        .andExpect(MockMvcResultMatchers.status().isForbidden())
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid token"))
+                        .andDo(MockMvcResultHandlers.print());
+        }
+
+        /**
+         * This test method sends a Get request to the "/api/v1/management/analysis-shortest-five"
+         *
+         * @throws Exception Exception of mockMvc.perform
+         */
+        @Test
+        @DisplayName("Test of ManagementController")
+        public void analysisShortest() throws Exception {
+                String userRequest = "{\n" +
+                        "    \"username\": \"test\",\n" +
+                        "    \"password\": \"12345678\",\n" +
+                        "    \"email\": \"123@11.com\"\n" +
+                        "}";
+
+                String userAuthRequest = "{\n" +
+                        "    \"password\": \"12345678\",\n" +
+                        "    \"email\": \"123@11.com\"\n" +
+                        "}";
+
+                mockMvc
+                        .perform(
+                                MockMvcRequestBuilders
+                                        .post("/api/v1/users")
+                                        .contentType("application/json;charset=UTF-8")
+                                        .content(userRequest))
+                        .andReturn();
+
+                MvcResult result = mockMvc
+                        .perform(
+                                MockMvcRequestBuilders
+                                        .post("/api/v1/users/authorize")
+                                        .contentType("application/json;charset=UTF-8")
+                                        .content(userAuthRequest))
+                        .andReturn();
+
+                Cookie cookie = result.getResponse().getCookie("token");
+
+                for (int i = 0; i < 10; i++) {
+                        StringBuilder logData = new StringBuilder("test data");
+                        for (int j = 0; j < i; j++) {
+                                logData.append(i);
+                        }
+                        String logRequest = "{\n" +
+                                "    \"data\": \"" +
+                                logData +
+                                "\",\n" +
+                                "    \"logType\": 0\n" +
+                                "}";
+                        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                                .post("/api/v1/logs")
+                                .cookie(cookie)
+                                .contentType("application/json;charset=UTF-8")
+                                .content(logRequest);
+
+                        mockMvc
+                                .perform(requestBuilder)
+                                .andDo(MockMvcResultHandlers.print())
+                                .andReturn();
+                }
+
+                userAuthRequest = "{\n" +
+                        "    \"password\": \"test_admin\",\n" +
+                        "    \"email\": \"test_admin@example.com\"\n" +
+                        "}";
+
+                result = mockMvc
+                        .perform(
+                                MockMvcRequestBuilders
+                                        .post("/api/v1/users/authorize")
+                                        .contentType("application/json;charset=UTF-8")
+                                        .content(userAuthRequest))
+                        .andReturn();
+
+                cookie = result.getResponse().getCookie("token");
+
+                MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                        .get("/api/v1/management/analysis-shortest-five")
+                        .param("numThreads", "5")
+                        .cookie(cookie)
+                        .contentType("application/json;charset=UTF-8");
+
+                /* Requirement 9 */
+                // isOK
+                mockMvc
+                        .perform(requestBuilder)
+                        .andExpect(MockMvcResultMatchers.status().isOk())
+                        .andExpect(
+                                MockMvcResultMatchers.jsonPath("$.data[0].data")
+                                        .value("test data4444"))
+                        .andExpect(
+                                MockMvcResultMatchers
+                                        .jsonPath("$.data[4].data")
+                                        .value("test data"))
+                        .andDo(MockMvcResultHandlers.print());
+
+                requestBuilder = MockMvcRequestBuilders
+                        .get("/api/v1/management/analysis-longest-five")
+                        .param("numThreads", "5")
+                        .contentType("application/json;charset=UTF-8");
+
+                /* Requirement 9 */
+                // no cookies
+                mockMvc.perform(requestBuilder)
+                        .andExpect(MockMvcResultMatchers.status().isForbidden())
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("No cookies found"))
+                        .andDo(MockMvcResultHandlers.print());
+
+                requestBuilder = MockMvcRequestBuilders
+                        .get("/api/v1/management/analysis-longest-five")
+                        .cookie(cookie)
+                        .contentType("application/json;charset=UTF-8");
+
+                /* Requirement 9 */
+                // no content
+                mockMvc.perform(requestBuilder)
+                        .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Something went wrong"))
+                        .andDo(MockMvcResultHandlers.print());
+
+                requestBuilder = MockMvcRequestBuilders
+                        .get("/api/v1/management/analysis-longest-five")
+                        .param("numThreads", "5")
+                        .cookie(new Cookie("token", "test"))
+                        .contentType("application/json;charset=UTF-8");
+
+                /* Requirement 9 */
+                // invalid token
+                mockMvc.perform(requestBuilder)
+                        .andExpect(MockMvcResultMatchers.status().isForbidden())
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid token"))
+                        .andDo(MockMvcResultHandlers.print());
         }
 }
