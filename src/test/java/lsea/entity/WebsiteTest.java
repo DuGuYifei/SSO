@@ -4,13 +4,17 @@ import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.UUID;
 import lsea.LaboratoryApplication;
+import lsea.dto.CreateUserDto;
 import lsea.dto.CreateWebsiteDto;
 import lsea.utils.RandomBase64Generator;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import javax.transaction.Transactional;
 
 import static junit.framework.TestCase.*;
 
@@ -19,6 +23,7 @@ import static junit.framework.TestCase.*;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { LaboratoryApplication.class })
+@Transactional
 public class WebsiteTest {
 
   /**
@@ -31,14 +36,15 @@ public class WebsiteTest {
    */
   @BeforeEach
   public void setup() {
-    user = new User();
+    user = User.create(CreateUserDto.builder().build());
     user.setId(UUID.randomUUID());
   }
 
   /**
-   * Test the getters and setters for the id field.
+   * Test the creation of a new Website instance based on CreateWebsiteDto.
    */
   @Test
+  @Rollback
   public void testCreateWebsite() {
     CreateWebsiteDto createWebsiteDto = CreateWebsiteDto.builder()
             .displayName("Test Website")
