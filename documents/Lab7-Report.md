@@ -129,7 +129,7 @@ spring.h2.console.enabled=true
 ### Target
 
 Conduct backend performance testing by performing load tests to obtain data on
-concurrent user counts, response times, system throughput, resource utilization
+concurrent use*________*r counts, response times, system throughput, resource utilization
 (including CPU usage, memory usage, disk I/O, network I/O), and other metrics.
 We hope, through data analysis, to examine the limits in specific server environments
 and provided recommendations for software optimization.
