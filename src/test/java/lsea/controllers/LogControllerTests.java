@@ -177,12 +177,12 @@ public class LogControllerTests {
     }
 
     /**
-     * This test method sends a Post request to the "/api/v1/logs" endpoint with an invalid token.
+     * This test method sends a Post request to the "/api/v1/logs" endpoint with an invalid authorization token.
      *
      * @throws Exception if the test fails
      */
     @Test
-    @DisplayName("Test of LogController createOne method with invalid token")
+    @DisplayName("Test of LogController createOne method with invalid authorization token")
     @Rollback
     public void testCreateOneWithInvalidToken() throws Exception {
         // Arrange
@@ -195,7 +195,7 @@ public class LogControllerTests {
                 .content(logRequest);
 
         /* Requirement 9 */
-        // invalid token
+        // invalid authorization token
         // Act
         mockMvc.perform(requestBuilder)
                 // Assert
@@ -346,12 +346,12 @@ public class LogControllerTests {
     }
 
     /**
-     * This test method sends a Get request to the "/api/v1/logs/generate-test-data" with invalid token
+     * This test method sends a Get request to the "/api/v1/logs/generate-test-data" with invalid authorization token
      *
      * @throws Exception if the test fails
      */
     @Test
-    @DisplayName("Test of generateData method in LogController with invalid token")
+    @DisplayName("Test of generateData method in LogController with invalid authorization token")
     @Rollback
     public void testGenerateDataInvalidToken() throws Exception {
         // Arrange
@@ -364,7 +364,7 @@ public class LogControllerTests {
                 .content(String.valueOf(N));
 
         /* Requirement 9 */
-        // invalid token
+        // invalid authorization token
         // Act
         mockMvc.perform(requestBuilder)
                 // Assert

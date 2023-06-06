@@ -44,70 +44,21 @@ public class ManagementControllerTest {
     @Rollback
     public void testAnalysisLongestIsOK() throws Exception {
         // Arrange
-        String userRequest = "{\n" +
-                "    \"username\": \"test\",\n" +
-                "    \"password\": \"12345678\",\n" +
-                "    \"email\": \"123@11.com\"\n" +
-                "}";
+        generateTestData();
 
         String userAuthRequest = "{\n" +
-                "    \"password\": \"12345678\",\n" +
-                "    \"email\": \"123@11.com\"\n" +
-                "}";
-
-        mockMvc
-                .perform(
-                        MockMvcRequestBuilders
-                                .post("/api/v1/users")
-                                .contentType("application/json;charset=UTF-8")
-                                .content(userRequest))
-                .andReturn();
-
-        MvcResult result = mockMvc
-                .perform(
-                        MockMvcRequestBuilders
-                                .post("/api/v1/users/authorize")
-                                .contentType("application/json;charset=UTF-8")
-                                .content(userAuthRequest))
-                .andReturn();
-
-        Cookie cookie = result.getResponse().getCookie("token");
-
-        for (int i = 0; i < 10; i++) {
-            StringBuilder logData = new StringBuilder("test data");
-            for (int j = 0; j < i; j++) {
-                logData.append(i);
-            }
-            String logRequest = "{\n" +
-                    "    \"data\": \"" +
-                    logData +
-                    "\",\n" +
-                    "    \"logType\": 0\n" +
-                    "}";
-            MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                    .post("/api/v1/logs")
-                    .cookie(cookie)
-                    .contentType("application/json;charset=UTF-8")
-                    .content(logRequest);
-
-            mockMvc.perform(requestBuilder)
-                    .andDo(MockMvcResultHandlers.print())
-                    .andReturn();
-        }
-
-        userAuthRequest = "{\n" +
                 "    \"password\": \"test_admin\",\n" +
                 "    \"email\": \"test_admin@example.com\"\n" +
                 "}";
 
-        result = mockMvc.perform(
+        MvcResult result = mockMvc.perform(
                 MockMvcRequestBuilders
                         .post("/api/v1/users/authorize")
                         .contentType("application/json;charset=UTF-8")
                         .content(userAuthRequest))
                 .andReturn();
 
-        cookie = result.getResponse().getCookie("token");
+        Cookie cookie = result.getResponse().getCookie("token");
 
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/api/v1/management/analysis-longest-five")
@@ -132,12 +83,12 @@ public class ManagementControllerTest {
 
     /**
      * This test method sends a Get request to the "/api/v1/management/analysis-longest-five"
-     * with no cookies.
+     * with no authorization to do so.
      *
      * @throws Exception Exception of mockMvc.perform
      */
     @Test
-    @DisplayName("Test of ManagementController - noCookies")
+    @DisplayName("Test of ManagementController - with no authorization to do so")
     @Rollback
     public void testAnalysisLongestNoCookies() throws Exception {
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -210,7 +161,7 @@ public class ManagementControllerTest {
 
     /**
      * This test method sends a Get request to the "/api/v1/management/analysis-longest-five"
-     * with invalid token.
+     * with invalid authorization token.
      *
      * @throws Exception Exception of mockMvc.perform
      */
@@ -226,7 +177,7 @@ public class ManagementControllerTest {
                 .contentType("application/json;charset=UTF-8");
 
         /* Requirement 9 */
-        // invalid token
+        // invalid authorization token
         // Act
         mockMvc.perform(requestBuilder)
                 // Assert
@@ -245,24 +196,12 @@ public class ManagementControllerTest {
     @Rollback
     public void testAnalysisShortestIsOK() throws Exception {
         // Arrange
-        String userRequest = "{\n" +
-                "    \"username\": \"test\",\n" +
-                "    \"password\": \"12345678\",\n" +
-                "    \"email\": \"123@11.com\"\n" +
-                "}";
+        generateTestData();
 
         String userAuthRequest = "{\n" +
-                "    \"password\": \"12345678\",\n" +
-                "    \"email\": \"123@11.com\"\n" +
+                "    \"password\": \"test_admin\",\n" +
+                "    \"email\": \"test_admin@example.com\"\n" +
                 "}";
-
-        mockMvc
-                .perform(
-                        MockMvcRequestBuilders
-                                .post("/api/v1/users")
-                                .contentType("application/json;charset=UTF-8")
-                                .content(userRequest))
-                .andReturn();
 
         MvcResult result = mockMvc
                 .perform(
@@ -273,44 +212,6 @@ public class ManagementControllerTest {
                 .andReturn();
 
         Cookie cookie = result.getResponse().getCookie("token");
-
-        for (int i = 0; i < 10; i++) {
-            StringBuilder logData = new StringBuilder("test data");
-            for (int j = 0; j < i; j++) {
-                logData.append(i);
-            }
-            String logRequest = "{\n" +
-                    "    \"data\": \"" +
-                    logData +
-                    "\",\n" +
-                    "    \"logType\": 0\n" +
-                    "}";
-            MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                    .post("/api/v1/logs")
-                    .cookie(cookie)
-                    .contentType("application/json;charset=UTF-8")
-                    .content(logRequest);
-
-            mockMvc
-                    .perform(requestBuilder)
-                    .andDo(MockMvcResultHandlers.print())
-                    .andReturn();
-        }
-
-        userAuthRequest = "{\n" +
-                "    \"password\": \"test_admin\",\n" +
-                "    \"email\": \"test_admin@example.com\"\n" +
-                "}";
-
-        result = mockMvc
-                .perform(
-                        MockMvcRequestBuilders
-                                .post("/api/v1/users/authorize")
-                                .contentType("application/json;charset=UTF-8")
-                                .content(userAuthRequest))
-                .andReturn();
-
-        cookie = result.getResponse().getCookie("token");
 
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/api/v1/management/analysis-shortest-five")
@@ -336,12 +237,12 @@ public class ManagementControllerTest {
 
     /**
      * This test method sends a Get request to the "/api/v1/management/analysis-shortest-five"
-     * with no cookie.
+     * with no authorization to do so.
      *
      * @throws Exception Exception of mockMvc.perform
      */
     @Test
-    @DisplayName("Test analysis-longest-five with no cookie")
+    @DisplayName("Test analysis-longest-five with no authorization to do so")
     public void testAnalysisShortestNoCookie() throws Exception {
         // Arrange
         // Send request to analysis-longest-five endpoint without a cookie
@@ -402,15 +303,15 @@ public class ManagementControllerTest {
 
     /**
      * This test method sends a Get request to the "/api/v1/management/analysis-shortest-five"
-     * with invalid token.
+     * with invalid authorization token.
      *
      * @throws Exception Exception of mockMvc.perform
      */
     @Test
-    @DisplayName("Test analysis-longest-five with invalid token")
+    @DisplayName("Test analysis-longest-five with invalid authorization token")
     public void testAnalysisShortestInvalidToken() throws Exception {
         // Arrange
-        // Send request to analysis-longest-five endpoint with invalid token
+        // Send request to analysis-longest-five endpoint with invalid authorization token
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/api/v1/management/analysis-longest-five")
                 .param("numThreads", "5")
@@ -418,12 +319,65 @@ public class ManagementControllerTest {
                 .contentType("application/json;charset=UTF-8");
 
         /* Requirement 9 */
-        // invalid token
+        // invalid authorization token
         // Act
         mockMvc.perform(requestBuilder)
                 // Assert
                 .andExpect(MockMvcResultMatchers.status().isForbidden())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid token"))
                 .andDo(MockMvcResultHandlers.print());
+    }
+
+    private void generateTestData() throws Exception {
+        String userRequest = "{\n" +
+                "    \"username\": \"test\",\n" +
+                "    \"password\": \"12345678\",\n" +
+                "    \"email\": \"123@11.com\"\n" +
+                "}";
+
+        String userAuthRequest = "{\n" +
+                "    \"password\": \"12345678\",\n" +
+                "    \"email\": \"123@11.com\"\n" +
+                "}";
+
+        mockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .post("/api/v1/users")
+                                .contentType("application/json;charset=UTF-8")
+                                .content(userRequest))
+                .andReturn();
+
+        MvcResult result = mockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .post("/api/v1/users/authorize")
+                                .contentType("application/json;charset=UTF-8")
+                                .content(userAuthRequest))
+                .andReturn();
+
+        Cookie cookie = result.getResponse().getCookie("token");
+
+        for (int i = 0; i < 10; i++) {
+            StringBuilder logData = new StringBuilder("test data");
+            for (int j = 0; j < i; j++) {
+                logData.append(i);
+            }
+            String logRequest = "{\n" +
+                    "    \"data\": \"" +
+                    logData +
+                    "\",\n" +
+                    "    \"logType\": 0\n" +
+                    "}";
+            MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                    .post("/api/v1/logs")
+                    .cookie(cookie)
+                    .contentType("application/json;charset=UTF-8")
+                    .content(logRequest);
+
+            mockMvc.perform(requestBuilder)
+                    .andDo(MockMvcResultHandlers.print())
+                    .andReturn();
+        }
     }
 }

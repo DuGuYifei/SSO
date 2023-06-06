@@ -96,9 +96,6 @@ public class UsersControllerTests {
     @Rollback
     public void testCreateUserIsOK() throws Exception {
         // Arrange
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
         String requestBody = "{ \"username\": \"testUser_first\", \"password\": \"password123\", \"email\": \"testuser1@example.com\" }";
 
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/v1/users")
@@ -111,8 +108,18 @@ public class UsersControllerTests {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
+    }
 
-        requestBuilder = MockMvcRequestBuilders.post("/api/v1/users")
+    /**
+     * Following test verifies create user endpoint reject no content request.
+     *
+     * @throws Exception if the test fails
+     */
+    @Test
+    @DisplayName("Test of create user endpoint with no content")
+    public void testCreateUserNoContent() throws Exception {
+        // Arrange
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/v1/users")
                 .contentType(MediaType.APPLICATION_JSON);
 
         /* Requirement 9 */
@@ -131,11 +138,7 @@ public class UsersControllerTests {
      */
     @Test
     @DisplayName("Test of create user endpoint with invalid email")
-    @Rollback
     public void testCreateUserWithInvalidEmail() throws Exception {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
         String requestBody = "{ \"username\": \"testUser_second\", \"password\": \"password123\", \"email\": \"testuser2example.com\" }";
 
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/v1/users")
@@ -163,9 +166,6 @@ public class UsersControllerTests {
     @Rollback
     public void testAlreadyExistingUser() throws Exception {
         // Arrange
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
         String requestBody = "{ \"username\": \"testUser_third\", \"password\": \"password123\", \"email\": \"testuser3@example.com\" }";
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users")
@@ -197,9 +197,6 @@ public class UsersControllerTests {
     @Rollback
     public void testAuthorizeUser() throws Exception {
         // Arrange
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
         // Create a user `testUser_fourth`
         String password = RandomBase64Generator.generateShort();
         String email = "testuser4@example.com";
@@ -241,9 +238,6 @@ public class UsersControllerTests {
     @Rollback
     public void testAuthorizeUserWithWrongEmailOrPassword() throws Exception {
         // Arrange
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
         // Create a user `testUser_fourth`
         String password = RandomBase64Generator.generateShort();
         String email = "testuser4@example.com";
@@ -271,7 +265,7 @@ public class UsersControllerTests {
     }
 
     /**
-     * Following test verifies whether the user authorization endpoint rejects
+     * Following test used to test whether admin user can successfully ban a user.
      *
      * @throws Exception if the test fails
      */
@@ -280,9 +274,6 @@ public class UsersControllerTests {
     @Rollback
     public void testBanUserAdminBan() throws Exception {
         // Arrange
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
         String password = RandomBase64Generator.generateShort();
         String email = "test_user@example.com";
         String requestBody = "{ \"username\": \"test_user\", \"password\": \"" +
@@ -313,28 +304,14 @@ public class UsersControllerTests {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
-        String requestBodyNotAdmin = "{ \"email\": \"test_user_not_admin@example.com\", \"password\": \"" +
-                password + "\" }";
-
-        requestBuilder = MockMvcRequestBuilders.post("/api/v1/users/authorize")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBodyNotAdmin);
-
-        MvcResult result = mockMvc.perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn();
-
-        Cookie cookieSetNotAdmin = result.getResponse().getCookie("token");
-
         // Actual admin user tries to ban another user
         String requestBodyAdmin = "{ \"email\": \"admin@example.com\", \"password\": \"adminadmin\" }";
-        headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+
         requestBuilder = MockMvcRequestBuilders.post("/api/v1/users/authorize")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBodyAdmin);
 
-        result = mockMvc.perform(requestBuilder)
+        MvcResult result = mockMvc.perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
@@ -355,11 +332,15 @@ public class UsersControllerTests {
                 .andReturn();
     }
 
+    /**
+     * Following test verifies whether the endpoint rejects the request if the
+     * user is not admin.
+     *
+     * @throws Exception if the test fails
+     */
+    @Test
     public void testBanUserNotAdminBan() throws Exception {
         // Arrange
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
         String password = RandomBase64Generator.generateShort();
         String email = "test_user@example.com";
         String requestBody = "{ \"username\": \"test_user\", \"password\": \"" +
@@ -408,8 +389,7 @@ public class UsersControllerTests {
         requestBuilder = MockMvcRequestBuilders.post("/api/v1/users/ban")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
-                .cookie(cookieSetNotAdmin)
-                .headers(headers);
+                .cookie(cookieSetNotAdmin);
 
         /* Requirement 9 */
         // Not admin user tries to ban another user
@@ -418,11 +398,14 @@ public class UsersControllerTests {
                 .andReturn();
     }
 
+    /**
+     * Following test used to successfully unban a user.
+     *
+     * @throws Exception if the test fails
+     */
+    @Test
     public void testUnBanAdminUnban() throws Exception {
         // Arrange
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
         String password = RandomBase64Generator.generateShort();
         String email = "test_user@example.com";
         String requestBody = "{ \"username\": \"test_user\", \"password\": \"" +
@@ -468,8 +451,7 @@ public class UsersControllerTests {
 
         // ban user
         String requestBodyAdmin = "{ \"email\": \"admin@example.com\", \"password\": \"adminadmin\" }";
-        headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+
         requestBuilder = MockMvcRequestBuilders.post("/api/v1/users/authorize")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBodyAdmin);
@@ -492,14 +474,11 @@ public class UsersControllerTests {
                 .andReturn();
 
         // Actual admin user tries to unban another user
-        headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
         requestBody = "{ \"emailAddress\": \"test_user@example.com\" }";
         requestBuilder = MockMvcRequestBuilders.post("/api/v1/users/unban")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
-                .cookie(cookieSetAdmin)
-                .headers(headers);
+                .cookie(cookieSetAdmin);
 
         /* Requirement 9 */
         // Actual admin user tries to unban another user
@@ -510,12 +489,14 @@ public class UsersControllerTests {
                 .andReturn();
     }
 
-
+    /**
+     * Following test verifies that a non-admin user cannot unban a user.
+     *
+     * @throws Exception if the test fails
+     */
+    @Test
     public void testUnBanNotAdminUnban() throws Exception {
         // Arrange
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
         String password = RandomBase64Generator.generateShort();
         String email = "test_user@example.com";
         String requestBody = "{ \"username\": \"test_user\", \"password\": \"" +
@@ -561,8 +542,7 @@ public class UsersControllerTests {
 
         // Actual admin user tries to ban another user
         String requestBodyAdmin = "{ \"email\": \"admin@example.com\", \"password\": \"adminadmin\" }";
-        headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+
         requestBuilder = MockMvcRequestBuilders.post("/api/v1/users/authorize")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBodyAdmin);
@@ -586,14 +566,11 @@ public class UsersControllerTests {
                 .andReturn();
 
         // Not admin user tries to unban another user
-        headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
         requestBody = "{ \"emailAddress\": \"test_user@example.com\" }";
         requestBuilder = MockMvcRequestBuilders.post("/api/v1/users/unban")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
-                .cookie(cookieSetNotAdmin)
-                .headers(headers);
+                .cookie(cookieSetNotAdmin);
 
         /* Requirement 9 */
         // Not admin user tries to unban another user
@@ -616,9 +593,6 @@ public class UsersControllerTests {
     @Rollback
     public void testUpdateUserIsOK() throws Exception {
         // Arrange
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
         String password = RandomBase64Generator.generateShort();
         String email = "test@test.com";
         String requestBody = "{ \"username\": \"test\", \"password\": \"" +
@@ -651,8 +625,7 @@ public class UsersControllerTests {
         mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/users/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBodyUpdate)
-                .cookie(cookieSet)
-                .headers(headers))
+                .cookie(cookieSet))
                 // Assert
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
@@ -662,18 +635,15 @@ public class UsersControllerTests {
 
     /**
      * Following test update user endpoint.
-     * Create a user and update it with invalid token.
+     * Create a user and update it with invalid authorization token.
      *
      * @throws Exception if the test fails
      */
     @Test
-    @DisplayName("Test of update user endpoint with UpdateUser with invalid token")
+    @DisplayName("Test of update user endpoint with UpdateUser with invalid authorization token")
     @Rollback
     public void testUpdateUserInValidToken() throws Exception {
         // Arrange
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
         String password = RandomBase64Generator.generateShort();
         String email = "test@test.com";
         String requestBody = "{ \"username\": \"test\", \"password\": \"" +
@@ -699,13 +669,12 @@ public class UsersControllerTests {
         String requestBodyUpdate = "{ \"username\": \"testUpdate\", \"email\": \"test2@test.com\" }";
 
         /* Requirement 9 */
-        // isForbidden with invalid token
+        // isForbidden with invalid authorization token
         // Act
         mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/users/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBodyUpdate)
-                .cookie(new Cookie("token", "invalid"))
-                .headers(headers))
+                .cookie(new Cookie("token", "invalid")))
                 // Assert
                 .andExpect(MockMvcResultMatchers.status().isForbidden())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid token"));
@@ -723,9 +692,6 @@ public class UsersControllerTests {
     @Rollback
     public void testUpdateUserNoContent() throws Exception {
         // Arrange
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
         String password = RandomBase64Generator.generateShort();
         String email = "test@test.com";
         String requestBody = "{ \"username\": \"test\", \"password\": \"" +
@@ -750,14 +716,12 @@ public class UsersControllerTests {
 
         Cookie cookieSet = result.getResponse().getCookie("token");
 
-        String requestBodyUpdate = "{ \"username\": \"testUpdate\", \"email\": \"test2@test.com\" }";
-
         /* Requirement 9 */
         // no content
         // Act
         mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/users/")
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(headers))
+                .cookie(cookieSet))
                 // Assert
                 .andExpect(MockMvcResultMatchers.status().isUnprocessableEntity())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Something went wrong"));
@@ -766,7 +730,7 @@ public class UsersControllerTests {
 
     /**
      * Following test update user endpoint.
-     * Create a user and update it without cookie
+     * Create a user and update it with no authorization to do so
      *
      * @throws Exception if the test fails
      */
@@ -790,17 +754,6 @@ public class UsersControllerTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
                 .andExpect(MockMvcResultMatchers.status().isOk());
-
-        // Authorize the user
-        requestBody = "{ \"email\": \"" + email + "\", \"password\": \"" + password + "\" }";
-
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users/authorize")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn();
-
-        Cookie cookieSet = result.getResponse().getCookie("token");
 
         String requestBodyUpdate = "{ \"username\": \"testUpdate\", \"email\": \"test2@test.com\" }";
 

@@ -45,7 +45,7 @@ public class WebsiteControllerTest {
     private WebsiteRepository websiteRepository;
 
     /**
-     * Test for createOne method.
+     * Test for successful creation of a website.
      *
      * @throws Exception if the request is invalid
      */
@@ -102,12 +102,12 @@ public class WebsiteControllerTest {
     }
 
     /**
-     * Test for createOne method with no cookies.
+     * Test for createOne method with no authorization to do so
      *
      * @throws Exception if the request is invalid
      */
     @Test
-    @DisplayName("Test of WebsiteController createOne with no cookies")
+    @DisplayName("Test of WebsiteController createOne with no authorization to do so")
     @Rollback
     public void testCreateOneNoCookie() throws Exception {
         // Arrange
@@ -182,12 +182,12 @@ public class WebsiteControllerTest {
     }
 
     /**
-     * Test for createOne method with invalid token.
+     * Test for createOne method with invalid authorization token.
      *
      * @throws Exception if the request is invalid
      */
     @Test
-    @DisplayName("Test of WebsiteController createOne with invalid token")
+    @DisplayName("Test of WebsiteController createOne with invalid authorization token")
     @Rollback
     public void testCreateOneInvalidToken() throws Exception {
         // Arrange
@@ -197,7 +197,7 @@ public class WebsiteControllerTest {
                 "}";
 
         /* Requirement 9 */
-        // invalid token
+        // invalid authorization token
         Cookie invalidCookie = new Cookie("token", "test");
         // Act
         mockMvc.perform(
@@ -370,12 +370,12 @@ public class WebsiteControllerTest {
     }
 
     /**
-     * Test for deleteOne method with invalid token.
+     * Test for deleteOne method with invalid authorization token.
      *
      * @throws Exception if the request is invalid
      */
     @Test
-    @DisplayName("Test of WebsiteController deleteOne with invalid token")
+    @DisplayName("Test of WebsiteController deleteOne with invalid authorization token")
     @Rollback
     public void testDeleteOneInvalidToken() throws Exception{
         // Arrange
@@ -439,7 +439,7 @@ public class WebsiteControllerTest {
                 .content(deleteRequest);
 
         /* Requirement 9 */
-        // invalid token
+        // invalid authorization token
         // Act
         mockMvc.perform(requestBuilder)
                 // Assert
