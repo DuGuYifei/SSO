@@ -2,7 +2,7 @@
 
 ## Tests List
 
-1. In our CI/CD, test part contains Unit Tests, Integration Tests (Controller tests), javadoc test.
+1. Our CI/CD pipeline includes various testing techniques: unit tests, integration smoke tests and documentation javadoc tests.
 ```yml
 run-unit-tests:
     stage: test
@@ -27,8 +27,8 @@ test-javadoc:
         - validate-project
 ```
 
-2. For tests, it contains
-    1. Non-trivial tests
+2. Our test suites covers various scenarios, including:
+    1. Non-trivial business logic tests
     2. No cookie (Controller)
     3. No content (Controller)
     4. Invalid token (Controller)
@@ -56,6 +56,7 @@ test-javadoc:
 | Management Controller - Analysis Shortest Log | testAnalysisShortestInvalidToken | 403 "Invalid token" | Forbid when token is invalid. |
 | User Controller - ping pong | testPing | 200 |  This test only have this response, which is used for client to test if the server is alive. |
 | User Controller - Create User | testCreateUserIsOK | 200 | Successfully create a user. |
+| User Controller - Create User | testCreateUserNoContent | 422 "Something went wrong" | UnprocessableEntity when no content. |
 | User Controller - Create User | testCreateUserWithInvalidEmail | 403 "`A validation error occured: email must match \"^[a-z0-9_.+-]+@[a-z0-9-]+\\.[a-z0-9-.]+$\"`" | Forbid when email is invalid. |
 | User Controller - Create User | testAlreadyExistingUser | 409 "User with email `xxxxx` already exists." | Conflict when user already exists. |
 | User Controller - Authorize User | testAuthorizeUser | 200 | Successfully authorize a user. |
@@ -130,16 +131,14 @@ test-javadoc:
 
 ## Special statement
 
-`Test should avoid loops instructions`. We have two places have loops, but 
-- one is used for deep clone test to check each needed field has been deeply cloned.
-- another one is used for generate different lengths of data to check the logic of analyzing longest/shortest logs
+`Test should avoid loops instructions`. We have one places have loops, but it is used for deep clone test to check each needed field has been deeply cloned.
     
 ## Other notes
 
 ### Mock
-Use mock when testing with business components.
+We use `mock` when testing with business components. In controller, we use `MockMvc` to send requests to the endpoints, and for other business components we use `Mockito`.
    
-Using mocks in Java testing is a common practice when testing business components, particularly in unit testing scenarios. A mock object is a simulated object that mimics the behavior of a real object, allowing you to isolate the component under test and verify its interactions with dependencies.
+Using mocks in Java testing is a common practice when testing business components, particularly in unit testing scenarios. A mock object is a simulated object that mimics the behavior of a real object, allowing to isolate the component under test and verify its interactions with dependencies.
     - Isolation
     - Control and Predictability
     - Speed and Efficiency
@@ -147,7 +146,7 @@ Using mocks in Java testing is a common practice when testing business component
     - Test Independence and Stability
     
 ### Arrange-Act-Assert
-Tests follow `Arrange-Act-Assert` pattern which is commented as `// Arrange`, `// Act`, `//Assert` in the code.
+Tests follow `Arrange-Act-Assert` pattern which is commented as `// Arrange`, `// Act`, `// Assert` in the code.
 
 ### Example code:
 
@@ -176,70 +175,21 @@ public class ManagementControllerTest {
     @Rollback
     public void testAnalysisLongestIsOK() throws Exception {
         // Arrange
-        String userRequest = "{\n" +
-                "    \"username\": \"test\",\n" +
-                "    \"password\": \"12345678\",\n" +
-                "    \"email\": \"123@11.com\"\n" +
-                "}";
+        generateTestData();
 
         String userAuthRequest = "{\n" +
-                "    \"password\": \"12345678\",\n" +
-                "    \"email\": \"123@11.com\"\n" +
-                "}";
-
-        mockMvc
-                .perform(
-                        MockMvcRequestBuilders
-                                .post("/api/v1/users")
-                                .contentType("application/json;charset=UTF-8")
-                                .content(userRequest))
-                .andReturn();
-
-        MvcResult result = mockMvc
-                .perform(
-                        MockMvcRequestBuilders
-                                .post("/api/v1/users/authorize")
-                                .contentType("application/json;charset=UTF-8")
-                                .content(userAuthRequest))
-                .andReturn();
-
-        Cookie cookie = result.getResponse().getCookie("token");
-
-        for (int i = 0; i < 10; i++) {
-            StringBuilder logData = new StringBuilder("test data");
-            for (int j = 0; j < i; j++) {
-                logData.append(i);
-            }
-            String logRequest = "{\n" +
-                    "    \"data\": \"" +
-                    logData +
-                    "\",\n" +
-                    "    \"logType\": 0\n" +
-                    "}";
-            MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                    .post("/api/v1/logs")
-                    .cookie(cookie)
-                    .contentType("application/json;charset=UTF-8")
-                    .content(logRequest);
-
-            mockMvc.perform(requestBuilder)
-                    .andDo(MockMvcResultHandlers.print())
-                    .andReturn();
-        }
-
-        userAuthRequest = "{\n" +
                 "    \"password\": \"test_admin\",\n" +
                 "    \"email\": \"test_admin@example.com\"\n" +
                 "}";
 
-        result = mockMvc.perform(
+        MvcResult result = mockMvc.perform(
                 MockMvcRequestBuilders
                         .post("/api/v1/users/authorize")
                         .contentType("application/json;charset=UTF-8")
                         .content(userAuthRequest))
                 .andReturn();
 
-        cookie = result.getResponse().getCookie("token");
+        Cookie cookie = result.getResponse().getCookie("token");
 
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/api/v1/management/analysis-longest-five")
@@ -260,11 +210,13 @@ public class ManagementControllerTest {
                         .jsonPath("$.data[4].data")
                         .value("test data999999999"))
                 .andDo(MockMvcResultHandlers.print());
+
     }
 }
 ```
 
-**Why we still have @Transactional and @Rollback here:**
+**Notes:**
+As you can see we are using both `@Transactional` and `@Rollback` annotations.
 
 It is because in this test class, there are two tests which are `testAnalysisLongestIsOK` and `testAnalysisShortestIsOK`, they will share the same `mockMvc` bean instance. 
 They can pass the test independently, but if we run them together in the `CI/CD`, the second test will fail because the data in the mock instance has been changed by the first test. 
@@ -277,25 +229,25 @@ So we need to rollback the data after each test. Or we can arrange the tests bef
 [INFO] 
 [INFO] Results:
 [INFO] 
-[INFO] Tests run: 37, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 41, Failures: 0, Errors: 0, Skipped: 0
 [INFO] 
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  01:11 min
-[INFO] Finished at: 2023-06-04T13:33:26Z
+[INFO] Total time:  01:19 min
+[INFO] Finished at: 2023-06-06T01:45:41Z
 [INFO] ------------------------------------------------------------------------
-section_end:1685885606:step_script
-[0Ksection_start:1685885606:archive_cache
+section_end:1686015942:step_script
+[0Ksection_start:1686015942:archive_cache
 [0K[0K[36;1mSaving cache for successful job[0;m[0;m
 [32;1mCreating cache VERY_COOL_KEY-7...[0;m
 .m2/repository: found 5033 matching artifact files and directories[0;m 
 Archive is up to date!                            [0;m 
 [32;1mCreated cache[0;m
-section_end:1685885607:archive_cache
-[0Ksection_start:1685885607:cleanup_file_variables
+section_end:1686015944:archive_cache
+[0Ksection_start:1686015944:cleanup_file_variables
 [0K[0K[36;1mCleaning up project directory and file based variables[0;m[0;m
-section_end:1685885608:cleanup_file_variables
+section_end:1686015945:cleanup_file_variables
 [0K[32;1mJob succeeded[0;m
 ```
 
@@ -309,20 +261,20 @@ section_end:1685885608:cleanup_file_variables
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  50.931 s
-[INFO] Finished at: 2023-06-04T13:31:54Z
+[INFO] Total time:  50.128 s
+[INFO] Finished at: 2023-06-06T02:07:08Z
 [INFO] ------------------------------------------------------------------------
-section_end:1685885514:step_script
-[0Ksection_start:1685885514:archive_cache
+section_end:1686017228:step_script
+[0Ksection_start:1686017228:archive_cache
 [0K[0K[36;1mSaving cache for successful job[0;m[0;m
 [32;1mCreating cache VERY_COOL_KEY-7...[0;m
 .m2/repository: found 5033 matching artifact files and directories[0;m 
 Archive is up to date!                            [0;m 
 [32;1mCreated cache[0;m
-section_end:1685885515:archive_cache
-[0Ksection_start:1685885515:cleanup_file_variables
+section_end:1686017229:archive_cache
+[0Ksection_start:1686017229:cleanup_file_variables
 [0K[0K[36;1mCleaning up project directory and file based variables[0;m[0;m
-section_end:1685885515:cleanup_file_variables
+section_end:1686017230:cleanup_file_variables
 [0K[32;1mJob succeeded[0;m
 ```
 
