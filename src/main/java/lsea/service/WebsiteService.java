@@ -208,7 +208,7 @@ public class WebsiteService {
     List<Website> websites = websiteRepository.findByUser(user);
     Website website = websiteRepository.findById(UUID.fromString(dto.getWebsiteId())).orElse(null);
     if (website == null) {
-      throw new GenericNotFoundError("Website not found");
+      throw new GenericNotFoundError("Website not found for this user");
     }
     if (!websites.contains(website)) {
       throw new GenericForbiddenError("User has no permission to delete this website");

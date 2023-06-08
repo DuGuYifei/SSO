@@ -79,7 +79,7 @@ public class UserGroupUser {
           "The user adding the new user to the group must have a permission level greater than SPECTATOR.");
     }
 
-    if (adderUser.groupPermission.ordinal() <= dto.getRole()) {
+    if (adderUser.groupPermission.ordinal() < dto.getRole()) {
       throw new GenericForbiddenError(
           "The user adding the new user to the group must have a permission level greater or equal than the new user.");
     }
