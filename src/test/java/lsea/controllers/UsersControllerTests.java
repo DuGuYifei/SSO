@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 
 /* Requirement 2.1 */
 
@@ -289,33 +290,8 @@ public class UsersControllerTests {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
-        password = RandomBase64Generator.generateShort();
-        email = "test_user_not_admin@example.com";
-        requestBody = "{ \"username\": \"test_user_not_admin\", \"password\": \"" +
-                password +
-                "\", \"email\": \"" +
-                email +
-                "\" }";
-        requestBuilder = MockMvcRequestBuilders.post("/api/v1/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody);
-
-        mockMvc.perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn();
-
         // Actual admin user tries to ban another user
-        String requestBodyAdmin = "{ \"email\": \"admin@example.com\", \"password\": \"adminadmin\" }";
-
-        requestBuilder = MockMvcRequestBuilders.post("/api/v1/users/authorize")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBodyAdmin);
-
-        MvcResult result = mockMvc.perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn();
-
-        Cookie cookieSetAdmin = result.getResponse().getCookie("token");
+        Cookie cookieSetAdmin = getAdminCookieHelper();
 
         requestBody = "{ \"emailAddress\": \"test_user@example.com\" }";
         requestBuilder = MockMvcRequestBuilders.post("/api/v1/users/ban")
@@ -421,46 +397,8 @@ public class UsersControllerTests {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
-        password = RandomBase64Generator.generateShort();
-        email = "test_user_not_admin@example.com";
-        requestBody = "{ \"username\": \"test_user_not_admin\", \"password\": \"" +
-                password +
-                "\", \"email\": \"" +
-                email +
-                "\" }";
-        requestBuilder = MockMvcRequestBuilders.post("/api/v1/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody);
-
-        mockMvc.perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn();
-
-        String requestBodyNotAdmin = "{ \"email\": \"test_user_not_admin@example.com\", \"password\": \"" +
-                password + "\" }";
-
-        requestBuilder = MockMvcRequestBuilders.post("/api/v1/users/authorize")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBodyNotAdmin);
-
-        MvcResult result = mockMvc.perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn();
-
-        Cookie cookieSetNotAdmin = result.getResponse().getCookie("token");
-
         // ban user
-        String requestBodyAdmin = "{ \"email\": \"admin@example.com\", \"password\": \"adminadmin\" }";
-
-        requestBuilder = MockMvcRequestBuilders.post("/api/v1/users/authorize")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBodyAdmin);
-
-        result = mockMvc.perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn();
-
-        Cookie cookieSetAdmin = result.getResponse().getCookie("token");
+        Cookie cookieSetAdmin = getAdminCookieHelper();
 
         requestBody = "{ \"emailAddress\": \"test_user@example.com\" }";
         requestBuilder = MockMvcRequestBuilders.post("/api/v1/users/ban")
@@ -541,17 +479,7 @@ public class UsersControllerTests {
         Cookie cookieSetNotAdmin = result.getResponse().getCookie("token");
 
         // Actual admin user tries to ban another user
-        String requestBodyAdmin = "{ \"email\": \"admin@example.com\", \"password\": \"adminadmin\" }";
-
-        requestBuilder = MockMvcRequestBuilders.post("/api/v1/users/authorize")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBodyAdmin);
-
-        result = mockMvc.perform(requestBuilder)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn();
-
-        Cookie cookieSetAdmin = result.getResponse().getCookie("token");
+        Cookie cookieSetAdmin = getAdminCookieHelper();
 
         requestBody = "{ \"emailAddress\": \"test_user@example.com\" }";
         requestBuilder = MockMvcRequestBuilders.post("/api/v1/users/ban")
@@ -767,5 +695,26 @@ public class UsersControllerTests {
                 // Assert
                 .andExpect(MockMvcResultMatchers.status().isForbidden())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("No cookies found"));
+    }
+
+    /**
+     * Used to return admin cookie
+     *
+     * @return Cookie admin cookie
+     * @throws Exception if the performed request failed
+     */
+    private Cookie getAdminCookieHelper() throws Exception {
+        String requestBodyAdmin = "{ \"email\": \"admin@example.com\", \"password\": \"adminadmin\" }";
+
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/v1/users/authorize")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBodyAdmin);
+
+        MvcResult result = mockMvc.perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        Cookie cookieSetAdmin = result.getResponse().getCookie("token");
+        return cookieSetAdmin;
     }
 }
