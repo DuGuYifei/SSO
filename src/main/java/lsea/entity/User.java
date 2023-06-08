@@ -1,6 +1,7 @@
 package lsea.entity;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.UUID;
 import javax.persistence.*;
 import lombok.*;
+import lsea.config.CustomGsonExclusionStrategy;
 import lsea.dto.CreateUserDto;
 import lsea.errors.GenericConflictError;
 import lsea.errors.GenericForbiddenError;
@@ -234,7 +236,9 @@ public class User extends PermissionedEntity implements Serializable {
    * @return A JSON string representing the User object
    */
   public String toJson() {
-    Gson gson = new Gson();
+    Gson gson = new GsonBuilder()
+            .setExclusionStrategies(new CustomGsonExclusionStrategy())
+            .create();
     return gson.toJson(this);
   }
 

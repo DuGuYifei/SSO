@@ -10,7 +10,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.test.annotation.Rollback;
 
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.UUID;
 
@@ -18,6 +20,7 @@ import java.util.UUID;
  * Unit tests for the User class.
  */
 @SpringBootTest(classes = { LaboratoryApplication.class })
+@Transactional
 public class UserTest {
 
     /**
@@ -30,22 +33,18 @@ public class UserTest {
      */
     @BeforeEach
     public void setUp() {
-        user = User.builder()
-                .id(UUID.randomUUID())
+        user = User.create(CreateUserDto.builder()
                 .username("testUser")
                 .email("test@example.com")
-                .password(BCrypt.hashpw(
-                        "password",
-                        BCrypt.gensalt()))
-                .createdAt(new Date())
-                .globalPermission(GlobalPermissions.USER)
-                .build();
+                .password("password")
+                .build());
     }
 
     /**
      * Test the creation of a new User instance based on CreateUserDto.
      */
     @Test
+    @Rollback
     public void testCreate() {
         CreateUserDto dto = CreateUserDto.builder()
                 .username("testUser")
@@ -57,13 +56,14 @@ public class UserTest {
 
         Assertions.assertEquals(dto.getUsername(), createdUser.getUsername());
         Assertions.assertEquals(dto.getEmail(), createdUser.getEmail());
-        Assertions.assertNotEquals(dto.getPassword(), createdUser.getPassword());
+        Assertions.assertEquals(true, BCrypt.checkpw(dto.getPassword(), createdUser.getPassword()));
     }
 
     /**
      * Test the ban method of User.
      */
     @Test
+    @Rollback
     public void testBan() {
         UUID adminId = UUID.randomUUID();
         String banReason = "Violated community guidelines";
@@ -79,6 +79,7 @@ public class UserTest {
      * Test the unBan method of User.
      */
     @Test
+    @Rollback
     public void testUnBan() {
         user.unBan();
 
@@ -91,6 +92,7 @@ public class UserTest {
      * Test the isBanned method of User.
      */
     @Test
+    @Rollback
     public void testIsBanned() {
         user.ban(UUID.randomUUID(), "Violated community guidelines");
 
@@ -102,6 +104,7 @@ public class UserTest {
      */
     @SneakyThrows
     @Test
+    @Rollback
     public void testChangePassword() {
         String oldPassword = "password";
         String newPassword = "newpassword";
@@ -115,6 +118,7 @@ public class UserTest {
      * Test verifying the password of User.
      */
     @Test
+    @Rollback
     public void testVerifyPassword() {
         String correctPassword = "password";
         String incorrectPassword = "incorrect";
@@ -127,6 +131,7 @@ public class UserTest {
      * Test generating a JWT token for User.
      */
     @Test
+    @Rollback
     public void testGetJwtToken() {
         String jwtToken = user.getJwtToken();
         Assertions.assertNotNull(jwtToken);
@@ -136,15 +141,18 @@ public class UserTest {
      * Test converting User object to JSON.
      */
     @Test
+    @Rollback
     public void testToJson() {
         String json = user.toJson();
         Assertions.assertNotNull(json);
+        Assertions.assertEquals(false, json.contains("password"));
     }
 
     /**
      * Test verifying a JWT token and getting the user ID.
      */
     @Test
+    @Rollback
     public void testVerifyToken() {
         String jwtToken = user.getJwtToken();
 

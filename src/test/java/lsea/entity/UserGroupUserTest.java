@@ -8,45 +8,49 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 
+import javax.transaction.Transactional;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
 import java.util.UUID;
 
 /**
  * Unit tests for the UserGroupUser class.
  */
 @SpringBootTest(classes = { LaboratoryApplication.class })
+@Transactional
 class UserGroupUserTest {
 
     /**
      * Create an AddUserToUserGroupDto instance.
      */
-    private UserGroupUser adderUser;
+    private UserGroupUser groupUser;
 
     /**
      * Create an AddUserToUserGroupDto instance.
      */
     @BeforeEach
     void setUp() {
-        adderUser = UserGroupUser.builder()
+        groupUser = UserGroupUser.builder()
                 .groupPermission(GroupPermissions.ADMIN)
                 .build();
     }
 
     /**
      * Test the create method of UserGroupUser.
+     *
+     * @throws Exception if an error occurs
      */
     @Test
-    void testCreate() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, GenericForbiddenError {
+    @Rollback
+    void testCreate() throws Exception {
         String userGroupId = UUID.randomUUID().toString();
         String userId = UUID.randomUUID().toString();
         int role = GroupPermissions.REGULAR.ordinal();
 
         AddUserToUserGroupDto dto = createAddUserToUserGroupDto(userGroupId, userId, role);
 
-        UserGroupUser userGroupUser = UserGroupUser.create(dto, adderUser);
+        UserGroupUser userGroupUser = UserGroupUser.create(dto, groupUser);
 
         Assertions.assertNotNull(userGroupUser);
         Assertions.assertNotNull(userGroupUser.getId());
@@ -57,27 +61,33 @@ class UserGroupUserTest {
 
     /**
      * Test the create method of UserGroupUser when the adder user has insufficient permissions.
+     *
+     * @throws Exception if an error occurs
      */
     @Test
-    void testCreateWithInsufficientPermissions() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    @Rollback
+    void testCreateWithInsufficientPermissions() throws Exception {
         String userGroupId = UUID.randomUUID().toString();
         String userId = UUID.randomUUID().toString();
         int role = GroupPermissions.ADMIN.ordinal();
 
-        adderUser.setGroupPermission(GroupPermissions.MODERATOR);
+        groupUser.setGroupPermission(GroupPermissions.MODERATOR);
 
         AddUserToUserGroupDto dto = createAddUserToUserGroupDto(userGroupId, userId, role);
 
         Assertions.assertThrows(GenericForbiddenError.class,
-                () -> UserGroupUser.create(dto, adderUser));
+                () -> UserGroupUser.create(dto, groupUser));
     }
 
     /**
      * Test the create method of UserGroupUser when the adder user is a spectator.
+     *
+     * @throws Exception if an error occurs
      */
     @Test
-    void testCreateWithSpectatorPermissions() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        adderUser.setGroupPermission(GroupPermissions.SPECTATOR);
+    @Rollback
+    void testCreateWithSpectatorPermissions() throws Exception {
+        groupUser.setGroupPermission(GroupPermissions.SPECTATOR);
 
         String userGroupId = UUID.randomUUID().toString();
         String userId = UUID.randomUUID().toString();
@@ -86,7 +96,7 @@ class UserGroupUserTest {
         AddUserToUserGroupDto dto = createAddUserToUserGroupDto(userGroupId, userId, role);
 
         Assertions.assertThrows(GenericForbiddenError.class,
-                () -> UserGroupUser.create(dto, adderUser));
+                () -> UserGroupUser.create(dto, groupUser));
     }
 
     /**
@@ -96,12 +106,9 @@ class UserGroupUserTest {
      * @param userId      the user ID
      * @param role        the role/permission level
      * @return the created AddUserToUserGroupDto instance
-     * @throws NoSuchMethodException     if the constructor is not found
-     * @throws IllegalAccessException    if the constructor cannot be accessed
-     * @throws InvocationTargetException if the constructor invocation fails
-     * @throws InstantiationException    if the object cannot be instantiated
+     * @throws Exception if an error occurs
      */
-    private AddUserToUserGroupDto createAddUserToUserGroupDto(String userGroupId, String userId, int role) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    private AddUserToUserGroupDto createAddUserToUserGroupDto(String userGroupId, String userId, int role) throws Exception {
         Constructor<AddUserToUserGroupDto> constructor = AddUserToUserGroupDto.class.getDeclaredConstructor();
         constructor.setAccessible(true);
 
