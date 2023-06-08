@@ -12,8 +12,6 @@ import org.springframework.test.annotation.Rollback;
 
 import javax.transaction.Transactional;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -26,14 +24,14 @@ class UserGroupUserTest {
     /**
      * Create an AddUserToUserGroupDto instance.
      */
-    private UserGroupUser adderUser;
+    private UserGroupUser groupUser;
 
     /**
      * Create an AddUserToUserGroupDto instance.
      */
     @BeforeEach
     void setUp() {
-        adderUser = UserGroupUser.builder()
+        groupUser = UserGroupUser.builder()
                 .groupPermission(GroupPermissions.ADMIN)
                 .build();
     }
@@ -52,7 +50,7 @@ class UserGroupUserTest {
 
         AddUserToUserGroupDto dto = createAddUserToUserGroupDto(userGroupId, userId, role);
 
-        UserGroupUser userGroupUser = UserGroupUser.create(dto, adderUser);
+        UserGroupUser userGroupUser = UserGroupUser.create(dto, groupUser);
 
         Assertions.assertNotNull(userGroupUser);
         Assertions.assertNotNull(userGroupUser.getId());
@@ -73,12 +71,12 @@ class UserGroupUserTest {
         String userId = UUID.randomUUID().toString();
         int role = GroupPermissions.ADMIN.ordinal();
 
-        adderUser.setGroupPermission(GroupPermissions.MODERATOR);
+        groupUser.setGroupPermission(GroupPermissions.MODERATOR);
 
         AddUserToUserGroupDto dto = createAddUserToUserGroupDto(userGroupId, userId, role);
 
         Assertions.assertThrows(GenericForbiddenError.class,
-                () -> UserGroupUser.create(dto, adderUser));
+                () -> UserGroupUser.create(dto, groupUser));
     }
 
     /**
@@ -89,7 +87,7 @@ class UserGroupUserTest {
     @Test
     @Rollback
     void testCreateWithSpectatorPermissions() throws Exception {
-        adderUser.setGroupPermission(GroupPermissions.SPECTATOR);
+        groupUser.setGroupPermission(GroupPermissions.SPECTATOR);
 
         String userGroupId = UUID.randomUUID().toString();
         String userId = UUID.randomUUID().toString();
@@ -98,7 +96,7 @@ class UserGroupUserTest {
         AddUserToUserGroupDto dto = createAddUserToUserGroupDto(userGroupId, userId, role);
 
         Assertions.assertThrows(GenericForbiddenError.class,
-                () -> UserGroupUser.create(dto, adderUser));
+                () -> UserGroupUser.create(dto, groupUser));
     }
 
     /**
