@@ -33,6 +33,10 @@ test-javadoc:
     3. No content (Controller)
     4. Invalid token (Controller)
     5. Different special cases if exist
+    
+3. Our test should cover all business logic code, including:
+    1. Integration tests of all endpoints of controller
+    2. Unit tests of all Entity's methods which are used in business logic.
 
 ### Controller tests
 | Business Logic | Test Name | Test Result | Test Description |
@@ -54,6 +58,9 @@ test-javadoc:
 | Management Controller - Analysis Shortest Log | testAnalysisShortestNoContent | 422 "Something went wrong" | UnprocessableEntity when no content. |
 | Management Controller - Analysis Shortest Log | testAnalysisShortestNoCookie | 403 "No cookies found" | Forbid when no cookie. |
 | Management Controller - Analysis Shortest Log | testAnalysisShortestInvalidToken | 403 "Invalid token" | Forbid when token is invalid. |
+| Management Controller - Generate report | testGenerateReportIsOK | 200 + `xlsx` file| Successfully generate report. |
+| Management Controller - Generate report | testGenerateReportNoToken | 403 "No token found in cookies" | Validation error when no token. |
+| Management Controller - Test database | testDatabaseReport | 200 + keys of map exist | Successfully test database. |
 | User Controller - ping pong | testPing | 200 |  This test only have this response, which is used for client to test if the server is alive. |
 | User Controller - Create User | testCreateUserIsOK | 200 | Successfully create a user. |
 | User Controller - Create User | testCreateUserNoContent | 422 "Something went wrong" | UnprocessableEntity when no content. |
@@ -222,6 +229,29 @@ It is because in this test class, there are two tests which are `testAnalysisLon
 They can pass the test independently, but if we run them together in the `CI/CD`, the second test will fail because the data in the mock instance has been changed by the first test. 
 So we need to rollback the data after each test. Or we can arrange the tests before running them in the other method.
 
+## Test Coverage Report
+
+<div align="center">
+<img src="Lab9/TestCoverage/overall.png" width="1000">
+</div>
+<div align="center">Figure 1. Overall Coverage Summary</div>
+
+From figure 1, we can see the overall coverage of test is 61/81 in class metrics, 248/373 in method metrics, 985/1285 in line metrics.
+
+<div align="center">
+<img src="Lab9/TestCoverage/overall2.png" width="1000">
+</div>
+<div align="center">Figure 2. Overall Coverage Summary details</div>
+The coverage in controller is not 100% from this view, because we have one class file in controller never been used in business logic. We can see details from the report of controller part.
+
+<div align="center">
+<img src="Lab9/TestCoverage/controller.png" width="1000">
+</div>
+<div align="center">Figure 3. Coverage Summary for Package: lsea.controllersy</div>
+
+From figure 3, we can see the overall coverage of test is 100% except for one class file which is mentioned above that never been used.
+
+
 ## Appendix - Test Result From CI/CD
 
 ### run-api-tests
@@ -229,25 +259,25 @@ So we need to rollback the data after each test. Or we can arrange the tests bef
 [INFO] 
 [INFO] Results:
 [INFO] 
-[INFO] Tests run: 41, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 44, Failures: 0, Errors: 0, Skipped: 0
 [INFO] 
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  01:19 min
-[INFO] Finished at: 2023-06-06T01:45:41Z
+[INFO] Total time:  01:14 min
+[INFO] Finished at: 2023-06-09T14:34:13Z
 [INFO] ------------------------------------------------------------------------
-section_end:1686015942:step_script
-[0Ksection_start:1686015942:archive_cache
+section_end:1686321253:step_script
+[0Ksection_start:1686321253:archive_cache
 [0K[0K[36;1mSaving cache for successful job[0;m[0;m
 [32;1mCreating cache VERY_COOL_KEY-7...[0;m
 .m2/repository: found 5033 matching artifact files and directories[0;m 
 Archive is up to date!                            [0;m 
 [32;1mCreated cache[0;m
-section_end:1686015944:archive_cache
-[0Ksection_start:1686015944:cleanup_file_variables
+section_end:1686321254:archive_cache
+[0Ksection_start:1686321254:cleanup_file_variables
 [0K[0K[36;1mCleaning up project directory and file based variables[0;m[0;m
-section_end:1686015945:cleanup_file_variables
+section_end:1686321255:cleanup_file_variables
 [0K[32;1mJob succeeded[0;m
 ```
 
