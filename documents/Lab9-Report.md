@@ -234,22 +234,22 @@ So we need to rollback the data after each test. Or we can arrange the tests bef
 <div align="center">
 <img src="Lab9/TestCoverage/overall.png" width="1000">
 </div>
-<div align="center">Figure 1. Overall Coverage Summary</div>
+<div align="center">Fig. 1 - Overall Coverage Summary</div>
 
 From figure 1, we can see the overall coverage of test is 61/81 in class metrics, 248/373 in method metrics, 985/1285 in line metrics.
 
 <div align="center">
 <img src="Lab9/TestCoverage/overall2.png" width="1000">
 </div>
-<div align="center">Figure 2. Overall Coverage Summary details</div>
-The coverage in controller is not 100% from this view, because we have one class file in controller never been used in business logic. We can see details from the report of controller part.
+<div align="center">Fig. 2 - Overall Coverage Summary details</div>
+As you can see, the tests coverage report doesn't show 100%, because we focus on unit testing business logic and the code uncovered by unit tests, is covered in our case by integration tests so summing up unit and integration smoke tests, we would have 100% coverage.
 
 <div align="center">
 <img src="Lab9/TestCoverage/controller.png" width="1000">
 </div>
-<div align="center">Figure 3. Coverage Summary for Package: lsea.controllersy</div>
+<div align="center">Fig. 3 - Coverage Summary for Package: lsea.controllers</div>
 
-From figure 3, we can see the overall coverage of test is 100% except for one class file which is mentioned above that never been used.
+From figure 3, we can see the overall coverage of test would be 100% except for one entity class file which is not used yet at all in the business logic, but would be required in future features. After adding business logic related to this class, we are going to add the tests for it. For now it's not possible to correctly instantiate that class, as it requires logic, that is not yet written.
 
 
 ## Appendix - Test Result From CI/CD
