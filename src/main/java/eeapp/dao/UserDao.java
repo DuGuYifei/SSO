@@ -11,12 +11,9 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Created By IDEA
- * Author: s188026 Yifei Liu
- * Date: 2023/6/10 12:26
- * Description:
+ * The UserDao class implements a data access object that
+ * provides access to the user table in the database.
  */
-
 public class UserDao {
 
     public static List<User> findAll () throws SQLException {
@@ -25,14 +22,14 @@ public class UserDao {
 
 
         // Execute a query
-        PreparedStatement statement = connection.prepareStatement("SELECT * FROM my_table");
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM users");
         ResultSet resultSet = statement.executeQuery();
 
         // Process the results
         List<User> beans = new ArrayList<>();
         while (resultSet.next()) {
             User bean = new User();
-            bean.setId(UUID.fromString(resultSet.getString("id")));
+            bean.setId(DatabaseConnection.readUUID(resultSet.getBytes("id")));
             bean.setUsername(resultSet.getString("username"));
             bean.setPassword(resultSet.getString("password"));
             bean.setCreatedAt(resultSet.getDate("created_at"));
