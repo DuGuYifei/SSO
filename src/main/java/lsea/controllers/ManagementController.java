@@ -124,7 +124,7 @@ public class ManagementController {
   public ResponseEntity<byte[]> generateReport(
       @RequestBody GenerateReportDto dto,
       HttpServletRequest request)
-      throws GenericForbiddenError, ValidationError, InterruptedException, GenericNotFoundError {
+          throws GenericForbiddenError, ValidationError, InterruptedException, GenericNotFoundError, IOException {
     requestMeterRegistry.counter("request.count").increment();
     requestMeterRegistry.counter("request.count", "method", "POST").increment();
     requestMeterRegistry.counter("request.count", "controller", "ManagementController").increment();
@@ -149,12 +149,10 @@ public class ManagementController {
         iterations);
 
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    try {
-      workbook.write(bos);
-      workbook.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+
+    workbook.write(bos);
+    workbook.close();
+
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(
         MediaType.parseMediaType("application/vnd.ms-excel"));
