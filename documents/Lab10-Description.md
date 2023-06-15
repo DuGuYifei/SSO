@@ -73,7 +73,9 @@ boot project, we can then add this war into the server.
     }
     ```
    
-Then we can use the java EE package as an extension of our spring boot project.
+Then we can use the java EE package as an extension of our spring boot project now.
 
+## Run the project
 
-         
+To run the project as EE, run "mvn clean install" as previously. Visit webpages at 
+'http://localhost:8081/users'.
