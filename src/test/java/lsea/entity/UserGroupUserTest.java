@@ -60,7 +60,8 @@ class UserGroupUserTest {
     }
 
     /**
-     * Test the create method of UserGroupUser when the adder user has insufficient permissions.
+     * Test the create method of UserGroupUser when the adder user has insufficient
+     * permissions.
      *
      * @throws Exception if an error occurs
      */
@@ -100,7 +101,8 @@ class UserGroupUserTest {
     }
 
     /**
-     * Helper method to create an AddUserToUserGroupDto object for testing purposes using reflection.
+     * Helper method to create an AddUserToUserGroupDto object for testing purposes
+     * using reflection.
      *
      * @param userGroupId the user group ID
      * @param userId      the user ID
@@ -108,7 +110,8 @@ class UserGroupUserTest {
      * @return the created AddUserToUserGroupDto instance
      * @throws Exception if an error occurs
      */
-    private AddUserToUserGroupDto createAddUserToUserGroupDto(String userGroupId, String userId, int role) throws Exception {
+    private AddUserToUserGroupDto createAddUserToUserGroupDto(String userGroupId, String userId, int role)
+            throws Exception {
         Constructor<AddUserToUserGroupDto> constructor = AddUserToUserGroupDto.class.getDeclaredConstructor();
         constructor.setAccessible(true);
 

@@ -237,8 +237,8 @@ public class User extends PermissionedEntity implements Serializable {
    */
   public String toJson() {
     Gson gson = new GsonBuilder()
-            .setExclusionStrategies(new CustomGsonExclusionStrategy())
-            .create();
+        .setExclusionStrategies(new CustomGsonExclusionStrategy())
+        .create();
     return gson.toJson(this);
   }
 

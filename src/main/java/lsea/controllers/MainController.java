@@ -35,7 +35,7 @@ public class MainController {
     return userController;
   }
 
-  /** 
+  /**
    * Returns the website controller that handles requests related to websites.
    *
    * @return The website controller.

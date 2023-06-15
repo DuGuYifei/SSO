@@ -4,7 +4,6 @@ import java.sql.Timestamp;
 import java.util.*;
 import javax.transaction.Transactional;
 
-import lsea.controllers.ValidationRouter;
 import lsea.dto.CreateLogDto;
 import lsea.entity.Log;
 import lsea.entity.User;

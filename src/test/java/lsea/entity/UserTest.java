@@ -4,7 +4,6 @@ import lombok.SneakyThrows;
 import lsea.LaboratoryApplication;
 import lsea.dto.CreateUserDto;
 import lsea.errors.GenericForbiddenError;
-import lsea.utils.GlobalPermissions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +12,6 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.test.annotation.Rollback;
 
 import javax.transaction.Transactional;
-import java.util.Date;
 import java.util.UUID;
 
 /**
