@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>lsea</groupId>
 	<artifactId>SSO</artifactId>
-	<version>9.0.0</version>
+	<version>10.0.0</version>
 	<name>SSO</name>
 	<description>Single Sign On application backend</description>
 	<properties>
