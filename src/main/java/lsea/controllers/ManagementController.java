@@ -118,13 +118,14 @@ public class ManagementController {
    * @throws ValidationError       if the dto is not valid
    * @throws InterruptedException  if the thread is interrupted
    * @throws GenericNotFoundError  if the user is not found
+   * @throws IOException           if the file is not found
    */
   /* Requirement 4.4 */
   @PostMapping(value = "/report", produces = "application/vnd.ms-excel")
   public ResponseEntity<byte[]> generateReport(
       @RequestBody GenerateReportDto dto,
       HttpServletRequest request)
-          throws GenericForbiddenError, ValidationError, InterruptedException, GenericNotFoundError, IOException {
+      throws GenericForbiddenError, ValidationError, InterruptedException, GenericNotFoundError, IOException {
     requestMeterRegistry.counter("request.count").increment();
     requestMeterRegistry.counter("request.count", "method", "POST").increment();
     requestMeterRegistry.counter("request.count", "controller", "ManagementController").increment();

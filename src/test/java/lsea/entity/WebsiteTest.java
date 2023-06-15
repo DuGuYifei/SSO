@@ -47,9 +47,9 @@ public class WebsiteTest {
   @Rollback
   public void testCreateWebsite() {
     CreateWebsiteDto createWebsiteDto = CreateWebsiteDto.builder()
-            .displayName("Test Website")
-            .redirectUrl("https://example.com")
-            .build();
+        .displayName("Test Website")
+        .redirectUrl("https://example.com")
+        .build();
 
     Website website = Website.create(createWebsiteDto, user);
 

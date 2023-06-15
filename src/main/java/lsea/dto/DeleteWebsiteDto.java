@@ -1,11 +1,9 @@
 package lsea.dto;
 
-import com.google.gson.annotations.SerializedName;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import java.util.UUID;
 
 /**
  * Represents a delete website data transfer object.
