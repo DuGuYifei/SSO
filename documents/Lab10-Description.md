@@ -77,5 +77,7 @@ Then we can use the java EE package as an extension of our spring boot project n
 
 ## Run the project
 
-To run the project as EE, run "mvn clean install" as previously. Visit webpages at 
-'http://localhost:8081/users'.
+To run the project as EE:
+1. Make sure you have `java 11`
+2. run "mvn clean install" as previously.
+3. Visit webpages at 'http://localhost:8081/users'.
