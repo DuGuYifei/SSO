@@ -16,6 +16,11 @@ import java.util.UUID;
  */
 public class UserDao {
 
+    /**
+     * The findAll method finds all users.
+     * @return a list of user
+     * @throws SQLException if there is an error accessing the database
+     */
     public static List<User> findAll () throws SQLException {
         // Get a connection from the data source
         Connection connection = DatabaseConnection.getConnection();
@@ -45,5 +50,45 @@ public class UserDao {
         connection.close();
 
         return beans;
+    }
+
+    /**
+     * Update a user
+     * @param id the id of the user
+     * @param username the username of the user
+     * @param email the email of the user
+     * @throws SQLException if there is an error accessing the database
+     */
+    public static void updateUser(String id, String username, String email) throws SQLException {
+        // Get a connection from the data source
+        Connection connection = DatabaseConnection.getConnection();
+
+        // Execute an update
+        PreparedStatement statement = connection.prepareStatement("UPDATE users SET username = ?, email = ? WHERE id = ?");
+        statement.setString(1, username);
+        statement.setString(2, email);
+        statement.setBytes(3, DatabaseConnection.writeUUID(UUID.fromString(id)));
+        statement.executeUpdate();
+
+        // Close the connection
+        connection.close();
+    }
+
+    /**
+     * The delete method to delete a user by id.
+     * @param id the id of the user
+     * @throws SQLException if there is an error accessing the database
+     */
+    public static void deleteUser(String id) throws SQLException {
+        // Get a connection from the data source
+        Connection connection = DatabaseConnection.getConnection();
+
+        // Execute a delete
+        PreparedStatement statement = connection.prepareStatement("DELETE FROM users WHERE id = ?");
+        statement.setBytes(1, DatabaseConnection.writeUUID(UUID.fromString(id)));
+        statement.executeUpdate();
+
+        // Close the connection
+        connection.close();
     }
 }

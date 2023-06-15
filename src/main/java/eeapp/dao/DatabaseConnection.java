@@ -1,5 +1,6 @@
 package eeapp.dao;
 
+import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -16,7 +17,7 @@ public class DatabaseConnection {
     /**
      * The DB_URL is the database connection information.
      */
-    private static final String DB_URL = "jdbc:h2:file:./db/lsea";
+    private static final String DB_URL = "jdbc:h2:mem:testdb";
 
     /**
      * The DB_USER is the database user name.
@@ -63,5 +64,17 @@ public class DatabaseConnection {
         for (int i=8; i<16; i++)
             lsb = (lsb << 8) | (bytes[i] & 0xff);
         return new UUID(msb, lsb);
+    }
+
+    /**
+     * The writeUUID method writes a UUID to a byte array.
+     * @param uuid the UUID
+     * @return the byte array
+     */
+    public static byte[] writeUUID(UUID uuid) {
+        ByteBuffer buffer = ByteBuffer.allocate(16);
+        buffer.putLong(uuid.getMostSignificantBits());
+        buffer.putLong(uuid.getLeastSignificantBits());
+        return buffer.array();
     }
 }
