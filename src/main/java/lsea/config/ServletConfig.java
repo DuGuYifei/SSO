@@ -17,6 +17,7 @@ public class ServletConfig {
     public ServletRegistrationBean<UserServlet> userServletRegistrationBean() {
         ServletRegistrationBean<UserServlet> bean = new ServletRegistrationBean<>(new UserServlet());
         bean.addUrlMappings("/users");
+        bean.setLoadOnStartup(1);
         return bean;
     }
 }
