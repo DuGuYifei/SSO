@@ -81,3 +81,13 @@ To run the project as EE:
 1. Make sure you have `java 11`
 2. run "mvn clean install" as previously.
 3. Visit webpages at 'http://localhost:8081/users'.
+
+
+## Tasks List
+- [x] 4 views:
+   - [x] Users
+   - [x] Add user
+   - [x] Websites
+   - [x] Add website
+- [x] Create, Remove, Update
+- [x] One-to-many relationship -> User and Website (Constraint: User can only be deleted when there is no website associated with it)
